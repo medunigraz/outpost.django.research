@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     forward = [
-        '''
+        """
         CREATE MATERIALIZED VIEW "public"."research_projectcategory" AS SELECT
             t.PROJEKT_TYP_ID::integer AS id,
             t.PROJEKT_TYP_DE AS name,
@@ -19,11 +19,11 @@ class Migration(migrations.Migration):
         LEFT OUTER JOIN
             "public"."research_djangoprojectcategory" AS d
             ON t.PROJEKT_TYP_ID::integer = d.id
-        ''',
-        '''
+        """,
+        """
         CREATE UNIQUE INDEX research_projectcategory_id_idx ON "public"."research_projectcategory" ("id");
-        ''',
-        '''
+        """,
+        """
         CREATE MATERIALIZED VIEW "public"."research_projectstatus" AS SELECT
             s.PROJEKT_STATUS_ID::integer AS id,
             s.PROJEKT_STATUS AS name,
@@ -33,34 +33,27 @@ class Migration(migrations.Migration):
         LEFT OUTER JOIN
             "public"."research_djangoprojectstatus" AS d
             ON s.PROJEKT_STATUS_ID::integer = d.id
-        ''',
-        '''
+        """,
+        """
         CREATE UNIQUE INDEX research_projectstatus_id_idx ON "public"."research_projectstatus" ("id");
-        ''',
+        """,
     ]
 
     reverse = [
-        '''
+        """
         DROP INDEX IF EXISTS research_projectstatus_id_idx;
-        ''',
-        '''
+        """,
+        """
         DROP MATERIALIZED VIEW IF EXISTS "public"."research_projectstatus";
-        ''',
-        '''
+        """,
+        """
         DROP INDEX IF EXISTS research_publicationcategory_id_idx;
-        ''',
-        '''
+        """,
+        """
         DROP MATERIALIZED VIEW IF EXISTS "public"."research_publicationcategory";
-        ''',
+        """,
     ]
 
-    dependencies = [
-        ('research', '0003_djangoprojectcategory_djangoprojectstatus'),
-    ]
+    dependencies = [("research", "0003_djangoprojectcategory_djangoprojectstatus")]
 
-    operations = [
-        migrations.RunSQL(
-            forward,
-            reverse
-        )
-    ]
+    operations = [migrations.RunSQL(forward, reverse)]

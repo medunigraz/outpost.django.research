@@ -8,87 +8,115 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('research', '0004_public_flag'),
-    ]
+    dependencies = [("research", "0004_public_flag")]
 
     operations = [
         migrations.CreateModel(
-            name='Classification',
+            name="Classification",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', django.contrib.postgres.fields.hstore.HStoreField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", django.contrib.postgres.fields.hstore.HStoreField()),
             ],
-            options={
-                'db_table': 'research_classification',
-                'managed': False,
-            },
+            options={"db_table": "research_classification", "managed": False},
         ),
         migrations.CreateModel(
-            name='Education',
+            name="Education",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', django.contrib.postgres.fields.hstore.HStoreField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", django.contrib.postgres.fields.hstore.HStoreField()),
             ],
-            options={
-                'db_table': 'research_education',
-                'managed': False,
-            },
+            options={"db_table": "research_education", "managed": False},
         ),
         migrations.CreateModel(
-            name='Expertise',
+            name="Expertise",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', django.contrib.postgres.fields.hstore.HStoreField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", django.contrib.postgres.fields.hstore.HStoreField()),
             ],
-            options={
-                'db_table': 'research_expertise',
-                'managed': False,
-            },
+            options={"db_table": "research_expertise", "managed": False},
         ),
         migrations.CreateModel(
-            name='Knowledge',
+            name="Knowledge",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', django.contrib.postgres.fields.hstore.HStoreField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", django.contrib.postgres.fields.hstore.HStoreField()),
             ],
-            options={
-                'db_table': 'research_knowledge',
-                'managed': False,
-            },
+            options={"db_table": "research_knowledge", "managed": False},
         ),
         migrations.CreateModel(
-            name='Program',
+            name="Program",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=256, null=True)),
-                ('active', models.BooleanField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(blank=True, max_length=256, null=True)),
+                ("active", models.BooleanField()),
             ],
-            options={
-                'db_table': 'research_program',
-                'managed': False,
-            },
+            options={"db_table": "research_program", "managed": False},
         ),
         migrations.CreateModel(
-            name='PublicationAuthorship',
+            name="PublicationAuthorship",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', django.contrib.postgres.fields.hstore.HStoreField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", django.contrib.postgres.fields.hstore.HStoreField()),
             ],
-            options={
-                'db_table': 'research_publicationauthorship',
-                'managed': False,
-            },
+            options={"db_table": "research_publicationauthorship", "managed": False},
         ),
         migrations.CreateModel(
-            name='PublicationOrganization',
+            name="PublicationOrganization",
             fields=[
-                ('id', models.CharField(max_length=256, primary_key=True, serialize=False)),
-                ('assigned', models.DateTimeField(blank=True, null=True)),
+                (
+                    "id",
+                    models.CharField(max_length=256, primary_key=True, serialize=False),
+                ),
+                ("assigned", models.DateTimeField(blank=True, null=True)),
             ],
-            options={
-                'db_table': 'research_publicationorganization',
-                'managed': False,
-            },
+            options={"db_table": "research_publicationorganization", "managed": False},
         ),
     ]

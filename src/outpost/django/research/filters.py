@@ -4,7 +4,7 @@ from . import models
 
 
 class ProjectFilter(filterset.FilterSet):
-    '''
+    """
     ## Filters
 
     To filter for exact value matches:
@@ -38,68 +38,33 @@ class ProjectFilter(filterset.FilterSet):
       - `begin_effective`: `gt`, `gte`, `lt`, `lte`
       - `end_planned`: `gt`, `gte`, `lt`, `lte`
       - `end_effective`: `gt`, `gte`, `lt`, `lte`
-    '''
+    """
 
     class Meta:
         model = models.Project
         fields = {
-            'organization': ('exact',),
-            'category': ('exact',),
-            'manager': ('exact',),
-            'contact': ('exact',),
-            'status': ('exact',),
-            'begin_planned': (
-                'exact',
-                'gt',
-                'lt',
-                'gte',
-                'lte',
-                'date',
-            ),
-            'begin_effective': (
-                'exact',
-                'gt',
-                'lt',
-                'gte',
-                'lte',
-                'date',
-            ),
-            'end_planned': (
-                'exact',
-                'gt',
-                'lt',
-                'gte',
-                'lte',
-                'date',
-            ),
-            'end_effective': (
-                'exact',
-                'gt',
-                'lt',
-                'gte',
-                'lte',
-                'date',
-            ),
-            'grant': ('exact',),
-            'research': ('exact',),
-            'event': ('exact',),
-            'study': ('exact',),
-            'language': ('exact',),
-            'funders': ('exact',),
-            'assignment': (
-                'exact',
-                'gt',
-                'lt',
-                'gte',
-                'lte',
-                'date',
-            ),
-            'program': ('exact',),
+            "organization": ("exact",),
+            "category": ("exact",),
+            "manager": ("exact",),
+            "contact": ("exact",),
+            "status": ("exact",),
+            "begin_planned": ("exact", "gt", "lt", "gte", "lte", "date"),
+            "begin_effective": ("exact", "gt", "lt", "gte", "lte", "date"),
+            "end_planned": ("exact", "gt", "lt", "gte", "lte", "date"),
+            "end_effective": ("exact", "gt", "lt", "gte", "lte", "date"),
+            "grant": ("exact",),
+            "research": ("exact",),
+            "event": ("exact",),
+            "study": ("exact",),
+            "language": ("exact",),
+            "funders": ("exact",),
+            "assignment": ("exact", "gt", "lt", "gte", "lte", "date"),
+            "program": ("exact",),
         }
 
 
 class PublicationFilter(filterset.FilterSet):
-    '''
+    """
     ## Filters
 
     To filter for exact value matches:
@@ -128,59 +93,56 @@ class PublicationFilter(filterset.FilterSet):
       - `pmc`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`
       - `organization_authorship`: `in`
       - `organization_authorship__assigned`: `gt`, `gte`, `lt`, `lte`, `date`
-    '''
+    """
 
     class Meta:
         model = models.Publication
         fields = {
-            'year': ('exact',),
-            'category': ('exact',),
-            'document': ('exact',),
-            'sci': (
-                'exact',
-                'iexact',
-                'contains',
-                'icontains',
-                'startswith',
-                'istartswith',
+            "year": ("exact",),
+            "category": ("exact",),
+            "document": ("exact",),
+            "sci": (
+                "exact",
+                "iexact",
+                "contains",
+                "icontains",
+                "startswith",
+                "istartswith",
             ),
-            'pubmed': (
-                'exact',
-                'iexact',
-                'contains',
-                'icontains',
-                'startswith',
-                'istartswith',
+            "pubmed": (
+                "exact",
+                "iexact",
+                "contains",
+                "icontains",
+                "startswith",
+                "istartswith",
             ),
-            'doi': (
-                'exact',
-                'iexact',
-                'contains',
-                'icontains',
-                'startswith',
-                'istartswith',
+            "doi": (
+                "exact",
+                "iexact",
+                "contains",
+                "icontains",
+                "startswith",
+                "istartswith",
             ),
-            'pmc': (
-                'exact',
-                'iexact',
-                'contains',
-                'icontains',
-                'startswith',
-                'istartswith',
+            "pmc": (
+                "exact",
+                "iexact",
+                "contains",
+                "icontains",
+                "startswith",
+                "istartswith",
             ),
-            'persons': ('exact',),
-            'organization_authorship': (
-                'exact',
-                'in',
+            "persons": ("exact",),
+            "organization_authorship": ("exact", "in"),
+            "organization_authorship__assigned": (
+                "exact",
+                "gt",
+                "lt",
+                "gte",
+                "lte",
+                "date",
             ),
-            'organization_authorship__assigned': (
-                'exact',
-                'gt',
-                'lt',
-                'gte',
-                'lte',
-                'date',
-            )
         }
 
     @property
@@ -190,7 +152,7 @@ class PublicationFilter(filterset.FilterSet):
 
 
 class BiddingDeadlineFilter(filterset.FilterSet):
-    '''
+    """
     ## Filters
 
     To filter for exact value matches:
@@ -211,25 +173,18 @@ class BiddingDeadlineFilter(filterset.FilterSet):
     Possible advanced lookups:
 
       - `deadline`: `gt`, `gte`, `lt`, `lte`, `date`
-    '''
+    """
 
     class Meta:
         model = models.BiddingDeadline
         fields = {
-            'bidding': ('exact',),
-            'deadline': (
-                'exact',
-                'gt',
-                'lt',
-                'gte',
-                'lte',
-                'date',
-            ),
+            "bidding": ("exact",),
+            "deadline": ("exact", "gt", "lt", "gte", "lte", "date"),
         }
 
 
 class BiddingEndowmentFilter(filterset.FilterSet):
-    '''
+    """
     ## Filters
 
     To filter for exact value matches:
@@ -250,24 +205,15 @@ class BiddingEndowmentFilter(filterset.FilterSet):
     Possible advanced lookups:
 
       - `amount`: `gt`, `gte`, `lt`, `lte`
-    '''
+    """
 
     class Meta:
         model = models.BiddingEndowment
-        fields = {
-            'bidding': ('exact',),
-            'amount': (
-                'exact',
-                'gt',
-                'lt',
-                'gte',
-                'lte',
-            ),
-        }
+        fields = {"bidding": ("exact",), "amount": ("exact", "gt", "lt", "gte", "lte")}
 
 
 class BiddingFilter(filterset.FilterSet):
-    '''
+    """
     ## Filters
 
     To filter for exact value matches:
@@ -291,31 +237,14 @@ class BiddingFilter(filterset.FilterSet):
       - `mode`: `iexact`, `contains`, `icontains`
       - `funders`: `in`
       - `start`: `gt`, `gte`, `lt`, `lte`, `date`
-    '''
+    """
 
     class Meta:
         model = models.Bidding
         fields = {
-            'title': (
-                'exact',
-                'iexact',
-                'contains',
-                'icontains',
-            ),
-            'mode': (
-                'exact',
-                'iexact',
-                'contains',
-                'icontains',
-            ),
-            'running': ('exact',),
-            'funders': ('exact',),
-            'start': (
-                'exact',
-                'gt',
-                'lt',
-                'gte',
-                'lte',
-                'date',
-            ),
+            "title": ("exact", "iexact", "contains", "icontains"),
+            "mode": ("exact", "iexact", "contains", "icontains"),
+            "running": ("exact",),
+            "funders": ("exact",),
+            "start": ("exact", "gt", "lt", "gte", "lte", "date"),
         }

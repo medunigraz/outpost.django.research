@@ -9,12 +9,15 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('research', '0005_classification_education_expertise_knowledge_program_publicationauthorship_publicationorganization'),
+        (
+            "research",
+            "0005_classification_education_expertise_knowledge_program_publicationauthorship_publicationorganization",
+        )
     ]
 
     ops = [
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."ausschreibung" (
                 AUSSCHREIBUNG_ID numeric,
                 AUSSCHREIBUNG_TITEL varchar,
@@ -29,13 +32,15 @@ class Migration(migrations.Migration):
                 tablename 'AUSSCHREIBUNG',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."ausschreibung";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."ausschreibung_deadline" (
                 DEADLINE_ID numeric,
                 AUSSCHREIBUNG_ID numeric,
@@ -47,13 +52,15 @@ class Migration(migrations.Migration):
                 tablename 'AUSSCHREIBUNG_DEADLINE',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."ausschreibung_deadline";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."ausschreibung_dotierung" (
                 DOTIERUNG_ID numeric,
                 AUSSCHREIBUNG_ID numeric,
@@ -65,13 +72,15 @@ class Migration(migrations.Migration):
                 tablename 'AUSSCHREIBUNG_DOTIERUNG',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."ausschreibung_dotierung";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."ausschreibung_geldgeber" (
                 AUSSCHREIBUNG_ID numeric,
                 GELDGEBER_ID numeric
@@ -80,13 +89,15 @@ class Migration(migrations.Migration):
                 tablename 'AUSSCHREIBUNG_GELDGEBER',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."ausschreibung_geldgeber";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_bidding" AS SELECT
                 AUSSCHREIBUNG_ID::integer AS id,
                 AUSSCHREIBUNG_TITEL AS title,
@@ -98,13 +109,13 @@ class Migration(migrations.Migration):
                 START_DATUM::timestamptz AS start
             FROM
                 "research"."ausschreibung"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_bidding";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_biddingdeadline" AS SELECT
                 DEADLINE_ID::integer AS id,
                 AUSSCHREIBUNG_ID::integer AS bidding_id,
@@ -113,13 +124,13 @@ class Migration(migrations.Migration):
                 ANMERKUNG_DEADLINE AS comment
             FROM
                 "research"."ausschreibung_deadline"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_biddingdeadline";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_biddingendowment" AS SELECT
                 DOTIERUNG_ID::integer AS id,
                 AUSSCHREIBUNG_ID::integer AS bidding_id,
@@ -128,36 +139,36 @@ class Migration(migrations.Migration):
                 WAEHRUNG AS currency
             FROM
                 "research"."ausschreibung_dotierung"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_biddingendowment";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_bidding_funder" AS SELECT
                 AUSSCHREIBUNG_ID::integer AS bidding_id,
                 GELDGEBER_ID::integer AS funder_id
             FROM
                 "research"."ausschreibung_geldgeber"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_bidding_funder";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_bidding_id_idx ON "public"."research_bidding" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_bidding_id_idx;
-            ''',
+            """,
         ),
     ]
 
     operations = [
         migrations.RunSQL(
             [forward for forward, reverse in ops],
-            [reverse for forward, reverse in reversed(ops)]
+            [reverse for forward, reverse in reversed(ops)],
         )
     ]

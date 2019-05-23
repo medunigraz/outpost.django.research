@@ -10,21 +10,19 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('base', '0001_initial'),
-    ]
+    dependencies = [("base", "0001_initial")]
 
     ops = [
         (
-            '''
+            """
             CREATE SCHEMA IF NOT EXISTS research;
-            ''',
-            '''
+            """,
+            """
             DROP SCHEMA IF EXISTS "research";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."forschung_programm" (
                 FORSCHUNG_PROGRAMM_ID numeric,
                 FORSCHUNG_PROGRAMM_NAME varchar,
@@ -34,13 +32,15 @@ class Migration(migrations.Migration):
                 tablename 'FORSCHUNG_PROGRAMM_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."forschung_programm";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."forschung_art" (
                 FORSCHUNG_ART_ID numeric,
                 FORSCHUNG_ART_DE varchar,
@@ -50,13 +50,15 @@ class Migration(migrations.Migration):
                 tablename 'FORSCHUNG_ART_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."forschung_art";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."geldgeber" (
                 GELDGEBER_ID numeric,
                 GELDGEBER_DE varchar,
@@ -72,13 +74,15 @@ class Migration(migrations.Migration):
                 tablename 'GELDGEBER',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."geldgeber";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."geldgeber_typ" (
                 GELDGEBER_TYP_ID numeric,
                 GELDGEBER_TYP_DE varchar,
@@ -89,13 +93,15 @@ class Migration(migrations.Migration):
                 tablename 'GELDGEBER_TYP_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."geldgeber_typ";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."land" (
                 LAND_ID numeric,
                 LAND_DE varchar,
@@ -105,13 +111,15 @@ class Migration(migrations.Migration):
                 tablename 'LAND_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."land";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."org_partner_projektfunktion" (
                 ORG_PARTNER_PROJEKTFUNKTION_ID numeric,
                 ORG_PARTNER_PROJEKTFUNKTION_DE varchar,
@@ -121,13 +129,15 @@ class Migration(migrations.Migration):
                 tablename 'ORG_PARTNER_PROJEKTFUNKTION_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."org_partner_projektfunktion";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."projekt_typ" (
                 PROJEKT_TYP_ID numeric,
                 PROJEKT_TYP_DE varchar,
@@ -138,13 +148,15 @@ class Migration(migrations.Migration):
                 tablename 'PROJEKT_TYP_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."projekt_typ";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."projekt" (
                 PROJEKT_ID numeric,
                 ORGEINHEIT_ID numeric,
@@ -176,13 +188,15 @@ class Migration(migrations.Migration):
                 tablename 'PROJEKT',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."projekt";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."projekt_geldgeber" (
                 PROJEKT_ID numeric,
                 GELDGEBER_ID numeric,
@@ -192,13 +206,15 @@ class Migration(migrations.Migration):
                 tablename 'PROJEKT_GELDGEBER',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."projekt_geldgeber";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."projekt_status" (
                 PROJEKT_STATUS_ID numeric,
                 PROJEKT_STATUS varchar
@@ -207,13 +223,15 @@ class Migration(migrations.Migration):
                 tablename 'PROJEKT_STATUS_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."projekt_status";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."sprache" (
                 SPRACHE_ID numeric,
                 SPRACHE_DE varchar,
@@ -224,13 +242,15 @@ class Migration(migrations.Migration):
                 tablename 'SPRACHE_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."sprache";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."studie_art" (
                 STUDIE_ART_ID numeric,
                 STUDIE_ART_DE varchar,
@@ -240,13 +260,15 @@ class Migration(migrations.Migration):
                 tablename 'STUDIE_ART_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."studie_art";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."veranstaltung_art" (
                 VERANSTALTUNG_ART_ID numeric,
                 VERANSTALTUNG_ART_DE varchar,
@@ -256,13 +278,15 @@ class Migration(migrations.Migration):
                 tablename 'VERANSTALTUNG_ART_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."veranstaltung_art";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."vergabe_art" (
                 VERGABE_ART_ID numeric,
                 VERGABE_ART_DE varchar,
@@ -272,13 +296,15 @@ class Migration(migrations.Migration):
                 tablename 'VERGABE_ART_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."vergabe_art";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."person_publikation" (
                 MEDONLINE_PERSON_ID numeric,
                 PUBLIKATION_ID numeric
@@ -287,13 +313,15 @@ class Migration(migrations.Migration):
                 tablename 'PERSON_PUBLIKATION',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."person_publikation";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."orgeinheit_publikation" (
                 PUBLIKATION_ID numeric,
                 MEDONLINE_ID numeric,
@@ -304,13 +332,15 @@ class Migration(migrations.Migration):
                 tablename 'ORGEINHEIT_PUBLIKATION',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."orgeinheit_publikation";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."publikation_typ" (
                 PUBLIKATION_TYP_ID numeric,
                 PUBLIKATION_TYP_DE varchar,
@@ -321,13 +351,15 @@ class Migration(migrations.Migration):
                 tablename 'PUBLIKATION_TYP_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."publikation_typ";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."publikation_dokumenttyp" (
                 PUBLIKATION_DOKUMENTTYP_ID numeric,
                 PUBLIKATION_DOKUMENTTYP_DE varchar,
@@ -337,13 +369,15 @@ class Migration(migrations.Migration):
                 tablename 'PUBLIKATION_DOKUMENTTYP_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."publikation_dokumenttyp";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."publikation" (
                 PUBLIKATION_ID varchar,
                 TITEL varchar,
@@ -363,13 +397,15 @@ class Migration(migrations.Migration):
                 tablename 'PUBLIKATION',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."publikation";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."klassifikation_oestat_2012" (
                 KLASSIFIKATION_OESTAT_ID numeric,
                 KLASSIFIKATION_OESTAT_DE varchar,
@@ -379,13 +415,15 @@ class Migration(migrations.Migration):
                 tablename 'KLASSIFIKATION_OESTAT_2012_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."klassifikation_oestat_2012";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."person_fachkenntnis" (
                 PERSON_FACHKENNTNIS_ID numeric,
                 MEDONLINE_PERSON_ID numeric,
@@ -396,13 +434,15 @@ class Migration(migrations.Migration):
                 tablename 'PERSON_FACHKENNTNIS',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."person_fachkenntnis";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."person_kenntnis" (
                 PERSON_KENNTNIS_ID numeric,
                 MEDONLINE_PERSON_ID numeric,
@@ -413,13 +453,15 @@ class Migration(migrations.Migration):
                 tablename 'PERSON_KENNTNIS',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."person_kenntnis";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."person_klass_oestat_2012" (
                 KLASSIFIKATION_OESTAT_ID numeric,
                 MEDONLINE_PERSON_ID numeric
@@ -428,13 +470,15 @@ class Migration(migrations.Migration):
                 tablename 'PERSON_KLASS_OESTAT_2012',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."person_klass_oestat_2012";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."person_weiterbildung" (
                 PERSON_WEITERBILDUNG_ID numeric,
                 MEDONLINE_PERSON_ID numeric,
@@ -447,13 +491,15 @@ class Migration(migrations.Migration):
                 tablename 'PERSON_WEITERBILDUNG',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."person_weiterbildung";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE FOREIGN TABLE "research"."publikation_autorenschaft" (
                 PUBLIKATION_AUTORENSCHAFT_ID numeric,
                 PUBLIKATION_AUTORENSCHAFT_DE varchar,
@@ -463,13 +509,15 @@ class Migration(migrations.Migration):
                 tablename 'PUBLIKATION_AUTORENSCHAFT_L',
                 db_url '{}'
             );
-            '''.format(settings.MULTICORN.get('research')),
-            '''
+            """.format(
+                settings.MULTICORN.get("research")
+            ),
+            """
             DROP FOREIGN TABLE IF EXISTS "research"."publikation_autorenschaft";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_classification" AS SELECT
                 KLASSIFIKATION_OESTAT_ID::integer AS id,
                 hstore(
@@ -478,25 +526,25 @@ class Migration(migrations.Migration):
                 ) AS name
             FROM
                 "research"."klassifikation_oestat_2012"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_classification";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_classification_person" AS SELECT
                 KLASSIFIKATION_OESTAT_ID::integer AS classification_id,
                 MEDONLINE_PERSON_ID::integer AS person_id
             FROM
                 "research"."person_klass_oestat_2012"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_classification_person";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_expertise" AS SELECT
                 PERSON_FACHKENNTNIS_ID::integer AS id,
                 MEDONLINE_PERSON_ID::integer AS person_id,
@@ -506,13 +554,13 @@ class Migration(migrations.Migration):
                 ) AS name
             FROM
                 "research"."person_fachkenntnis"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_expertise";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_knowledge" AS SELECT
                 PERSON_KENNTNIS_ID::integer AS id,
                 MEDONLINE_PERSON_ID::integer AS person_id,
@@ -522,13 +570,13 @@ class Migration(migrations.Migration):
                 ) AS name
             FROM
                 "research"."person_kenntnis"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_knowledge";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_education" AS SELECT
                 PERSON_WEITERBILDUNG_ID::integer AS id,
                 MEDONLINE_PERSON_ID::integer AS person_id,
@@ -540,13 +588,13 @@ class Migration(migrations.Migration):
                 JAHR_BIS::integer AS to
             FROM
                 "research"."person_weiterbildung"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_education";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_publicationauthorship" AS SELECT
                 PUBLIKATION_AUTORENSCHAFT_ID::integer AS id,
                 hstore(
@@ -555,46 +603,46 @@ class Migration(migrations.Migration):
                 ) AS name
             FROM
                 "research"."publikation_autorenschaft"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_publicationauthorship";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_program" AS SELECT
                 FORSCHUNG_PROGRAMM_ID::integer AS id,
                 FORSCHUNG_PROGRAMM_NAME AS name,
                 COALESCE((LOWER(AKTIV_JN) = 'n'), FALSE)::boolean AS active
             FROM
                 "research"."forschung_programm"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_program";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_projectresearch" AS SELECT
                 FORSCHUNG_ART_ID::integer AS id,
                 FORSCHUNG_ART_DE AS name
             FROM
                 "research"."forschung_art"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_projectresearch";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_projectresearch_id_idx ON "public"."research_projectresearch" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_projectresearch_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_funder" AS SELECT
                 GELDGEBER_ID::integer AS id,
                 GELDGEBER_DE AS name,
@@ -606,82 +654,82 @@ class Migration(migrations.Migration):
                 GELDGEBER_TYP_ID::integer AS category_id
             FROM
                 "research"."geldgeber"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_funder";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_funder_id_idx ON "public"."research_funder" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_funder_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_fundercategory" AS SELECT
                 GELDGEBER_TYP_ID::integer AS id,
                 GELDGEBER_TYP_DE AS name,
                 GELDGEBER_TYP_KURZ AS short
             FROM
                 "research"."geldgeber_typ"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_fundercategory";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_fundercategory_id_idx ON "public"."research_fundercategory" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_fundercategory_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_country" AS SELECT
                 LAND_ID::integer AS id,
                 LAND_DE AS name
             FROM
                 "research"."land"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_country";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_country_id_idx ON "public"."research_country" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_country_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_projectpartnerfunction" AS SELECT
                 ORG_PARTNER_PROJEKTFUNKTION_ID::integer AS id,
                 ORG_PARTNER_PROJEKTFUNKTION_DE AS name
             FROM
                 "research"."org_partner_projektfunktion"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_projectpartnerfunction";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_projectpartnerfunction_id_idx ON "public"."research_projectpartnerfunction" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_projectpartnerfunction_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_project" AS SELECT
                 PROJEKT_ID::integer AS id,
                 ORGEINHEIT_ID::integer AS organization_id,
@@ -723,147 +771,147 @@ class Migration(migrations.Migration):
             INNER JOIN
                 campusonline.organisationen AS co_o
                 ON projekt.orgeinheit_id::integer = co_o.nr::integer
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_project";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_project_id_idx ON "public"."research_project" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_project_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_project_funder" AS SELECT
                 PROJEKT_ID::integer AS project_id,
                 GELDGEBER_ID::integer AS funder_id,
                 CASE lower(HAUPTGELDGEBER_JA_NEIN) WHEN 'ja' THEN TRUE ELSE FALSE END AS primary
             FROM
                 "research"."projekt_geldgeber"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_project_funder";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_project_funder_idx ON "public"."research_project_funder" ("project_id", "funder_id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_project_funder_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE INDEX research_project_funder_project_id_idx ON "public"."research_project_funder" ("project_id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_project_funder_project_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE INDEX research_project_funder_funder_id_idx ON "public"."research_project_funder" ("funder_id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_project_funder_funder_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_language" AS SELECT
                 SPRACHE_ID::integer AS id,
                 SPRACHE_DE AS name,
                 SPRACHE_EN_KURZ AS iso
             FROM
                 "research"."sprache";
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_language";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_language_id_idx ON "public"."research_language" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_language_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE INDEX research_language_iso_idx ON "public"."research_language" ("iso");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_language_iso_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_projectstudy" AS SELECT
                 STUDIE_ART_ID::integer AS id,
                 STUDIE_ART_DE AS name
             FROM
                 "research"."studie_art";
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_projectstudy";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_projectstudy_id_idx ON "public"."research_projectstudy" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_projectstudy_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_projectevent" AS SELECT
                 VERANSTALTUNG_ART_ID::integer AS id,
                 VERANSTALTUNG_ART_DE AS name
             FROM
                 "research"."veranstaltung_art";
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_projectevent";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_projectevent_id_idx ON "public"."research_projectevent" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_projectevent_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_projectgrant" AS SELECT
                 VERGABE_ART_ID::integer AS id,
                 VERGABE_ART_DE AS name
             FROM
                 "research"."vergabe_art"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_projectgrant";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_projectgrant_id_idx ON "public"."research_projectgrant" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_projectgrant_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_publication_person" AS SELECT
                 person_publikation.publikation_id::integer AS publication_id,
                 person_publikation.medonline_person_id::integer AS person_id
@@ -875,37 +923,37 @@ class Migration(migrations.Migration):
             INNER JOIN
                 campusonline.personen co_p
                 ON person_publikation.medonline_person_id::integer = co_p.pers_nr::integer
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_publication_person";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_publication_person_idx ON "public"."research_publication_person" ("publication_id", "person_id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_publication_person_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE INDEX research_publication_person_publication_id_idx ON "public"."research_publication_person" ("publication_id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_publication_person_publication_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE INDEX research_publication_person_person_id_idx ON "public"."research_publication_person" ("person_id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_publication_person_person_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_publicationorganization" AS SELECT DISTINCT
                 FORMAT(
                     '%s-%s',
@@ -924,37 +972,37 @@ class Migration(migrations.Migration):
             INNER JOIN
                 campusonline.organisationen co_o
                 ON r_op.MEDONLINE_ID::integer = co_o.NR::integer
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_publicationorganization";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_publicationorganization_idx ON "public"."research_publicationorganization" ("publication_id", "organization_id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_publicationorganization_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE INDEX research_publicationorganization_publication_id_idx ON "public"."research_publicationorganization" ("publication_id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_publicationorganization_publication_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE INDEX research_publicationorganization_organization_id_idx ON "public"."research_publicationorganization" ("organization_id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_publicationorganization_organization_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_publicationcategory" AS SELECT
                 PUBLIKATION_TYP_ID::integer AS id,
                 hstore(
@@ -963,21 +1011,21 @@ class Migration(migrations.Migration):
                 ) AS name
             FROM
                 "research"."publikation_typ";
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_publicationcategory";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_publicationcategory_id_idx ON "public"."research_publicationcategory" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_publicationcategory_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_publicationdocument" AS SELECT
                 PUBLIKATION_DOKUMENTTYP_ID::integer AS id,
                 hstore(
@@ -986,21 +1034,21 @@ class Migration(migrations.Migration):
                 ) AS name
             FROM
                 "research"."publikation_dokumenttyp";
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_publicationdocument";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_publicationdocument_id_idx ON "public"."research_publicationdocument" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_publicationdocument_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE MATERIALIZED VIEW "public"."research_publication" AS SELECT
                 PUBLIKATION_ID::integer AS id,
                 TITEL AS title,
@@ -1016,48 +1064,48 @@ class Migration(migrations.Migration):
                 ABSTRACT AS abstract_bytes
             FROM
                 "research"."publikation"
-            ''',
-            '''
+            """,
+            """
             DROP MATERIALIZED VIEW IF EXISTS "public"."research_publication";
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE UNIQUE INDEX research_publication_id_idx ON "public"."research_publication" ("id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_publication_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE INDEX research_publication_year_idx ON "public"."research_publication" ("year");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_publication_year_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE INDEX research_publication_category_id_idx ON "public"."research_publication" ("category_id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_publication_category_id_idx;
-            ''',
+            """,
         ),
         (
-            '''
+            """
             CREATE INDEX research_publication_document_id_idx ON "public"."research_publication" ("document_id");
-            ''',
-            '''
+            """,
+            """
             DROP INDEX IF EXISTS research_publication_document_id_idx;
-            ''',
-        )
+            """,
+        ),
     ]
 
     operations = [
         migrations.RunSQL(
             [forward for forward, reverse in ops],
-            [reverse for forward, reverse in reversed(ops)]
+            [reverse for forward, reverse in reversed(ops)],
         )
     ]
