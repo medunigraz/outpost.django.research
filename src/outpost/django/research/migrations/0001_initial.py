@@ -912,7 +912,7 @@ class Migration(migrations.Migration):
         ),
         (
             """
-            CREATE MATERIALIZED VIEW "public"."research_publication_person" AS SELECT
+            CREATE MATERIALIZED VIEW "public"."research_publication_person" AS SELECT DISTINCT
                 person_publikation.publikation_id::integer AS publication_id,
                 person_publikation.medonline_person_id::integer AS person_id
             FROM
