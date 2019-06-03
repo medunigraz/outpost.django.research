@@ -584,8 +584,8 @@ class Migration(migrations.Migration):
                     ARRAY['de', 'en'],
                     ARRAY[PERSON_WEITERBILDUNG_DE, PERSON_WEITERBILDUNG_EN]
                 ) AS name,
-                JAHR::integer AS from,
-                JAHR_BIS::integer AS to
+                JAHR AS from,
+                JAHR_BIS AS to
             FROM
                 "research"."person_weiterbildung"
             """,
