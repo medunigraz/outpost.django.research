@@ -98,7 +98,7 @@ class PublicationFilter(filterset.FilterSet):
     class Meta:
         model = models.Publication
         fields = {
-            "year": ("exact",),
+            "year": ("exact", "gt", "lt", "gte", "lte"),
             "category": ("exact",),
             "document": ("exact",),
             "sci": (
