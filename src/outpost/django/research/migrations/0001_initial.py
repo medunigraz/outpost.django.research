@@ -1049,7 +1049,7 @@ class Migration(migrations.Migration):
         ),
         (
             """
-            CREATE MATERIALIZED VIEW "public"."research_publication" AS SELECT
+            CREATE MATERIALIZED VIEW "public"."research_publication" AS SELECT DISTINCT
                 PUBLIKATION_ID::integer AS id,
                 TITEL AS title,
                 regexp_split_to_array(trim(both ' ' from AUTOR), ';\s*') AS authors,
