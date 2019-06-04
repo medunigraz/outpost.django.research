@@ -87,6 +87,7 @@ class PublicationFilter(filterset.FilterSet):
 
     Possible advanced lookups:
 
+      - `year`: `gt`, `gte`, `lt`, `lte`
       - `sci`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`
       - `pubmed`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`
       - `doi`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`
