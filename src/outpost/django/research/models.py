@@ -835,7 +835,7 @@ class Bidding(models.Model):
         db_table = "research_bidding"
 
     class Refresh:
-        interval = 86400
+        interval = 3600
 
     def __str__(self):
         return self.title
