@@ -6,8 +6,11 @@ import pyodbc
 import requests
 from braces.views import CsrfExemptMixin
 from django.db import connection
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import View
+from more_itertools import chunked
+from purl import URL
 
 from .conf import settings
 
@@ -18,131 +21,136 @@ logger = logging.getLogger(__name__)
 
 
 class SearchView(CsrfExemptMixin, View):
-    # PubMed URL
-    # Beispiel: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=gollinger[Author]+
+    url = (
+        URL(settings.RESEARCH_PUBMED_URL)
+        .add_path_segment("esearch.fcgi")
+        .query_param("db", "pubmed")
+    )  # &term=
     con = pyodbc.connect("DSN={}".format(settings.RESEARCH_DSN))
-    url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
-    strSearchUrl = "%s/esearch.fcgi?db=pubmed&term=" % (url)
-    # URL Platzhalter
-    strAuthor = "[Author]"
-    strPDAT = "[PDAT]"
-
-    # GET Parameter
-    strAutor1 = ""
-    strAutor2 = ""
-    strJahr = ""
-    strKombination = ""
-    strPersonID = ""
-    strSuchDatum = ""
-    intCounter = 1
-    intSucheID = 0
 
     def post(self, request):
-        # import pudb;pu.db #Debugger aktivieren
-        # print(request.GET.get("autor1_in"))
-        if request.POST.get("autor1_in") is not None:
-            self.strAutor1 = request.POST.get("autor1_in")
-            self.strSearchUrl += self.strAutor1.replace(" ", "+") + self.strAuthor
 
-        if request.POST.get("autor2_in") is not None:
-            self.strAutor2 = request.POST.get("autor2_in")
-            self.strSearchUrl += "+" + self.strAutor2.replace(" ", "+") + self.strAuthor
+        term = []
 
-        if request.POST.get("jahr_in") is not None:
-            self.strJahr = request.POST.get("jahr_in")
-            self.strSearchUrl += "+" + self.strJahr + self.strPDAT
+        author1 = request.POST.get("autor1_in")
+        if author1:
+            term.append(
+                author1.replace(" ", "+") + settings.RESEARCH_PUBMED_AUTHOR_TOKEN
+            )
 
-        if request.POST.get("kombination_in") is not None:
-            self.strKombination = request.POST.get("kombination_in")
-            self.strSearchUrl += request.POST.get("kombination_in")
+        author2 = request.POST.get("autor2_in")
+        if author2:
+            term.append(
+                author2.replace(" ", "+") + settings.RESEARCH_PUBMED_AUTHOR_TOKEN
+            )
 
-        if request.POST.get("suche_id_in") is not None:
-            self.intSucheID = request.POST.get("suche_id_in")
+        year = request.POST.get("jahr_in")
+        if year:
+            term.append(year + settings.RESEARCH_PUBMED_PDAT_TOKEN)
 
-        # TODO PersonID
-        self.strPersonID = request.POST.get("person_id")
+        combination = request.POST.get("kombination_in")
+        if combination:
+            term.append(combination)
 
-        x = datetime.now()
-        # self.strSuchDatum = x.strftime("%d.%m.%y")
-        self.strSuchDatum = x.strftime("%Y-%m-%d %H:%M:%S")
+        url = self.url.query_param("term", "+".join(term))
 
-        response = requests.get(self.strSearchUrl, timeout=5)
-        xmlData = ElementTree.fromstring(response.content)
-        # print(xmlData)
-        dData = self.prepareDataForDB(xmlData)
-        # print(dData)
+        logger.debug(f"Constructed search URL: {url.as_string()}")
 
-        response = self.writeInDB(dData)
+        if not request.POST.get("suche_id_in"):
+            return HttpResponseBadRequest(reason=_("No search ID specified"))
 
-        # DetailTask().run(self.url,  self.intSucheID, dData["IDList"]);
+        try:
+            search = int(request.POST.get("suche_id_in"))
+        except ValueError:
+            return HttpResponseBadRequest(reason=_("Invalid search ID specified"))
 
-        return HttpResponse(response)
+        person_id = request.POST.get("person_id")
+        if person_id:
+            try:
+                person_id = int(person_id)
+            except ValueError:
+                return HttpResponseBadRequest(reason=_("Invalid person ID specified"))
 
-    def prepareDataForDB(self, xmlData):
-        dictSearchData = {}
-        aIDList = []
-        for item in xmlData.findall("IdList/Id"):
-            # print(item)
-            aIDList.append(item.text)
-        dictSearchData["IDList"] = aIDList
-        dictSearchData["Count"] = xmlData.find("Count").text
-        # print(dictSearchData)
+        try:
+            with requests.get(
+                url.as_string(), timeout=settings.RESEARCH_PUBMED_TIMEOUT
+            ) as response:
+                xml = ElementTree.fromstring(response.content)
+        except requests.exceptions.RequestException:
+            return HttpResponse(_("Remote service not available"), status=503)
 
-        return dictSearchData
+        length = int(xml.find("Count").text)
+        ids = (int(item.text) for item in xml.findall("IdList/Id"))
 
-    def writeInDB(self, data):
         try:
             with self.con.cursor() as cursor:
-                intPaketSize = 20
-                intDatenpaket = 1
-
                 cursor.execute(
-                    "insert into pubmed_suche_treffer (suche_id, suchbegriff1, suchbegriff2, suchbegriff3, suchfeld_jahr, person_id, suchdatum, anzahl_treffer) values (?, ?, ?, ?, ?, ?, ?, ?) ",
-                    self.intSucheID,
-                    self.strAutor1,
-                    self.strAutor2,
-                    self.strKombination,
-                    self.strJahr,
-                    self.strPersonID,
-                    self.strSuchDatum,
-                    data["Count"],
+                    """
+                    INSERT INTO
+                        pubmed_suche_treffer
+                    (
+                        suche_id,
+                        suchbegriff1,
+                        suchbegriff2,
+                        suchbegriff3,
+                        suchfeld_jahr,
+                        person_id,
+                        suchdatum,
+                        anzahl_treffer
+                    )
+                    VALUES
+                    (
+                        ?, ?, ?, ?, ?, ?, SYSDATE, ?
+                    )
+                    """,
+                    search,
+                    author1,
+                    author2,
+                    combination,
+                    year,
+                    person_id,
+                    length,
                 )
 
-                cursor.commit()
+            for cid, chunk in enumerate(
+                chunked(ids, settings.RESEARCH_PUBMED_CHUNK_SIZE)
+            ):
+                for i in chunk:
+                    with self.con.cursor() as cursor:
+                        cursor.execute(
+                            """
+                            INSERT INTO
+                                pubmed_suche_ids
+                            (
+                                suche_id,
+                                pubmed_id,
+                                datenpaket_nr
+                            )
+                            VALUES
+                            (?, ?, ?)
+                            """,
+                            search,
+                            i,
+                            cid + 1,
+                        )
+        except pyodbc.Error as e:
+            self.con.rollback()
+            logger.error(f"Failed to write to ODBC DSN {settings.RESEARCH_DSN}: {e}")
+            return HttpResponse(reason=_("ODBC connection failed"), status=503)
+        else:
+            self.con.commit()
 
-            # Pubmed Suche IDs
-            for pubmedId in data["IDList"]:
-                self.intCounter = self.intCounter + 1
-
-                with self.con.cursor() as cursorIDs:
-                    cursorIDs.execute(
-                        """insert into pubmed_suche_ids (suche_id, pubmed_id, datenpaket_nr) values (?, ?, ?) """,
-                        self.intSucheID,
-                        int(pubmedId),
-                        int(intDatenpaket),
-                    )
-                    cursorIDs.commit()
-
-                if self.intCounter > intPaketSize:
-                    self.intCounter = 1
-                    intDatenpaket = intDatenpaket + 1
-
-            return "true"
-
-        except pyodbc.Error as er:
-            # print(pubmedId)
-            # print(er)
-            return er
+        return HttpResponse(response, content_type="text/xml; charset=utf-8")
 
 
 class DetailView(CsrfExemptMixin, View):
-
-    url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
-    strDetailUrl = "%s/efetch.fcgi?db=pubmed&rettyp=medline&retmode=xml&id=" % (url)
-
     con = pyodbc.connect("DSN={}".format(settings.RESEARCH_DSN))
-
-    xmlStructurPubmedArticleMedlineCitation = "PubmedArticle/MedlineCitation/"
+    url = (
+        URL(settings.RESEARCH_PUBMED_URL)
+        .add_path_segment("efetch.fcgi")
+        .query_params({"db": "pubmed", "rettype": "medline", "retmode": "xml"})
+    )
+    base = settings.RESEARCH_PUBMED_XPATH_PUBMEDARTICLE_MEDLINECITATION
 
     # Seperatoren für die Umwandlung von Array auf String
     seperatorColon = " : "
@@ -150,116 +158,77 @@ class DetailView(CsrfExemptMixin, View):
     seperatorBlank = " "
     seperatorComma = ", "
 
-    intSucheID = 0
-
     def post(self, request):
-        begin = datetime.now()
-        # print(self.url)
+        search = request.POST.get("suche_id_in")
+        if not search:
+            return HttpResponseBadRequest(reason=_("No search ID specified"))
 
-        id = 0
-
-        if request.POST.get("suche_id_in") is not None:
-            self.intSucheID = request.POST.get("suche_id_in")
-
-        if request.POST.get("ids_in") is not None:
-            ids = request.POST.get("ids_in").replace("[", "").replace("]", "")
-            pubmedIDS = ids.split(",")
+        ids = map(
+            lambda i: int(i.strip()),
+            request.POST.get("ids_in", "").strip("[]").split(","),
+        )
 
         # print(pubmedIDS)
-        response = ""
-        for pubmedID in pubmedIDS:
-            id = pubmedID.strip()
-
-            xmlData = self.getXMLFromID(id)
-
-            response = self.saveDetail(id, xmlData)
-            print(response)
-            if response == "true":
-                response = self.saveAutoren(id, xmlData)
-            if response == "true":
-                response = self.saveFoerderungen(id, xmlData)
-            if response == "true":
-                response = self.saveMesh(id, xmlData)
-        print(response)
-        return HttpResponse(response)
-
-    def getXMLFromID(self, id):
-        tmpUrl = self.strDetailUrl + id
-        response = requests.get(tmpUrl, timeout=5)
-        xmlData = ElementTree.fromstring(response.content)
-
-        return xmlData
-
-    def saveDetail(self, pubmedId, xmldoc):
-        intPubDate = 0
-        intPubDateAlternative = 0
-        if (
-            xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + "Article/Journal/JournalIssue/PubDate/Year"
-            )
-        ) is not None:
-            intPubDate = xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + "Article/Journal/JournalIssue/PubDate/Year"
-            ).text
-        else:
-            if (
-                xmldoc.find(
-                    'PubmedArticle/PubmedData/History/PubMedPubDate[@PubStatus="pubmed"]'
+        for pubmed in ids:
+            url = self.url.query_param("id", pubmed)
+            try:
+                with requests.get(
+                    url.as_string(), timeout=settings.RESEARCH_PUBMED_TIMEOUT
+                ) as resp:
+                    xml = ElementTree.fromstring(resp.content)
+            except requests.exceptions.RequestException:
+                return HttpResponse(
+                    status=503, reason=_("Remote service not available")
                 )
-            ) is not None:
-                intPubDateAlternative = xmldoc.find(
-                    'PubmedArticle/PubmedData/History/PubMedPubDate[@PubStatus="pubmed"]/Year'
-                ).text
 
-        strArticleTitle = ""
-        if (
-            xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation + "Article/ArticleTitle"
-            )
-        ) is not None:
-            strArticleTitle = xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation + "Article/ArticleTitle"
-            ).text
+            try:
+                self.save_detail(search, pubmed, xml)
+                self.save_authors(search, pubmed, xml)
+                self.save_sponsorships(search, pubmed, xml)
+                self.save_mesh(search, pubmed, xml)
+            except pyodbc.Error:
+                self.con.rollback()
+                logger.error(f"Failed to write to ODBC DSN {settings.RESEARCH_DSN}")
+                import pudb
 
-        strDoi = ""
-        if (
-            xmldoc.find(
-                'PubmedArticle/PubmedData/ArticleIdList/ArticleId[@IdType="doi"]'
-            )
-        ) is not None:
-            strDoi = xmldoc.find(
-                'PubmedArticle/PubmedData/ArticleIdList/ArticleId[@IdType="doi"]'
-            ).text
-        else:
-            if (
-                xmldoc.find(
-                    self.xmlStructurPubmedArticleMedlineCitation
-                    + 'Article/ELocationID[@EIdType="doi"]'
-                )
-            ) is not None:
-                strDoi = xmldoc.find(
-                    self.xmlStructurPubmedArticleMedlineCitation
-                    + 'Article/ELocationID[@EIdType="doi"]'
-                ).text
+                pu.db
+                return HttpResponse(status=503, reason=_("ODBC connection failed"))
+            else:
+                self.con.commit()
+        return HttpResponse("true")
 
-        strLanguage = ""
-        if (
-            xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation + "Article/Language"
-            )
-        ) is not None:
-            strLanguage = xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation + "Article/Language"
+    @staticmethod
+    def find(node, default, *paths):
+        try:
+            return next(
+                filter(lambda n: n is not None, map(lambda p: node.find(p), paths))
             ).text
+        except StopIteration:
+            return default
+
+    def save_detail(self, search, pubmed, xml):
+        intPubDate = self.find(
+            xml, 0, self.base + "Article/Journal/JournalIssue/PubDate/Year"
+        )
+        intPubDateAlternative = self.find(
+            xml,
+            0,
+            "PubmedArticle/PubmedData/History/PubMedPubDate[@PubStatus='pubmed']/Year",
+        )
+        strArticleTitle = self.find(xml, "", self.base + "Article/ArticleTitle")
+
+        strDoi = self.find(
+            xml,
+            "",
+            "PubmedArticle/PubmedData/ArticleIdList/ArticleId[@IdType='doi']",
+            self.base + "Article/ELocationID[@EIdType='doi']",
+        )
+
+        strLanguage = self.find(xml, "", self.base + "Article/Language")
 
         strAbstractText = ""
         aAbstract = []
-        for item in xmldoc.findall(
-            self.xmlStructurPubmedArticleMedlineCitation
-            + "Article/Abstract/AbstractText"
-        ):
+        for item in xml.findall(self.base + "Article/Abstract/AbstractText"):
             strTemp = ""
             if (item.get("Label")) is not None:
                 strTemp = item.get("Label") + ": "
@@ -267,104 +236,33 @@ class DetailView(CsrfExemptMixin, View):
             aAbstract.append(strTemp + item.text)
         strAbstractText = self.seperatorBlank.join(aAbstract)
 
-        strVolume = ""
-        if (
-            xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + "Article/Journal/JournalIssue/Volume"
-            )
-        ) is not None:
-            strVolume = xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + "Article/Journal/JournalIssue/Volume"
-            ).text
+        strVolume = self.find(
+            xml, "", self.base + "Article/Journal/JournalIssue/Volume"
+        )
 
-        strIssue = ""
-        if (
-            xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + "Article/Journal/JournalIssue/Issue"
-            )
-        ) is not None:
-            strIssue = xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + "Article/Journal/JournalIssue/Issue"
-            ).text
+        strIssue = self.find(xml, "", self.base + "Article/Journal/JournalIssue/Issue")
 
-        strPagination = ""
-        if (
-            xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + "Article/Pagination/MedlinePgn"
-            )
-        ) is not None:
-            strPagination = xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + "Article/Pagination/MedlinePgn"
-            ).text
+        strPagination = self.find(xml, "", self.base + "Article/Pagination/MedlinePgn")
 
-        strISSNPrint = ""
-        if (
-            xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + 'Article/Journal/ISSN[@IssnType="Print"]'
-            )
-        ) is not None:
-            strISSNPrint = xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + 'Article/Journal/ISSN[@IssnType="Print"]'
-            ).text
+        strISSNPrint = self.find(
+            xml, "", self.base + "Article/Journal/ISSN[@IssnType='Print']"
+        )
 
-        strISSNElectronic = ""
-        if (
-            xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + 'Article/Journal/ISSN[@IssnType="Electronic"]'
-            )
-        ) is not None:
-            strISSNElectronic = xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + 'Article/Journal/ISSN[@IssnType="Electronic"]'
-            ).text
+        strISSNElectronic = self.find(
+            xml, "", self.base + "Article/Journal/ISSN[@IssnType='Electronic']"
+        )
 
-        strJournaltitle = ""
-        if (
-            xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation + "Article/Journal/Title"
-            )
-        ) is not None:
-            strJournaltitle = xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation + "Article/Journal/Title"
-            ).text
+        strJournaltitle = self.find(xml, "", self.base + "Article/Journal/Title")
 
-        strISOAbbreviation = ""
-        if (
-            xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + "Article/Journal/ISOAbbreviation"
-            )
-        ) is not None:
-            strISOAbbreviation = xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + "Article/Journal/ISOAbbreviation"
-            ).text
+        strISOAbbreviation = self.find(
+            xml, "", self.base + "Article/Journal/ISOAbbreviation"
+        )
 
-        intNLM_ID = 0
-        if (
-            xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + "MedlineJournalInfo/NlmUniqueID"
-            )
-        ) is not None:
-            intNLM_ID = xmldoc.find(
-                self.xmlStructurPubmedArticleMedlineCitation
-                + "MedlineJournalInfo/NlmUniqueID"
-            ).text
+        intNLM_ID = self.find(xml, 0, self.base + "MedlineJournalInfo/NlmUniqueID")
 
         aPublicationType = []
-        for item in xmldoc.findall(
-            self.xmlStructurPubmedArticleMedlineCitation
-            + "Article/PublicationTypeList/PublicationType"
+        for item in xml.findall(
+            self.base + "Article/PublicationTypeList/PublicationType"
         ):
             aPublicationType.append(item.text)
 
@@ -372,9 +270,7 @@ class DetailView(CsrfExemptMixin, View):
 
         strMeshheadingList = ""
         aMeshHeading = []
-        for item in xmldoc.findall(
-            self.xmlStructurPubmedArticleMedlineCitation + "MeshHeadingList/MeshHeading"
-        ):
+        for item in xml.findall(self.base + "MeshHeadingList/MeshHeading"):
             aQualifierName = []
             strQualifierName = ""
             tempMeshHeading = ""
@@ -392,213 +288,234 @@ class DetailView(CsrfExemptMixin, View):
             aMeshHeading.append(tempMeshHeading)
         strMeshheadingList = self.seperatorColon.join(aMeshHeading)
 
-        strPMC = ""
-        if (
-            xmldoc.find(
-                'PubmedArticle/PubmedData/ArticleIdList/ArticleId[@IdType="pmc"]'
-            )
-        ) is not None:
-            strPMC = xmldoc.find(
-                'PubmedArticle/PubmedData/ArticleIdList/ArticleId[@IdType="pmc"]'
-            ).text
+        strPMC = self.find(
+            xml, "", "PubmedArticle/PubmedData/ArticleIdList/ArticleId[@IdType='pmc']"
+        )
 
-        strPUBMedStatus = xmldoc.find("PubmedArticle/PubmedData/PublicationStatus").text
+        strPUBMedStatus = self.find(
+            xml, "", "PubmedArticle/PubmedData/PublicationStatus"
+        )
 
         strPubMedReceived = None
         if (
-            xmldoc.find(
+            xml.find(
                 'PubmedArticle/PubmedData/History/PubMedPubDate[@PubStatus="received"]'
             )
-        ) is not None:
+            is not None
+        ):
             # Date Object fürs Insert erstellen
             datePubmedReceived = datetime(
                 int(
-                    xmldoc.find(
+                    xml.find(
                         'PubmedArticle/PubmedData/History/PubMedPubDate[@PubStatus="received"]/Year'
                     ).text
                 ),
                 int(
-                    xmldoc.find(
+                    xml.find(
                         'PubmedArticle/PubmedData/History/PubMedPubDate[@PubStatus="received"]/Month'
                     ).text
                 ),
                 int(
-                    xmldoc.find(
+                    xml.find(
                         'PubmedArticle/PubmedData/History/PubMedPubDate[@PubStatus="received"]/Day'
                     ).text
                 ),
             )
-            strPubMedReceived = datePubmedReceived.strftime("%Y-%m-%d %H:%M:%S")
+            strPubMedReceived = datePubmedReceived.strftime("%Y-%m-%d")
 
         strPubMedAccepted = None
         if (
-            xmldoc.find(
+            xml.find(
                 'PubmedArticle/PubmedData/History/PubMedPubDate[@PubStatus="accepted"]'
             )
-        ) is not None:
+            is not None
+        ):
             # Date Object fürs Insert erstellen
             datePubmedAccepted = datetime(
                 int(
-                    xmldoc.find(
+                    xml.find(
                         'PubmedArticle/PubmedData/History/PubMedPubDate[@PubStatus="accepted"]/Year'
                     ).text
                 ),
                 int(
-                    xmldoc.find(
+                    xml.find(
                         'PubmedArticle/PubmedData/History/PubMedPubDate[@PubStatus="accepted"]/Month'
                     ).text
                 ),
                 int(
-                    xmldoc.find(
+                    xml.find(
                         'PubmedArticle/PubmedData/History/PubMedPubDate[@PubStatus="accepted"]/Day'
                     ).text
                 ),
             )
-            strPubMedAccepted = datePubmedReceived.strftime("%Y-%m-%d %H:%M:%S")
+            strPubMedAccepted = datePubmedAccepted.strftime("%Y-%m-%d")
 
         aAutor = []
-        for item in xmldoc.findall(
-            self.xmlStructurPubmedArticleMedlineCitation + "Article/AuthorList/Author"
-        ):
-            if (item.find("LastName")) is not None:
+        for item in xml.findall(self.base + "Article/AuthorList/Author"):
+            if item.find("LastName") is not None:
                 aAutor.append(
                     item.find("LastName").text + " " + item.find("Initials").text
                 )
-            if (item.find("CollectiveName")) is not None:
+            if item.find("CollectiveName"):
                 aAutor.append(item.find("CollectiveName").text)
         strAuthorList = self.seperatorSemicolon.join(aAutor)
-        # print(self.intSucheID)
+
         with self.con.cursor() as cursor:
-            try:
-                cursor.execute(
-                    """insert into pubmed_suche_id_detail (SUCHE_ID, PUBMED_ID, PUBDATE, ARTICLETITLE, DOI, LANGUAGE, ABSTRACTTEXT, VOLUME, ISSUE, PAGINATION, ISSN_PRINT, ISSN_ELECTRONIC, JOURNALTITLE,
-                                    ISOABBREVIATION, NLM_ID, PUBLICATIONTYPELIST, MESHHEADINGLIST, PMC, PUBMEDSTATUS, PUBDATE_ALTERNATIV, PUBDATE_RECEIVED, PUBDATE_ACCEPTED, AUTHOR_LIST)
-                                    values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    self.intSucheID,
-                    int(pubmedId),
-                    int(intPubDate),
-                    strArticleTitle,
-                    strDoi,
-                    strLanguage,
-                    strAbstractText,
-                    strVolume,
-                    strIssue,
-                    strPagination,
-                    strISSNPrint,
-                    strISSNElectronic,
-                    strJournaltitle,
-                    strISOAbbreviation,
-                    int(intNLM_ID),
-                    strPublicationstypelist,
-                    strMeshheadingList,
-                    strPMC,
-                    strPUBMedStatus,
-                    intPubDateAlternative,
-                    strPubMedReceived,
-                    strPubMedAccepted,
-                    strAuthorList,
+            cursor.execute(
+                """
+                INSERT INTO
+                    pubmed_suche_id_detail
+                (
+                    SUCHE_ID,
+                    PUBMED_ID,
+                    PUBDATE,
+                    ARTICLETITLE,
+                    DOI,
+                    LANGUAGE,
+                    ABSTRACTTEXT,
+                    VOLUME,
+                    ISSUE,
+                    PAGINATION,
+                    ISSN_PRINT,
+                    ISSN_ELECTRONIC,
+                    JOURNALTITLE,
+                    ISOABBREVIATION,
+                    NLM_ID,
+                    PUBLICATIONTYPELIST,
+                    MESHHEADINGLIST,
+                    PMC,
+                    PUBMEDSTATUS,
+                    PUBDATE_ALTERNATIV,
+                    PUBDATE_RECEIVED,
+                    PUBDATE_ACCEPTED,
+                    AUTHOR_LIST
                 )
-                cursor.commit()
-            except pyodbc.Error as er:
-                print(pubmedId)
-                print(er)
-                return er
-        return "true"
+                VALUES
+                (
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    to_date(?, 'YYYY-MM-DD'),
+                    to_date(?, 'YYYY-MM-DD'),
+                    ?
+                )
+                """,
+                search,
+                pubmed,
+                int(intPubDate),
+                strArticleTitle,
+                strDoi,
+                strLanguage,
+                strAbstractText,
+                strVolume,
+                strIssue,
+                strPagination,
+                strISSNPrint,
+                strISSNElectronic,
+                strJournaltitle,
+                strISOAbbreviation,
+                int(intNLM_ID),
+                strPublicationstypelist,
+                strMeshheadingList,
+                strPMC,
+                strPUBMedStatus,
+                intPubDateAlternative,
+                strPubMedReceived,
+                strPubMedAccepted,
+                strAuthorList,
+            )
 
-    def saveAutoren(self, pubmedId, xmldoc):
+    def save_authors(self, search, pubmed, xml):
 
-        for item in xmldoc.findall(
-            self.xmlStructurPubmedArticleMedlineCitation + "Article/AuthorList/Author"
-        ):
+        for item in xml.findall(self.base + "Article/AuthorList/Author"):
 
-            strLastname = ""
-            strForename = ""
-            strInitials = ""
+            strLastname = self.find(item, "", "LastName")
+            strForename = self.find(item, "", "ForeName")
+            strInitials = self.find(item, "", "Initials")
 
-            if (item.find("LastName")) is not None:
-                strLastname = item.find("LastName").text
-            if (item.find("ForeName")) is not None:
-                strForename = item.find("ForeName").text
-            if (item.find("Initials")) is not None:
-                strInitials = item.find("Initials").text
+            strAffiliation = " ".join(
+                map(lambda a: a.text, item.findall("AffiliationInfo/Affiliation"))
+            )
 
-            strAffiliation = ""
-            for item2 in item.findall("AffiliationInfo/Affiliation"):
-                strAffiliation += item2.text + " "
-
-            strIdentifierPerson = ""
-            strIdentifierORGE = ""
-            strCollectiveName = ""
-
-            if (item.find('Identifier[@Source="ORCID"]')) is not None:
-                strIdentifierPerson = item.find('Identifier[@Source="ORCID"]').text
-            if (
-                item.find('AffiliationInfo/Identifier[@Source="RINGGOLD"]')
-            ) is not None:
-                strIdentifierORGE = item.find(
-                    'AffiliationInfo/Identifier[@Source="RINGGOLD"]'
-                ).text
-
-            if (item.find("CollectiveName")) is not None:
-                strCollectiveName = item.find("CollectiveName").text
-
-            with self.con.cursor() as cursor:
-                try:
-                    cursor.execute(
-                        """insert into pubmed_suche_autoren (SUCHE_ID, PUBMED_ID, LASTNAME, FORENAME, INITIALS, AFFILIATION, IDENTIFIER_PERSON, IDENTIFIER_ORGE, COLLECTIVE_NAME)
-                                    values (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                        self.intSucheID,
-                        int(pubmedId),
-                        strLastname,
-                        strForename,
-                        strInitials,
-                        strAffiliation,
-                        strIdentifierPerson,
-                        strIdentifierORGE,
-                        strCollectiveName,
-                    )
-                    cursor.commit()
-                except pyodbc.Error as er:
-                    print(pubmedId)
-                    print(er)
-                    return er
-        return "true"
-
-    def saveFoerderungen(self, pubmedId, xmldoc):
-
-        for item in xmldoc.findall(
-            self.xmlStructurPubmedArticleMedlineCitation + "Article/GrantList/Grant"
-        ):
-            strGrant_ID = item.find("GrantID").text
-            strFoerd_Inst = item.find("Agency").text
-            strFoerd_Land = item.find("Country").text
+            strIdentifierPerson = self.find(item, "", "Identifier[@Source='ORCID']")
+            strIdentifierORGE = self.find(
+                item, "", "AffiliationInfo/Identifier[@Source='RINGGOLD']"
+            )
+            strCollectiveName = self.find(item, "", "CollectiveName")
 
             with self.con.cursor() as cursor:
-                try:
-                    cursor.execute(
-                        """insert into pubmed_suche_foerderungen (SUCHE_ID, PUBMED_ID, GRANT_ID, FOERD_INST, FOERD_LAND)
-                                    values (?, ?, ?, ?, ?)""",
-                        self.intSucheID,
-                        int(pubmedId),
-                        strGrant_ID,
-                        strFoerd_Inst,
-                        strFoerd_Land,
-                    )
-                    cursor.commit()
-                except pyodbc.Error as er:
-                    print(pubmedId)
-                    print(er)
-                    return er
-        return "true"
+                cursor.execute(
+                    """
+                        INSERT INTO
+                            pubmed_suche_autoren
+                        (
+                            SUCHE_ID,
+                            PUBMED_ID,
+                            LASTNAME,
+                            FORENAME,
+                            INITIALS,
+                            AFFILIATION,
+                            IDENTIFIER_PERSON,
+                            IDENTIFIER_ORGE,
+                            COLLECTIVE_NAME
+                        )
+                        VALUES
+                        (
+                            ?, ?, ?, ?, ?, ?, ?, ?, ?
+                        )
+                        """,
+                    search,
+                    pubmed,
+                    strLastname,
+                    strForename,
+                    strInitials,
+                    strAffiliation,
+                    strIdentifierPerson,
+                    strIdentifierORGE,
+                    strCollectiveName,
+                )
 
-    def saveMesh(self, pubmedId, xmldoc):
-        for item in xmldoc.findall(
-            self.xmlStructurPubmedArticleMedlineCitation + "MeshHeadingList/MeshHeading"
-        ):
+    def save_sponsorships(self, search, pubmed, xml):
+
+        for item in xml.findall(self.base + "Article/GrantList/Grant"):
+            strGrant_ID = self.find(item, None, "GrantID")
+            strFoerd_Inst = self.find(item, None, "Agency")
+            strFoerd_Land = self.find(item, None, "Country")
+
+            with self.con.cursor() as cursor:
+                cursor.execute(
+                    """insert into pubmed_suche_foerderungen (SUCHE_ID, PUBMED_ID, GRANT_ID, FOERD_INST, FOERD_LAND)
+                                values (?, ?, ?, ?, ?)""",
+                    search,
+                    pubmed,
+                    strGrant_ID,
+                    strFoerd_Inst,
+                    strFoerd_Land,
+                )
+
+    def save_mesh(self, search, pubmed, xml):
+        for item in xml.findall(self.base + "MeshHeadingList/MeshHeading"):
             strDescriptor_UI = ""
             strDescriptor_Name = ""
             strMajortopic_Desc_JN = ""
-            if (item.find("DescriptorName")) is not None:
+            if item.find("DescriptorName") is not None:
                 strDescriptor_Name = item.find("DescriptorName").text
                 strDescriptor_UI = item.find("DescriptorName").get("UI")
                 strMajortopic_Desc_JN = item.find("DescriptorName").get("MajorTopicYN")
@@ -606,32 +523,37 @@ class DetailView(CsrfExemptMixin, View):
             strQualifier_UI = ""
             strQualifier_Name = ""
             strMajortopic_Quali_JN = ""
-            if (item.find("QualifierName")) is not None:
+            if item.find("QualifierName") is not None:
                 strQualifier_Name = item.find("QualifierName").text
                 strQualifier_UI = item.find("QualifierName").get("UI")
                 strMajortopic_Quali_JN = item.find("QualifierName").get("MajorTopicYN")
 
             with self.con.cursor() as cursor:
-                try:
-                    cursor.execute(
-                        """insert into pubmed_suche_mesh (SUCHE_ID, PUBMED_ID, DESCRIPTOR_UI, DESCRIPTOR_NAME, MAJORTOPIC_DESC_JN, QUALIFIER_UI, QUALIFIER_NAME, MAJORTOPIC_QUALI_JN)
-                                    values (?, ?, ?, ?, ?, ?, ?, ?)""",
-                        self.intSucheID,
-                        int(pubmedId),
-                        strDescriptor_UI,
-                        strDescriptor_Name,
-                        strMajortopic_Desc_JN,
-                        strQualifier_UI,
-                        strQualifier_Name,
-                        strMajortopic_Quali_JN,
-                    )
-                    cursor.commit()
-                except pyodbc.Error as er:
-                    # print(pubmedId)
-                    # print(er)
-                    return er
-                except pyodbc.ProgrammingError as er2:
-                    # print(pubmedId)
-                    # print(er2)
-                    return er2
-        return "true"
+                cursor.execute(
+                    """
+                        INSERT INTO
+                            pubmed_suche_mesh
+                        (
+                            SUCHE_ID,
+                            PUBMED_ID,
+                            DESCRIPTOR_UI,
+                            DESCRIPTOR_NAME,
+                            MAJORTOPIC_DESC_JN,
+                            QUALIFIER_UI,
+                            QUALIFIER_NAME,
+                            MAJORTOPIC_QUALI_JN
+                        )
+                        VALUES
+                        (
+                            ?, ?, ?, ?, ?, ?, ?, ?
+                        )
+                        """,
+                    search,
+                    pubmed,
+                    strDescriptor_UI,
+                    strDescriptor_Name,
+                    strMajortopic_Desc_JN,
+                    strQualifier_UI,
+                    strQualifier_Name,
+                    strMajortopic_Quali_JN,
+                )
