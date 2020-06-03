@@ -149,7 +149,7 @@ class SearchView(CsrfExemptMixin, View):
                                     search,
                                     i,
                                     cid + 1,
-                        )
+                                )
         except pyodbc.Error as e:
             self.con.rollback()
             logger.error(f"Failed to write to ODBC DSN {settings.RESEARCH_DSN}: {e}")
