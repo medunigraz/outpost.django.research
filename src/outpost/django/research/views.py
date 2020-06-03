@@ -25,11 +25,10 @@ class SearchView(CsrfExemptMixin, View):
         URL(settings.RESEARCH_PUBMED_URL)
         .add_path_segment("esearch.fcgi")
         .query_param("db", "pubmed")
-    )  # &term=
+    )
     con = pyodbc.connect("DSN={}".format(settings.RESEARCH_DSN))
 
     def post(self, request):
-
         term = []
 
         author1 = request.POST.get("autor1_in")
@@ -46,30 +45,47 @@ class SearchView(CsrfExemptMixin, View):
 
         year = request.POST.get("jahr_in")
         if year:
-            term.append(year + settings.RESEARCH_PUBMED_PDAT_TOKEN)
+            try:
+                year = int(year)
+                term.append(year + settings.RESEARCH_PUBMED_PDAT_TOKEN)
+            except ValueError:
+                return HttpResponse(_("Invalid Year specified"), status=400)
 
         combination = request.POST.get("kombination_in")
         if combination:
             term.append(combination)
 
+        if (len(term)) == 0:
+            return HttpResponse(_("No search parameters specified"), status=400)
+
         url = self.url.query_param("term", "+".join(term))
+
+        # 2020-04-22: Nach Absprache mit Hrn. Schaffer wird in die Tabelle PUBMED_SUCHE_IDS
+        # nur geschrieben, wenn der POST Parameter retmax_in mitübergeben wird. Es werden dann
+        # alle PubMed Ids, die anhand der Suche gefunden werden können, gespeichert
+        if request.POST.get("retmax_in"):
+            try:
+                logger.debug(f"PubMed IDs paketieren")
+                url = url.query_param("RetMax", int(request.POST.get("retmax_in")))
+            except ValueError:
+                return HttpResponse(_("Invalid RetMax specified"), status=400)
 
         logger.debug(f"Constructed search URL: {url.as_string()}")
 
         if not request.POST.get("suche_id_in"):
-            return HttpResponseBadRequest(reason=_("No search ID specified"))
+            return HttpResponse(_("No search ID specified"), status=400)
 
         try:
             search = int(request.POST.get("suche_id_in"))
         except ValueError:
-            return HttpResponseBadRequest(reason=_("Invalid search ID specified"))
+            return HttpResponse(_("Invalid search ID specified"), status=400)
 
-        person_id = request.POST.get("person_id")
+        person_id = request.POST.get("person_id_in")
         if person_id:
             try:
                 person_id = int(person_id)
             except ValueError:
-                return HttpResponseBadRequest(reason=_("Invalid person ID specified"))
+                return HttpResponse(_("Invalid person ID specified"), status=400)
 
         try:
             with requests.get(
@@ -84,59 +100,60 @@ class SearchView(CsrfExemptMixin, View):
 
         try:
             with self.con.cursor() as cursor:
-                cursor.execute(
-                    """
-                    INSERT INTO
-                        pubmed_suche_treffer
-                    (
-                        suche_id,
-                        suchbegriff1,
-                        suchbegriff2,
-                        suchbegriff3,
-                        suchfeld_jahr,
+                if not request.POST.get("retmax_in"):
+                    cursor.execute(
+                        """
+                        INSERT INTO
+                            pubmed_suche_treffer
+                        (
+                            suche_id,
+                            suchbegriff1,
+                            suchbegriff2,
+                            suchbegriff3,
+                            suchfeld_jahr,
+                            person_id,
+                            suchdatum,
+                            anzahl_treffer
+                        )
+                        VALUES
+                        (
+                            ?, ?, ?, ?, ?, ?, SYSDATE, ?
+                        )
+                        """,
+                        search,
+                        author1,
+                        author2,
+                        combination,
+                        year,
                         person_id,
-                        suchdatum,
-                        anzahl_treffer
+                        length,
                     )
-                    VALUES
-                    (
-                        ?, ?, ?, ?, ?, ?, SYSDATE, ?
-                    )
-                    """,
-                    search,
-                    author1,
-                    author2,
-                    combination,
-                    year,
-                    person_id,
-                    length,
-                )
-
-            for cid, chunk in enumerate(
-                chunked(ids, settings.RESEARCH_PUBMED_CHUNK_SIZE)
-            ):
-                for i in chunk:
-                    with self.con.cursor() as cursor:
-                        cursor.execute(
-                            """
-                            INSERT INTO
-                                pubmed_suche_ids
-                            (
-                                suche_id,
-                                pubmed_id,
-                                datenpaket_nr
-                            )
-                            VALUES
-                            (?, ?, ?)
-                            """,
-                            search,
-                            i,
-                            cid + 1,
+                else:
+                    for cid, chunk in enumerate(
+                        chunked(ids, settings.RESEARCH_PUBMED_CHUNK_SIZE)
+                    ):
+                        for i in chunk:
+                            with self.con.cursor() as cursor:
+                                cursor.execute(
+                                    """
+                                    INSERT INTO
+                                        pubmed_suche_ids
+                                    (
+                                        suche_id,
+                                        pubmed_id,
+                                        datenpaket_nr
+                                    )
+                                    VALUES
+                                    (?, ?, ?)
+                                    """,
+                                    search,
+                                    i,
+                                    cid + 1,
                         )
         except pyodbc.Error as e:
             self.con.rollback()
             logger.error(f"Failed to write to ODBC DSN {settings.RESEARCH_DSN}: {e}")
-            return HttpResponse(reason=_("ODBC connection failed"), status=503)
+            return HttpResponse(_("ODBC connection failed"), status=503)
         else:
             self.con.commit()
 
@@ -159,9 +176,18 @@ class DetailView(CsrfExemptMixin, View):
     seperatorComma = ", "
 
     def post(self, request):
+        logger.debug(f"Start detail")
         search = request.POST.get("suche_id_in")
         if not search:
-            return HttpResponseBadRequest(reason=_("No search ID specified"))
+            return HttpResponse(_("No search ID specified"), status=400)
+
+        try:
+            search = int(search)
+        except ValueError:
+            return HttpResponse(_("Invalid search ID specified"), status=400)
+
+        if not request.POST.get("ids_in"):
+            return HttpResponse(_("No PubMed IDs specified"), status=400)
 
         ids = map(
             lambda i: int(i.strip()),
@@ -171,15 +197,15 @@ class DetailView(CsrfExemptMixin, View):
         # print(pubmedIDS)
         for pubmed in ids:
             url = self.url.query_param("id", pubmed)
+            logger.debug(f"Constructed search URL: {url.as_string()}")
+
             try:
                 with requests.get(
                     url.as_string(), timeout=settings.RESEARCH_PUBMED_TIMEOUT
                 ) as resp:
                     xml = ElementTree.fromstring(resp.content)
             except requests.exceptions.RequestException:
-                return HttpResponse(
-                    status=503, reason=_("Remote service not available")
-                )
+                return HttpResponse(_("Remote service not available"), status=503)
 
             try:
                 self.save_detail(search, pubmed, xml)
@@ -189,10 +215,7 @@ class DetailView(CsrfExemptMixin, View):
             except pyodbc.Error:
                 self.con.rollback()
                 logger.error(f"Failed to write to ODBC DSN {settings.RESEARCH_DSN}")
-                import pudb
-
-                pu.db
-                return HttpResponse(status=503, reason=_("ODBC connection failed"))
+                return HttpResponse(_("ODBC connection failed"), status=503)
             else:
                 self.con.commit()
         return HttpResponse("true")
