@@ -768,7 +768,7 @@ class Publication(models.Model):
         db_table = "research_publication"
 
     class Refresh:
-        interval = 86400
+        interval = 3600
 
     @property
     @memoize(timeout=3600)
