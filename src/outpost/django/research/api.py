@@ -408,6 +408,24 @@ class PublicationViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelV
         "organization_authorship",
     )
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.select_related("category", "document")
+        queryset = queryset.prefetch_related(
+            "persons",
+            "persons__room",
+            "persons__room__building",
+            "persons__room__floor",
+            "persons__room__geo",
+            "persons__room__category",
+            "persons__classifications",
+            "persons__expertise",
+            "persons__knowledge",
+            "persons__education",
+            "organization_authorship",
+        )
+        return queryset
+
 
 class PublicationSearchViewSet(HaystackViewSet):
     index_models = [models.Publication]
@@ -485,3 +503,8 @@ class BiddingViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewS
     ordering_fields = ("start",)
     permission_classes = (AllowAny,)
     permit_list_expands = ("funders", "deadlines", "endowments")
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.prefetch_related("funders", "deadlines", "endowments")
+        return queryset
