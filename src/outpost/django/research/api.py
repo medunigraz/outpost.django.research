@@ -1,24 +1,20 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_haystack.viewsets import HaystackViewSet
 from outpost.django.base.decorators import docstring_format
+from outpost.django.base.filters import SimpleDjangoFilterBackend
+from outpost.django.base.mixins import ReadOnlyETAGCacheMixin
 from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-# from rest_framework_extensions.mixins import (
-#     CacheResponseAndETAGMixin,
-# )
-# from rest_framework_extensions.cache.mixins import (
-#     CacheResponseMixin,
-# )
 from . import filters, models, serializers
 
 
 @docstring_format(
     model=models.Country.__doc__, serializer=serializers.CountrySerializer.__doc__
 )
-class CountryViewSet(ReadOnlyModelViewSet):
+class CountryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List countries.
 
@@ -34,7 +30,7 @@ class CountryViewSet(ReadOnlyModelViewSet):
 @docstring_format(
     model=models.Language.__doc__, serializer=serializers.LanguageSerializer.__doc__
 )
-class LanguageViewSet(ReadOnlyModelViewSet):
+class LanguageViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List languages.
 
@@ -50,7 +46,7 @@ class LanguageViewSet(ReadOnlyModelViewSet):
 @docstring_format(
     model=models.Program.__doc__, serializer=serializers.ProgramSerializer.__doc__
 )
-class ProgramViewSet(ReadOnlyModelViewSet):
+class ProgramViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List programs.
 
@@ -67,7 +63,7 @@ class ProgramViewSet(ReadOnlyModelViewSet):
     model=models.Classification.__doc__,
     serializer=serializers.ClassificationSerializer.__doc__,
 )
-class ClassificationViewSet(ReadOnlyModelViewSet):
+class ClassificationViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List OESTAT 2012 classifications.
 
@@ -83,7 +79,7 @@ class ClassificationViewSet(ReadOnlyModelViewSet):
 @docstring_format(
     model=models.Expertise.__doc__, serializer=serializers.ExpertiseSerializer.__doc__
 )
-class ExpertiseViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+class ExpertiseViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List expertise.
 
@@ -100,7 +96,7 @@ class ExpertiseViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
 @docstring_format(
     model=models.Knowledge.__doc__, serializer=serializers.KnowledgeSerializer.__doc__
 )
-class KnowledgeViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+class KnowledgeViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List knowledge.
 
@@ -117,7 +113,7 @@ class KnowledgeViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
 @docstring_format(
     model=models.Education.__doc__, serializer=serializers.EducationSerializer.__doc__
 )
-class EducationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+class EducationViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List educations.
 
@@ -135,7 +131,7 @@ class EducationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     model=models.FunderCategory.__doc__,
     serializer=serializers.FunderCategorySerializer.__doc__,
 )
-class FunderCategoryViewSet(ReadOnlyModelViewSet):
+class FunderCategoryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List funder categories.
 
@@ -151,7 +147,7 @@ class FunderCategoryViewSet(ReadOnlyModelViewSet):
 @docstring_format(
     model=models.Funder.__doc__, serializer=serializers.FunderSerializer.__doc__
 )
-class FunderViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+class FunderViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List funders.
 
@@ -169,7 +165,7 @@ class FunderViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     model=models.ProjectCategory.__doc__,
     serializer=serializers.ProjectCategorySerializer.__doc__,
 )
-class ProjectCategoryViewSet(ReadOnlyModelViewSet):
+class ProjectCategoryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List project categories.
 
@@ -186,7 +182,7 @@ class ProjectCategoryViewSet(ReadOnlyModelViewSet):
     model=models.ProjectResearch.__doc__,
     serializer=serializers.ProjectResearchSerializer.__doc__,
 )
-class ProjectResearchViewSet(ReadOnlyModelViewSet):
+class ProjectResearchViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List project research.
 
@@ -203,7 +199,7 @@ class ProjectResearchViewSet(ReadOnlyModelViewSet):
     model=models.ProjectPartnerFunction.__doc__,
     serializer=serializers.ProjectPartnerFunctionSerializer.__doc__,
 )
-class ProjectPartnerFunctionViewSet(ReadOnlyModelViewSet):
+class ProjectPartnerFunctionViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List project partner functions.
 
@@ -220,7 +216,7 @@ class ProjectPartnerFunctionViewSet(ReadOnlyModelViewSet):
     model=models.ProjectStudy.__doc__,
     serializer=serializers.ProjectStudySerializer.__doc__,
 )
-class ProjectStudyViewSet(ReadOnlyModelViewSet):
+class ProjectStudyViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List project studies.
 
@@ -237,7 +233,7 @@ class ProjectStudyViewSet(ReadOnlyModelViewSet):
     model=models.ProjectEvent.__doc__,
     serializer=serializers.ProjectEventSerializer.__doc__,
 )
-class ProjectEventViewSet(ReadOnlyModelViewSet):
+class ProjectEventViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List project events.
 
@@ -254,7 +250,7 @@ class ProjectEventViewSet(ReadOnlyModelViewSet):
     model=models.ProjectGrant.__doc__,
     serializer=serializers.ProjectGrantSerializer.__doc__,
 )
-class ProjectGrantViewSet(ReadOnlyModelViewSet):
+class ProjectGrantViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List project grants.
 
@@ -271,7 +267,7 @@ class ProjectGrantViewSet(ReadOnlyModelViewSet):
     model=models.ProjectStatus.__doc__,
     serializer=serializers.ProjectStatusSerializer.__doc__,
 )
-class ProjectStatusViewSet(ReadOnlyModelViewSet):
+class ProjectStatusViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List project status.
 
@@ -289,7 +285,7 @@ class ProjectStatusViewSet(ReadOnlyModelViewSet):
     serializer=serializers.ProjectSerializer.__doc__,
     filter=filters.ProjectFilter.__doc__,
 )
-class ProjectViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+class ProjectViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List projects.
 
@@ -336,7 +332,7 @@ class ProjectSearchViewSet(HaystackViewSet):
     model=models.PublicationAuthorship.__doc__,
     serializer=serializers.PublicationAuthorshipSerializer.__doc__,
 )
-class PublicationAuthorshipViewSet(ReadOnlyModelViewSet):
+class PublicationAuthorshipViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List publication authorships.
 
@@ -353,7 +349,7 @@ class PublicationAuthorshipViewSet(ReadOnlyModelViewSet):
     model=models.PublicationCategory.__doc__,
     serializer=serializers.PublicationCategorySerializer.__doc__,
 )
-class PublicationCategoryViewSet(ReadOnlyModelViewSet):
+class PublicationCategoryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List publication categories.
 
@@ -370,7 +366,7 @@ class PublicationCategoryViewSet(ReadOnlyModelViewSet):
     model=models.PublicationDocument.__doc__,
     serializer=serializers.PublicationDocumentSerializer.__doc__,
 )
-class PublicationDocumentViewSet(ReadOnlyModelViewSet):
+class PublicationDocumentViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     """
     List publication documents.
 
@@ -388,7 +384,7 @@ class PublicationDocumentViewSet(ReadOnlyModelViewSet):
     serializer=serializers.PublicationSerializer.__doc__,
     filter=filters.PublicationFilter.__doc__,
 )
-class PublicationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+class PublicationViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List publications.
 
@@ -424,7 +420,9 @@ class PublicationSearchViewSet(HaystackViewSet):
     serializer=serializers.BiddingDeadlineSerializer.__doc__,
     filter=filters.BiddingDeadlineFilter.__doc__,
 )
-class BiddingDeadlineViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+class BiddingDeadlineViewSet(
+    ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet
+):
     """
     List bidding deadlines.
 
@@ -447,7 +445,9 @@ class BiddingDeadlineViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     serializer=serializers.BiddingEndowmentSerializer.__doc__,
     filter=filters.BiddingEndowmentFilter.__doc__,
 )
-class BiddingEndowmentViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+class BiddingEndowmentViewSet(
+    ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet
+):
     """
     List bidding endowments.
 
@@ -469,7 +469,7 @@ class BiddingEndowmentViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     serializer=serializers.BiddingSerializer.__doc__,
     filter=filters.BiddingFilter.__doc__,
 )
-class BiddingViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+class BiddingViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List biddings.
 
