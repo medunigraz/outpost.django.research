@@ -370,7 +370,7 @@ class PublicationSerializer(FlexFieldsModelSerializer):
      * `persons`
      * `category`
      * `document`
-     * `organization_authorship`'
+     * `organization_authorship`
 
     """
 
@@ -434,10 +434,9 @@ class BiddingSerializer(FlexFieldsModelSerializer):
 
     The following relational fields can be expanded:
 
-     * `persons`
-     * `organizations`
-     * `category`
-     * `document`
+     * `funders`
+     * `deadlines`
+     * `endowments`
 
     """
 
