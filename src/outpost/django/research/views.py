@@ -47,7 +47,7 @@ class SearchView(CsrfExemptMixin, View):
         if year:
             try:
                 year = int(year)
-                term.append(year + settings.RESEARCH_PUBMED_PDAT_TOKEN)
+                term.append(f"{year}{settings.RESEARCH_PUBMED_PDAT_TOKEN}")
             except ValueError:
                 return HttpResponse(_("Invalid Year specified"), status=400)
 
