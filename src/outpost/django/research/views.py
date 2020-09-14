@@ -399,84 +399,152 @@ class DetailView(CsrfExemptMixin, View):
         with self.con.cursor() as cursor:
             cursor.execute(
                 """
-                INSERT INTO
-                    pubmed_suche_id_detail
-                (
-                    SUCHE_ID,
-                    PUBMED_ID,
-                    PUBDATE,
-                    ARTICLETITLE,
-                    DOI,
-                    LANGUAGE,
-                    ABSTRACTTEXT,
-                    VOLUME,
-                    ISSUE,
-                    PAGINATION,
-                    ISSN_PRINT,
-                    ISSN_ELECTRONIC,
-                    JOURNALTITLE,
-                    ISOABBREVIATION,
-                    NLM_ID,
-                    PUBLICATIONTYPELIST,
-                    MESHHEADINGLIST,
-                    PMC,
-                    PUBMEDSTATUS,
-                    PUBDATE_ALTERNATIV,
-                    PUBDATE_RECEIVED,
-                    PUBDATE_ACCEPTED,
-                    AUTHOR_LIST
-                )
-                VALUES
-                (
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    to_date(?, 'YYYY-MM-DD'),
-                    to_date(?, 'YYYY-MM-DD'),
-                    ?
-                )
+                SELECT COUNT(1) AS count FROM pubmed_suche_id_detail WHERE SUCHE_ID=? AND PUBMED_ID=?
                 """,
                 search,
-                pubmed,
-                int(intPubDate),
-                strArticleTitle,
-                strDoi,
-                strLanguage,
-                strAbstractText,
-                strVolume,
-                strIssue,
-                strPagination,
-                strISSNPrint,
-                strISSNElectronic,
-                strJournaltitle,
-                strISOAbbreviation,
-                intNLM_ID,
-                strPublicationstypelist,
-                strMeshheadingList,
-                strPMC,
-                strPUBMedStatus,
-                intPubDateAlternative,
-                strPubMedReceived,
-                strPubMedAccepted,
-                strAuthorList,
+                pubmed
             )
+            row = cursor.fetchone()
+            logger.debug(f"Found {row.COUNT} rows for search {search} pubmed {pubmed}")
+            if row.COUNT == 0:
+                logger.debug(f"Inserting details for search {search} pubmed {pubmed}")
+                cursor.execute(
+                    """
+                    INSERT INTO
+                        pubmed_suche_id_detail
+                    (
+                        SUCHE_ID,
+                        PUBMED_ID,
+                        PUBDATE,
+                        ARTICLETITLE,
+                        DOI,
+                        LANGUAGE,
+                        ABSTRACTTEXT,
+                        VOLUME,
+                        ISSUE,
+                        PAGINATION,
+                        ISSN_PRINT,
+                        ISSN_ELECTRONIC,
+                        JOURNALTITLE,
+                        ISOABBREVIATION,
+                        NLM_ID,
+                        PUBLICATIONTYPELIST,
+                        MESHHEADINGLIST,
+                        PMC,
+                        PUBMEDSTATUS,
+                        PUBDATE_ALTERNATIV,
+                        PUBDATE_RECEIVED,
+                        PUBDATE_ACCEPTED,
+                        AUTHOR_LIST
+                    )
+                    VALUES
+                    (
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        to_date(?, 'YYYY-MM-DD'),
+                        to_date(?, 'YYYY-MM-DD'),
+                        ?
+                    )
+                    """,
+                    search,
+                    pubmed,
+                    int(intPubDate),
+                    strArticleTitle,
+                    strDoi,
+                    strLanguage,
+                    strAbstractText,
+                    strVolume,
+                    strIssue,
+                    strPagination,
+                    strISSNPrint,
+                    strISSNElectronic,
+                    strJournaltitle,
+                    strISOAbbreviation,
+                    intNLM_ID,
+                    strPublicationstypelist,
+                    strMeshheadingList,
+                    strPMC,
+                    strPUBMedStatus,
+                    intPubDateAlternative,
+                    strPubMedReceived,
+                    strPubMedAccepted,
+                    strAuthorList,
+                )
+            else:
+                logger.debug(f"Skipping details for search {search} pubmed {pubmed}")
+                #logger.debug(f"Updating details for search {search} pubmed {pubmed}")
+                #cursor.execute(
+                #    """
+                #    UPDATE
+                #        pubmed_suche_id_detail
+                #    SET
+                #        PUBDATE = ?,
+                #        ARTICLETITLE = ?,
+                #        DOI = ?,
+                #        LANGUAGE = ?,
+                #        ABSTRACTTEXT = ?,
+                #        VOLUME = ?,
+                #        ISSUE = ?,
+                #        PAGINATION = ?,
+                #        ISSN_PRINT = ?,
+                #        ISSN_ELECTRONIC = ?,
+                #        JOURNALTITLE = ?,
+                #        ISOABBREVIATION = ?,
+                #        NLM_ID = ?,
+                #        PUBLICATIONTYPELIST = ?,
+                #        MESHHEADINGLIST = ?,
+                #        PMC = ?,
+                #        PUBMEDSTATUS = ?,
+                #        PUBDATE_ALTERNATIV = ?,
+                #        PUBDATE_RECEIVED = ?,
+                #        PUBDATE_ACCEPTED = ?,
+                #        AUTHOR_LIST = ?
+                #    WHERE
+                #        SUCHE_ID = ? AND
+                #        PUBMED_ID = ?
+                #    """,
+                #    int(intPubDate),
+                #    strArticleTitle,
+                #    strDoi,
+                #    strLanguage,
+                #    strAbstractText,
+                #    strVolume,
+                #    strIssue,
+                #    strPagination,
+                #    strISSNPrint,
+                #    strISSNElectronic,
+                #    strJournaltitle,
+                #    strISOAbbreviation,
+                #    intNLM_ID,
+                #    strPublicationstypelist,
+                #    strMeshheadingList,
+                #    strPMC,
+                #    strPUBMedStatus,
+                #    intPubDateAlternative,
+                #    strPubMedReceived,
+                #    strPubMedAccepted,
+                #    strAuthorList,
+                #    search,
+                #    pubmed,
+                #)
 
     def save_authors(self, search, pubmed, xml):
 
