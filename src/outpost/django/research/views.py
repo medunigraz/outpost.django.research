@@ -260,9 +260,12 @@ class DetailView(CsrfExemptMixin, View):
         strAbstractText = ""
         aAbstract = []
         for item in xml.findall(f"{self.base}Article/Abstract/AbstractText"):
+            text = (item.text or '') + ''.join(ElementTree.tostring(e, 'unicode') for e in item)
             label = item.get("Label")
-            if label:
-                aAbstract.append(f"{label}: {item.text}")
+            if label is not None:
+                aAbstract.append(f"{label}: {text}")
+            else:
+                aAbstract.append(text)
         strAbstractText = self.seperatorBlank.join(aAbstract)
 
         strVolume = self.find(
