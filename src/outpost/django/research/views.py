@@ -386,9 +386,9 @@ class DetailView(CsrfExemptMixin, View):
         aAutor = []
         for item in xml.findall(f"{self.base}Article/AuthorList/Author"):
             lastName = item.find("LastName")
-            if lastName:
+            if lastName is not None:
                 initials = item.find("Initials")
-                if initials:
+                if initials is not None:
                     aAutor.append(f"{lastName.text} {initials.text}")
                 else:
                     aAutor.append(lastName.text)
