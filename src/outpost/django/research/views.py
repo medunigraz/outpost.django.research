@@ -239,61 +239,59 @@ class DetailView(CsrfExemptMixin, View):
 
     def save_detail(self, search, pubmed, xml):
         intPubDate = self.find(
-            xml, 0, self.base + "Article/Journal/JournalIssue/PubDate/Year"
+            xml, 0, f"{self.base}Article/Journal/JournalIssue/PubDate/Year"
         )
         intPubDateAlternative = self.find(
             xml,
             0,
             "PubmedArticle/PubmedData/History/PubMedPubDate[@PubStatus='pubmed']/Year",
         )
-        strArticleTitle = self.find(xml, "", self.base + "Article/ArticleTitle")
+        strArticleTitle = self.find(xml, "", f"{self.base}Article/ArticleTitle")
 
         strDoi = self.find(
             xml,
             "",
             "PubmedArticle/PubmedData/ArticleIdList/ArticleId[@IdType='doi']",
-            self.base + "Article/ELocationID[@EIdType='doi']",
+            f"{self.base}Article/ELocationID[@EIdType='doi']",
         )
 
-        strLanguage = self.find(xml, "", self.base + "Article/Language")
+        strLanguage = self.find(xml, "", f"{self.base}Article/Language")
 
         strAbstractText = ""
         aAbstract = []
-        for item in xml.findall(self.base + "Article/Abstract/AbstractText"):
-            strTemp = ""
-            if (item.get("Label")) is not None:
-                strTemp = item.get("Label") + ": "
-
-            aAbstract.append(strTemp + item.text)
+        for item in xml.findall(f"{self.base}Article/Abstract/AbstractText"):
+            label = item.get("Label")
+            if label:
+                aAbstract.append(f"{label}: {item.text}")
         strAbstractText = self.seperatorBlank.join(aAbstract)
 
         strVolume = self.find(
-            xml, "", self.base + "Article/Journal/JournalIssue/Volume"
+            xml, "", f"{self.base}Article/Journal/JournalIssue/Volume"
         )
 
-        strIssue = self.find(xml, "", self.base + "Article/Journal/JournalIssue/Issue")
+        strIssue = self.find(xml, "", f"{self.base}Article/Journal/JournalIssue/Issue")
 
-        strPagination = self.find(xml, "", self.base + "Article/Pagination/MedlinePgn")
+        strPagination = self.find(xml, "", f"{self.base}Article/Pagination/MedlinePgn")
 
         strISSNPrint = self.find(
-            xml, "", self.base + "Article/Journal/ISSN[@IssnType='Print']"
+            xml, "", f"{self.base}Article/Journal/ISSN[@IssnType='Print']"
         )
 
         strISSNElectronic = self.find(
-            xml, "", self.base + "Article/Journal/ISSN[@IssnType='Electronic']"
+            xml, "", f"{self.base}Article/Journal/ISSN[@IssnType='Electronic']"
         )
 
-        strJournaltitle = self.find(xml, "", self.base + "Article/Journal/Title")
+        strJournaltitle = self.find(xml, "", f"{self.base}Article/Journal/Title")
 
         strISOAbbreviation = self.find(
-            xml, "", self.base + "Article/Journal/ISOAbbreviation"
+            xml, "", f"{self.base}Article/Journal/ISOAbbreviation"
         )
 
-        intNLM_ID = self.find(xml, 0, self.base + "MedlineJournalInfo/NlmUniqueID")
+        intNLM_ID = self.find(xml, 0, f"{self.base}MedlineJournalInfo/NlmUniqueID")
 
         aPublicationType = []
         for item in xml.findall(
-            self.base + "Article/PublicationTypeList/PublicationType"
+            f"{self.base}Article/PublicationTypeList/PublicationType"
         ):
             aPublicationType.append(item.text)
 
@@ -301,20 +299,21 @@ class DetailView(CsrfExemptMixin, View):
 
         strMeshheadingList = ""
         aMeshHeading = []
-        for item in xml.findall(self.base + "MeshHeadingList/MeshHeading"):
+        for item in xml.findall(f"{self.base}MeshHeadingList/MeshHeading"):
             aQualifierName = []
             strQualifierName = ""
             tempMeshHeading = ""
             for itemQualifierName in item.findall("QualifierName"):
                 aQualifierName.append(itemQualifierName.text)
             strQualifierName = self.seperatorComma.join(aQualifierName)
+            descriptorName = item.find("DescriptorName").text
             if strQualifierName == "":
                 tempMeshHeading = (
-                    item.find("DescriptorName").text + " - administration & dosage"
+                    f"{descriptorName} - administration & dosage"
                 )
             else:
                 tempMeshHeading = (
-                    item.find("DescriptorName").text + " - " + strQualifierName
+                    f"{descriptorName} - {strQualifierName}"
                 )
             aMeshHeading.append(tempMeshHeading)
         strMeshheadingList = self.seperatorColon.join(aMeshHeading)
@@ -382,10 +381,12 @@ class DetailView(CsrfExemptMixin, View):
             strPubMedAccepted = datePubmedAccepted.strftime("%Y-%m-%d")
 
         aAutor = []
-        for item in xml.findall(self.base + "Article/AuthorList/Author"):
-            if item.find("LastName") is not None:
+        for item in xml.findall(f"{self.base}Article/AuthorList/Author"):
+            lastName = item.find("LastName")
+            initials = item.find("Initials")
+            if lastName and initials:
                 aAutor.append(
-                    item.find("LastName").text + " " + item.find("Initials").text
+                    f"{lastName.text} {initials.text}"
                 )
             if item.find("CollectiveName"):
                 aAutor.append(item.find("CollectiveName").text)
@@ -475,7 +476,7 @@ class DetailView(CsrfExemptMixin, View):
 
     def save_authors(self, search, pubmed, xml):
 
-        for item in xml.findall(self.base + "Article/AuthorList/Author"):
+        for item in xml.findall(f"{self.base}Article/AuthorList/Author"):
 
             strLastname = self.find(item, "", "LastName")
             strForename = self.find(item, "", "ForeName")
@@ -525,7 +526,7 @@ class DetailView(CsrfExemptMixin, View):
 
     def save_sponsorships(self, search, pubmed, xml):
 
-        for item in xml.findall(self.base + "Article/GrantList/Grant"):
+        for item in xml.findall(f"{self.base}Article/GrantList/Grant"):
             strGrant_ID = self.find(item, None, "GrantID")
             strFoerd_Inst = self.find(item, None, "Agency")
             strFoerd_Land = self.find(item, None, "Country")
@@ -542,7 +543,7 @@ class DetailView(CsrfExemptMixin, View):
                 )
 
     def save_mesh(self, search, pubmed, xml):
-        for item in xml.findall(self.base + "MeshHeadingList/MeshHeading"):
+        for item in xml.findall(f"{self.base}MeshHeadingList/MeshHeading"):
             strDescriptor_UI = ""
             strDescriptor_Name = ""
             strMajortopic_Desc_JN = ""
