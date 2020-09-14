@@ -14,8 +14,8 @@ from purl import URL
 
 from .conf import settings
 
-# from .tasks import DetailTask
-
+# TODO: Find a way to fix https://github.com/mkleehammer/pyodbc/issues/489
+#       This makes Oracle SQL error messages useless.
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,11 @@ class SearchView(CsrfExemptMixin, View):
         .add_path_segment("esearch.fcgi")
         .query_param("db", "pubmed")
     )
-    con = pyodbc.connect("DSN={}".format(settings.RESEARCH_DSN))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.con = pyodbc.connect("DSN={}".format(settings.RESEARCH_DSN), autocommit=False)
+        self.con.setencoding(encoding='utf-8')
 
     def post(self, request):
         term = []
@@ -150,9 +154,9 @@ class SearchView(CsrfExemptMixin, View):
                                     i,
                                     cid + 1,
                                 )
-        except pyodbc.Error as e:
+        except pyodbc.Error:
             self.con.rollback()
-            logger.error(f"Failed to write to ODBC DSN {settings.RESEARCH_DSN}: {e}")
+            logger.error(f"Failed to write to ODBC DSN {settings.RESEARCH_DSN}")
             return HttpResponse(_("ODBC connection failed"), status=503)
         else:
             self.con.commit()
@@ -161,7 +165,6 @@ class SearchView(CsrfExemptMixin, View):
 
 
 class DetailView(CsrfExemptMixin, View):
-    con = pyodbc.connect("DSN={}".format(settings.RESEARCH_DSN))
     url = (
         URL(settings.RESEARCH_PUBMED_URL)
         .add_path_segment("efetch.fcgi")
@@ -174,6 +177,11 @@ class DetailView(CsrfExemptMixin, View):
     seperatorSemicolon = "; "
     seperatorBlank = " "
     seperatorComma = ", "
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.con = pyodbc.connect("DSN={}".format(settings.RESEARCH_DSN), autocommit=False)
+        self.con.setencoding(encoding='utf-8')
 
     def post(self, request):
         logger.debug(f"Start detail")
