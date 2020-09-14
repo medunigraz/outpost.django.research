@@ -383,11 +383,12 @@ class DetailView(CsrfExemptMixin, View):
         aAutor = []
         for item in xml.findall(f"{self.base}Article/AuthorList/Author"):
             lastName = item.find("LastName")
-            initials = item.find("Initials")
-            if lastName and initials:
-                aAutor.append(
-                    f"{lastName.text} {initials.text}"
-                )
+            if lastName:
+                initials = item.find("Initials")
+                if initials:
+                    aAutor.append(f"{lastName.text} {initials.text}")
+                else:
+                    aAutor.append(lastName.text)
             if item.find("CollectiveName"):
                 aAutor.append(item.find("CollectiveName").text)
         strAuthorList = self.seperatorSemicolon.join(aAutor)
