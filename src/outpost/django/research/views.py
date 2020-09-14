@@ -464,7 +464,7 @@ class DetailView(CsrfExemptMixin, View):
                 strISSNElectronic,
                 strJournaltitle,
                 strISOAbbreviation,
-                int(intNLM_ID),
+                intNLM_ID,
                 strPublicationstypelist,
                 strMeshheadingList,
                 strPMC,
