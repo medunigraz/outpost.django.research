@@ -30,7 +30,6 @@ class SearchView(CsrfExemptMixin, View):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.con = pyodbc.connect("DSN={}".format(settings.RESEARCH_DSN), autocommit=False)
-        self.con.setencoding(encoding='utf-8')
 
     def post(self, request):
         term = []
@@ -181,7 +180,6 @@ class DetailView(CsrfExemptMixin, View):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.con = pyodbc.connect("DSN={}".format(settings.RESEARCH_DSN), autocommit=False)
-        self.con.setencoding(encoding='utf-8')
 
     def post(self, request):
         logger.debug(f"Start detail")
