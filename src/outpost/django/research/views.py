@@ -229,9 +229,12 @@ class DetailView(CsrfExemptMixin, View):
     @staticmethod
     def find(node, default, *paths):
         try:
-            return next(
+            node = next(
                 filter(lambda n: n is not None, map(lambda p: node.find(p), paths))
-            ).text
+            )
+            return (node.text or "") + "".join(
+                ElementTree.tostring(e, "unicode") for e in node
+            )
         except StopIteration:
             return default
 
