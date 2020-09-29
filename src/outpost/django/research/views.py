@@ -390,7 +390,7 @@ class DetailView(CsrfExemptMixin, View):
             if lastName is not None:
                 initials = item.find("Initials")
                 if initials is not None:
-                    aAutor.append(f"{lastName.text} {initials.text}")
+                    aAutor.append(f"{lastName.text}, {initials.text}")
                 else:
                     aAutor.append(lastName.text)
             if item.find("CollectiveName"):
