@@ -4,6 +4,7 @@ from django.conf import settings
 
 class ResearchAppConf(AppConf):
     DSN = "FODOK-NEW"
+    SCHEMAS = ("RIO", "RIOTEST", "BERUFUNG", "FIS", "MUG_DEV_BS")
     PUBMED_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
     PUBMED_TIMEOUT = 5
     PUBMED_CHUNK_SIZE = 20

@@ -29,9 +29,15 @@ class SearchView(CsrfExemptMixin, View):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.con = pyodbc.connect("DSN={}".format(settings.RESEARCH_DSN), autocommit=False)
+        self.con = pyodbc.connect(
+            "DSN={}".format(settings.RESEARCH_DSN), autocommit=False
+        )
 
-    def post(self, request):
+    def post(self, request, schema):
+
+        if schema not in settings.RESEARCH_SCHEMAS:
+            return HttpResponseBadRequest(_("Schema not allowed"))
+
         term = []
 
         author1 = request.POST.get("autor1_in")
@@ -105,9 +111,9 @@ class SearchView(CsrfExemptMixin, View):
             with self.con.cursor() as cursor:
                 if not request.POST.get("retmax_in"):
                     cursor.execute(
-                        """
+                        f"""
                         INSERT INTO
-                            pubmed_suche_treffer
+                            {schema}.pubmed_suche_treffer
                         (
                             suche_id,
                             suchbegriff1,
@@ -138,9 +144,9 @@ class SearchView(CsrfExemptMixin, View):
                         for i in chunk:
                             with self.con.cursor() as cursor:
                                 cursor.execute(
-                                    """
+                                    f"""
                                     INSERT INTO
-                                        pubmed_suche_ids
+                                        {schema}.pubmed_suche_ids
                                     (
                                         suche_id,
                                         pubmed_id,
@@ -179,9 +185,14 @@ class DetailView(CsrfExemptMixin, View):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.con = pyodbc.connect("DSN={}".format(settings.RESEARCH_DSN), autocommit=False)
+        self.con = pyodbc.connect(
+            "DSN={}".format(settings.RESEARCH_DSN), autocommit=False
+        )
 
-    def post(self, request):
+    def post(self, request, schema):
+        if schema not in settings.RESEARCH_SCHEMAS:
+            return HttpResponseBadRequest(_("Schema not allowed"))
+
         logger.debug(f"Start detail")
         search = request.POST.get("suche_id_in")
         if not search:
@@ -213,12 +224,14 @@ class DetailView(CsrfExemptMixin, View):
             except requests.exceptions.RequestException:
                 return HttpResponse(_("Remote service not available"), status=503)
 
+
+            import pudb; pu.db
             try:
-                self.save_detail(search, pubmed, xml)
-                self.save_authors(search, pubmed, xml)
-                self.save_sponsorships(search, pubmed, xml)
-                self.save_mesh(search, pubmed, xml)
-            except pyodbc.Error:
+                self.save_detail(search, pubmed, xml, schema)
+                self.save_authors(search, pubmed, xml, schema)
+                self.save_sponsorships(search, pubmed, xml, schema)
+                self.save_mesh(search, pubmed, xml, schema)
+            except pyodbc.Error as e:
                 self.con.rollback()
                 logger.error(f"Failed to write to ODBC DSN {settings.RESEARCH_DSN}")
                 return HttpResponse(_("ODBC connection failed"), status=503)
@@ -238,7 +251,7 @@ class DetailView(CsrfExemptMixin, View):
         except StopIteration:
             return default
 
-    def save_detail(self, search, pubmed, xml):
+    def save_detail(self, search, pubmed, xml, schema):
         intPubDate = self.find(
             xml, 0, f"{self.base}Article/Journal/JournalIssue/PubDate/Year"
         )
@@ -261,7 +274,9 @@ class DetailView(CsrfExemptMixin, View):
         strAbstractText = ""
         aAbstract = []
         for item in xml.findall(f"{self.base}Article/Abstract/AbstractText"):
-            text = (item.text or '') + ''.join(ElementTree.tostring(e, 'unicode') for e in item)
+            text = (item.text or "") + "".join(
+                ElementTree.tostring(e, "unicode") for e in item
+            )
             label = item.get("Label")
             if label is not None:
                 aAbstract.append(f"{label}: {text}")
@@ -312,13 +327,9 @@ class DetailView(CsrfExemptMixin, View):
             strQualifierName = self.seperatorComma.join(aQualifierName)
             descriptorName = item.find("DescriptorName").text
             if strQualifierName == "":
-                tempMeshHeading = (
-                    f"{descriptorName} - administration & dosage"
-                )
+                tempMeshHeading = f"{descriptorName} - administration & dosage"
             else:
-                tempMeshHeading = (
-                    f"{descriptorName} - {strQualifierName}"
-                )
+                tempMeshHeading = f"{descriptorName} - {strQualifierName}"
             aMeshHeading.append(tempMeshHeading)
         strMeshheadingList = self.seperatorColon.join(aMeshHeading)
 
@@ -399,20 +410,20 @@ class DetailView(CsrfExemptMixin, View):
 
         with self.con.cursor() as cursor:
             cursor.execute(
-                """
-                SELECT COUNT(1) AS count FROM pubmed_suche_id_detail WHERE SUCHE_ID=? AND PUBMED_ID=?
+                f"""
+                SELECT COUNT(1) AS count FROM {schema}.pubmed_suche_id_detail WHERE SUCHE_ID=? AND PUBMED_ID=?
                 """,
                 search,
-                pubmed
+                pubmed,
             )
             row = cursor.fetchone()
             logger.debug(f"Found {row.COUNT} rows for search {search} pubmed {pubmed}")
             if row.COUNT == 0:
                 logger.debug(f"Inserting details for search {search} pubmed {pubmed}")
                 cursor.execute(
-                    """
+                    f"""
                     INSERT INTO
-                        pubmed_suche_id_detail
+                        {schema}.pubmed_suche_id_detail
                     (
                         SUCHE_ID,
                         PUBMED_ID,
@@ -491,8 +502,8 @@ class DetailView(CsrfExemptMixin, View):
                 )
             else:
                 logger.debug(f"Skipping details for search {search} pubmed {pubmed}")
-                #logger.debug(f"Updating details for search {search} pubmed {pubmed}")
-                #cursor.execute(
+                # logger.debug(f"Updating details for search {search} pubmed {pubmed}")
+                # cursor.execute(
                 #    """
                 #    UPDATE
                 #        pubmed_suche_id_detail
@@ -545,9 +556,9 @@ class DetailView(CsrfExemptMixin, View):
                 #    strAuthorList,
                 #    search,
                 #    pubmed,
-                #)
+                # )
 
-    def save_authors(self, search, pubmed, xml):
+    def save_authors(self, search, pubmed, xml, schema):
 
         for item in xml.findall(f"{self.base}Article/AuthorList/Author"):
 
@@ -567,25 +578,25 @@ class DetailView(CsrfExemptMixin, View):
 
             with self.con.cursor() as cursor:
                 cursor.execute(
-                    """
-                        INSERT INTO
-                            pubmed_suche_autoren
-                        (
-                            SUCHE_ID,
-                            PUBMED_ID,
-                            LASTNAME,
-                            FORENAME,
-                            INITIALS,
-                            AFFILIATION,
-                            IDENTIFIER_PERSON,
-                            IDENTIFIER_ORGE,
-                            COLLECTIVE_NAME
-                        )
-                        VALUES
-                        (
-                            ?, ?, ?, ?, ?, ?, ?, ?, ?
-                        )
-                        """,
+                    f"""
+                    INSERT INTO
+                        {schema}.pubmed_suche_autoren
+                    (
+                        SUCHE_ID,
+                        PUBMED_ID,
+                        LASTNAME,
+                        FORENAME,
+                        INITIALS,
+                        AFFILIATION,
+                        IDENTIFIER_PERSON,
+                        IDENTIFIER_ORGE,
+                        COLLECTIVE_NAME
+                    )
+                    VALUES
+                    (
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    )
+                    """,
                     search,
                     pubmed,
                     strLastname,
@@ -597,7 +608,7 @@ class DetailView(CsrfExemptMixin, View):
                     strCollectiveName,
                 )
 
-    def save_sponsorships(self, search, pubmed, xml):
+    def save_sponsorships(self, search, pubmed, xml, schema):
 
         for item in xml.findall(f"{self.base}Article/GrantList/Grant"):
             strGrant_ID = self.find(item, None, "GrantID")
@@ -606,8 +617,19 @@ class DetailView(CsrfExemptMixin, View):
 
             with self.con.cursor() as cursor:
                 cursor.execute(
-                    """insert into pubmed_suche_foerderungen (SUCHE_ID, PUBMED_ID, GRANT_ID, FOERD_INST, FOERD_LAND)
-                                values (?, ?, ?, ?, ?)""",
+                    f"""INSERT INTO
+                        {schema}.pubmed_suche_foerderungen
+                    (
+                        SUCHE_ID,
+                        PUBMED_ID,
+                        GRANT_ID,
+                        FOERD_INST,
+                        FOERD_LAND
+                    )
+                    VALUES
+                    (
+                        ?, ?, ?, ?, ?
+                    )""",
                     search,
                     pubmed,
                     strGrant_ID,
@@ -615,7 +637,7 @@ class DetailView(CsrfExemptMixin, View):
                     strFoerd_Land,
                 )
 
-    def save_mesh(self, search, pubmed, xml):
+    def save_mesh(self, search, pubmed, xml, schema):
         for item in xml.findall(f"{self.base}MeshHeadingList/MeshHeading"):
             strDescriptor_UI = ""
             strDescriptor_Name = ""
@@ -635,24 +657,24 @@ class DetailView(CsrfExemptMixin, View):
 
             with self.con.cursor() as cursor:
                 cursor.execute(
-                    """
-                        INSERT INTO
-                            pubmed_suche_mesh
-                        (
-                            SUCHE_ID,
-                            PUBMED_ID,
-                            DESCRIPTOR_UI,
-                            DESCRIPTOR_NAME,
-                            MAJORTOPIC_DESC_JN,
-                            QUALIFIER_UI,
-                            QUALIFIER_NAME,
-                            MAJORTOPIC_QUALI_JN
-                        )
-                        VALUES
-                        (
-                            ?, ?, ?, ?, ?, ?, ?, ?
-                        )
-                        """,
+                    f"""
+                    INSERT INTO
+                        {schema}.pubmed_suche_mesh
+                    (
+                        SUCHE_ID,
+                        PUBMED_ID,
+                        DESCRIPTOR_UI,
+                        DESCRIPTOR_NAME,
+                        MAJORTOPIC_DESC_JN,
+                        QUALIFIER_UI,
+                        QUALIFIER_NAME,
+                        MAJORTOPIC_QUALI_JN
+                    )
+                    VALUES
+                    (
+                        ?, ?, ?, ?, ?, ?, ?, ?
+                    )
+                    """,
                     search,
                     pubmed,
                     strDescriptor_UI,

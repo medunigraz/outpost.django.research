@@ -5,6 +5,6 @@ from . import views
 app_name = "research"
 
 urlpatterns = [
-    url(r"^search/$", views.SearchView.as_view()),
-    url(r"^detail/$", views.DetailView.as_view()),
+    url(r"^search/(?P<schema>\w+)/$", views.SearchView.as_view()),
+    url(r"^detail/(?P<schema>\w+)/$", views.DetailView.as_view()),
 ]
