@@ -5,7 +5,6 @@ from xml.etree import ElementTree
 import pyodbc
 import requests
 from braces.views import CsrfExemptMixin
-from django.db import connection
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import View
@@ -20,23 +19,43 @@ from .conf import settings
 logger = logging.getLogger(__name__)
 
 
-class SearchView(CsrfExemptMixin, View):
+class DatabaseException(Exception):
+    pass
+
+
+class DatabaseMixin(object):
+
+    def connection(self, database, schema):
+        schemas = settings.RESEARCH_DB_MAP.get(database)
+
+        if not schemas:
+            raise DatabaseException(_("Unknown database requested"))
+
+        if schema not in schemas:
+            raise DatabaseException(_("Schema not allowed"))
+
+        try:
+            return pyodbc.connect(
+                "DSN={}".format(database), autocommit=False
+            )
+        except pyodbc.InterfaceError as e:
+            logger.error(f"Unable to connect to database: {e}")
+            raise DatabaseException(_("Unable to connect to database"))
+
+
+class SearchView(CsrfExemptMixin, DatabaseMixin, View):
     url = (
         URL(settings.RESEARCH_PUBMED_URL)
         .add_path_segment("esearch.fcgi")
         .query_param("db", "pubmed")
     )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.con = pyodbc.connect(
-            "DSN={}".format(settings.RESEARCH_DSN), autocommit=False
-        )
+    def post(self, request, database, schema):
 
-    def post(self, request, schema):
-
-        if schema not in settings.RESEARCH_SCHEMAS:
-            return HttpResponseBadRequest(_("Schema not allowed"))
+        try:
+            con = self.connection(database, schema)
+        except DatabaseException as e:
+            return HttpResponseBadRequest(e)
 
         term = []
 
@@ -108,7 +127,7 @@ class SearchView(CsrfExemptMixin, View):
         ids = (int(item.text) for item in xml.findall("IdList/Id"))
 
         try:
-            with self.con.cursor() as cursor:
+            with con.cursor() as cursor:
                 if not request.POST.get("retmax_in"):
                     cursor.execute(
                         f"""
@@ -142,7 +161,7 @@ class SearchView(CsrfExemptMixin, View):
                         chunked(ids, settings.RESEARCH_PUBMED_CHUNK_SIZE)
                     ):
                         for i in chunk:
-                            with self.con.cursor() as cursor:
+                            with con.cursor() as cursor:
                                 cursor.execute(
                                     f"""
                                     INSERT INTO
@@ -160,16 +179,16 @@ class SearchView(CsrfExemptMixin, View):
                                     cid + 1,
                                 )
         except pyodbc.Error:
-            self.con.rollback()
+            con.rollback()
             logger.error(f"Failed to write to ODBC DSN {settings.RESEARCH_DSN}")
             return HttpResponse(_("ODBC connection failed"), status=503)
         else:
-            self.con.commit()
+            con.commit()
 
         return HttpResponse(response, content_type="text/xml; charset=utf-8")
 
 
-class DetailView(CsrfExemptMixin, View):
+class DetailView(CsrfExemptMixin, DatabaseMixin, View):
     url = (
         URL(settings.RESEARCH_PUBMED_URL)
         .add_path_segment("efetch.fcgi")
@@ -183,15 +202,12 @@ class DetailView(CsrfExemptMixin, View):
     seperatorBlank = " "
     seperatorComma = ", "
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.con = pyodbc.connect(
-            "DSN={}".format(settings.RESEARCH_DSN), autocommit=False
-        )
+    def post(self, request, database, schema):
 
-    def post(self, request, schema):
-        if schema not in settings.RESEARCH_SCHEMAS:
-            return HttpResponseBadRequest(_("Schema not allowed"))
+        try:
+            con = self.connection(database, schema)
+        except DatabaseException as e:
+            return HttpResponseBadRequest(e)
 
         logger.debug(f"Start detail")
         search = request.POST.get("suche_id_in")
@@ -225,18 +241,17 @@ class DetailView(CsrfExemptMixin, View):
                 return HttpResponse(_("Remote service not available"), status=503)
 
 
-            import pudb; pu.db
             try:
-                self.save_detail(search, pubmed, xml, schema)
-                self.save_authors(search, pubmed, xml, schema)
-                self.save_sponsorships(search, pubmed, xml, schema)
-                self.save_mesh(search, pubmed, xml, schema)
+                self.save_detail(search, pubmed, xml, con, schema)
+                self.save_authors(search, pubmed, xml, con, schema)
+                self.save_sponsorships(search, pubmed, xml, con, schema)
+                self.save_mesh(search, pubmed, xml, con, schema)
             except pyodbc.Error as e:
-                self.con.rollback()
+                con.rollback()
                 logger.error(f"Failed to write to ODBC DSN {settings.RESEARCH_DSN}")
                 return HttpResponse(_("ODBC connection failed"), status=503)
             else:
-                self.con.commit()
+                con.commit()
         return HttpResponse("true")
 
     @staticmethod
@@ -251,7 +266,7 @@ class DetailView(CsrfExemptMixin, View):
         except StopIteration:
             return default
 
-    def save_detail(self, search, pubmed, xml, schema):
+    def save_detail(self, search, pubmed, xml, con, schema):
         intPubDate = self.find(
             xml, 0, f"{self.base}Article/Journal/JournalIssue/PubDate/Year"
         )
@@ -408,7 +423,7 @@ class DetailView(CsrfExemptMixin, View):
                 aAutor.append(item.find("CollectiveName").text)
         strAuthorList = self.seperatorSemicolon.join(aAutor)
 
-        with self.con.cursor() as cursor:
+        with con.cursor() as cursor:
             cursor.execute(
                 f"""
                 SELECT COUNT(1) AS count FROM {schema}.pubmed_suche_id_detail WHERE SUCHE_ID=? AND PUBMED_ID=?
@@ -558,7 +573,7 @@ class DetailView(CsrfExemptMixin, View):
                 #    pubmed,
                 # )
 
-    def save_authors(self, search, pubmed, xml, schema):
+    def save_authors(self, search, pubmed, xml, con, schema):
 
         for item in xml.findall(f"{self.base}Article/AuthorList/Author"):
 
@@ -576,7 +591,7 @@ class DetailView(CsrfExemptMixin, View):
             )
             strCollectiveName = self.find(item, "", "CollectiveName")
 
-            with self.con.cursor() as cursor:
+            with con.cursor() as cursor:
                 cursor.execute(
                     f"""
                     INSERT INTO
@@ -608,14 +623,14 @@ class DetailView(CsrfExemptMixin, View):
                     strCollectiveName,
                 )
 
-    def save_sponsorships(self, search, pubmed, xml, schema):
+    def save_sponsorships(self, search, pubmed, xml, con, schema):
 
         for item in xml.findall(f"{self.base}Article/GrantList/Grant"):
             strGrant_ID = self.find(item, None, "GrantID")
             strFoerd_Inst = self.find(item, None, "Agency")
             strFoerd_Land = self.find(item, None, "Country")
 
-            with self.con.cursor() as cursor:
+            with con.cursor() as cursor:
                 cursor.execute(
                     f"""INSERT INTO
                         {schema}.pubmed_suche_foerderungen
@@ -637,7 +652,7 @@ class DetailView(CsrfExemptMixin, View):
                     strFoerd_Land,
                 )
 
-    def save_mesh(self, search, pubmed, xml, schema):
+    def save_mesh(self, search, pubmed, xml, con, schema):
         for item in xml.findall(f"{self.base}MeshHeadingList/MeshHeading"):
             strDescriptor_UI = ""
             strDescriptor_Name = ""
@@ -655,7 +670,7 @@ class DetailView(CsrfExemptMixin, View):
                 strQualifier_UI = item.find("QualifierName").get("UI")
                 strMajortopic_Quali_JN = item.find("QualifierName").get("MajorTopicYN")
 
-            with self.con.cursor() as cursor:
+            with con.cursor() as cursor:
                 cursor.execute(
                     f"""
                     INSERT INTO
