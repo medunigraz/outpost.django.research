@@ -24,7 +24,6 @@ class DatabaseException(Exception):
 
 
 class DatabaseMixin(object):
-
     def connection(self, database, schema):
         schemas = settings.RESEARCH_DB_MAP.get(database)
 
@@ -35,9 +34,7 @@ class DatabaseMixin(object):
             raise DatabaseException(_("Schema not allowed"))
 
         try:
-            return pyodbc.connect(
-                "DSN={}".format(database), autocommit=False
-            )
+            return pyodbc.connect("DSN={}".format(database), autocommit=False)
         except pyodbc.InterfaceError as e:
             logger.error(f"Unable to connect to database: {e}")
             raise DatabaseException(_("Unable to connect to database"))
@@ -239,7 +236,6 @@ class DetailView(CsrfExemptMixin, DatabaseMixin, View):
                     xml = ElementTree.fromstring(resp.content)
             except requests.exceptions.RequestException:
                 return HttpResponse(_("Remote service not available"), status=503)
-
 
             try:
                 self.save_detail(search, pubmed, xml, con, schema)
@@ -654,39 +650,54 @@ class DetailView(CsrfExemptMixin, DatabaseMixin, View):
 
     def save_mesh(self, search, pubmed, xml, con, schema):
         for item in xml.findall(f"{self.base}MeshHeadingList/MeshHeading"):
-            strDescriptor_UI = ""
-            strDescriptor_Name = ""
-            strMajortopic_Desc_JN = ""
-            if item.find("DescriptorName") is not None:
-                strDescriptor_Name = item.find("DescriptorName").text
-                strDescriptor_UI = item.find("DescriptorName").get("UI")
-                strMajortopic_Desc_JN = item.find("DescriptorName").get("MajorTopicYN")
-                
-                if item.find("QualifierName") is None:  
-                    strQualifier_UI = ""
-                    strQualifier_Name = ""
-                    strMajortopic_Quali_JN = ""
-                    
-                    self.save_mesh_Insert(search, pubmed, schema, 
-                                        strDescriptor_UI, strDescriptor_Name, strMajortopic_Desc_JN, 
-                                        "", "", "")
-                else:            
-                    for item2 in item.findall("QualifierName"):
-                        strQualifier_Name = item2.text
-                        strQualifier_UI = item2.get("UI")
-                        strMajortopic_Quali_JN = item2.get("MajorTopicYN")
-                        '''                   
-                        print(strDescriptor_Name)              
-                        print(strQualifier_Name)
-                        print(strQualifier_UI)
-                        print(strMajortopic_Quali_JN)
-                        '''
-                        
-                        self.save_mesh_Insert(search, pubmed, schema, 
-                                            strDescriptor_UI, strDescriptor_Name, strMajortopic_Desc_JN, 
-                                            strQualifier_UI, strQualifier_Name, strMajortopic_Quali_JN)        
+            if item.find("DescriptorName") is None:
+                continue
+            strDescriptor_Name = item.find("DescriptorName").text
+            strDescriptor_UI = item.find("DescriptorName").get("UI")
+            strMajortopic_Desc_JN = item.find("DescriptorName").get("MajorTopicYN")
 
-    def save_mesh_Insert(self, search, pubmed, schema, strDescriptor_UI, strDescriptor_Name, strMajortopic_Desc_JN, strQualifier_UI, strQualifier_Name, strMajortopic_Quali_JN):
+            if item.find("QualifierName") is None:
+                self.save_mesh_Insert(
+                    search,
+                    pubmed,
+                    schema,
+                    strDescriptor_UI,
+                    strDescriptor_Name,
+                    strMajortopic_Desc_JN,
+                    "",
+                    "",
+                    "",
+                )
+            else:
+                for item2 in item.findall("QualifierName"):
+                    strQualifier_Name = item2.text
+                    strQualifier_UI = item2.get("UI")
+                    strMajortopic_Quali_JN = item2.get("MajorTopicYN")
+
+                    self.save_mesh_Insert(
+                        search,
+                        pubmed,
+                        schema,
+                        strDescriptor_UI,
+                        strDescriptor_Name,
+                        strMajortopic_Desc_JN,
+                        strQualifier_UI,
+                        strQualifier_Name,
+                        strMajortopic_Quali_JN,
+                    )
+
+    def save_mesh_Insert(
+        self,
+        search,
+        pubmed,
+        schema,
+        strDescriptor_UI,
+        strDescriptor_Name,
+        strMajortopic_Desc_JN,
+        strQualifier_UI,
+        strQualifier_Name,
+        strMajortopic_Quali_JN,
+    ):
         with self.con.cursor() as cursor:
             cursor.execute(
                 f"""
@@ -716,4 +727,3 @@ class DetailView(CsrfExemptMixin, DatabaseMixin, View):
                 strQualifier_Name,
                 strMajortopic_Quali_JN,
             )
-                
