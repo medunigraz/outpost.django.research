@@ -661,41 +661,59 @@ class DetailView(CsrfExemptMixin, DatabaseMixin, View):
                 strDescriptor_Name = item.find("DescriptorName").text
                 strDescriptor_UI = item.find("DescriptorName").get("UI")
                 strMajortopic_Desc_JN = item.find("DescriptorName").get("MajorTopicYN")
+                
+                if item.find("QualifierName") is None:  
+                    strQualifier_UI = ""
+                    strQualifier_Name = ""
+                    strMajortopic_Quali_JN = ""
+                    
+                    self.save_mesh_Insert(search, pubmed, schema, 
+                                        strDescriptor_UI, strDescriptor_Name, strMajortopic_Desc_JN, 
+                                        "", "", "")
+                else:            
+                    for item2 in item.findall("QualifierName"):
+                        strQualifier_Name = item2.text
+                        strQualifier_UI = item2.get("UI")
+                        strMajortopic_Quali_JN = item2.get("MajorTopicYN")
+                        '''                   
+                        print(strDescriptor_Name)              
+                        print(strQualifier_Name)
+                        print(strQualifier_UI)
+                        print(strMajortopic_Quali_JN)
+                        '''
+                        
+                        self.save_mesh_Insert(search, pubmed, schema, 
+                                            strDescriptor_UI, strDescriptor_Name, strMajortopic_Desc_JN, 
+                                            strQualifier_UI, strQualifier_Name, strMajortopic_Quali_JN)        
 
-            strQualifier_UI = ""
-            strQualifier_Name = ""
-            strMajortopic_Quali_JN = ""
-            if item.find("QualifierName") is not None:
-                strQualifier_Name = item.find("QualifierName").text
-                strQualifier_UI = item.find("QualifierName").get("UI")
-                strMajortopic_Quali_JN = item.find("QualifierName").get("MajorTopicYN")
-
-            with con.cursor() as cursor:
-                cursor.execute(
-                    f"""
-                    INSERT INTO
-                        {schema}.pubmed_suche_mesh
-                    (
-                        SUCHE_ID,
-                        PUBMED_ID,
-                        DESCRIPTOR_UI,
-                        DESCRIPTOR_NAME,
-                        MAJORTOPIC_DESC_JN,
-                        QUALIFIER_UI,
-                        QUALIFIER_NAME,
-                        MAJORTOPIC_QUALI_JN
-                    )
-                    VALUES
-                    (
-                        ?, ?, ?, ?, ?, ?, ?, ?
-                    )
-                    """,
-                    search,
-                    pubmed,
-                    strDescriptor_UI,
-                    strDescriptor_Name,
-                    strMajortopic_Desc_JN,
-                    strQualifier_UI,
-                    strQualifier_Name,
-                    strMajortopic_Quali_JN,
+    def save_mesh_Insert(self, search, pubmed, schema, strDescriptor_UI, strDescriptor_Name, strMajortopic_Desc_JN, strQualifier_UI, strQualifier_Name, strMajortopic_Quali_JN):
+        with self.con.cursor() as cursor:
+            cursor.execute(
+                f"""
+                INSERT INTO
+                    {schema}.pubmed_suche_mesh
+                (
+                    SUCHE_ID,
+                    PUBMED_ID,
+                    DESCRIPTOR_UI,
+                    DESCRIPTOR_NAME,
+                    MAJORTOPIC_DESC_JN,
+                    QUALIFIER_UI,
+                    QUALIFIER_NAME,
+                    MAJORTOPIC_QUALI_JN
                 )
+                VALUES
+                (
+                    ?, ?, ?, ?, ?, ?, ?, ?
+                )
+                """,
+                search,
+                pubmed,
+                strDescriptor_UI,
+                strDescriptor_Name,
+                strMajortopic_Desc_JN,
+                strQualifier_UI,
+                strQualifier_Name,
+                strMajortopic_Quali_JN,
+            )
+                
