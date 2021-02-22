@@ -660,6 +660,7 @@ class DetailView(CsrfExemptMixin, DatabaseMixin, View):
                 self.save_mesh_Insert(
                     search,
                     pubmed,
+                    con,
                     schema,
                     strDescriptor_UI,
                     strDescriptor_Name,
@@ -677,6 +678,7 @@ class DetailView(CsrfExemptMixin, DatabaseMixin, View):
                     self.save_mesh_Insert(
                         search,
                         pubmed,
+                        con,
                         schema,
                         strDescriptor_UI,
                         strDescriptor_Name,
@@ -690,6 +692,7 @@ class DetailView(CsrfExemptMixin, DatabaseMixin, View):
         self,
         search,
         pubmed,
+        con,
         schema,
         strDescriptor_UI,
         strDescriptor_Name,
@@ -698,7 +701,7 @@ class DetailView(CsrfExemptMixin, DatabaseMixin, View):
         strQualifier_Name,
         strMajortopic_Quali_JN,
     ):
-        with self.con.cursor() as cursor:
+        with con.cursor() as cursor:
             cursor.execute(
                 f"""
                 INSERT INTO
