@@ -657,7 +657,7 @@ class DetailView(CsrfExemptMixin, DatabaseMixin, View):
             strMajortopic_Desc_JN = item.find("DescriptorName").get("MajorTopicYN")
 
             if item.find("QualifierName") is None:
-                self.save_mesh_Insert(
+                self.save_mesh_insert(
                     search,
                     pubmed,
                     con,
@@ -675,7 +675,7 @@ class DetailView(CsrfExemptMixin, DatabaseMixin, View):
                     strQualifier_UI = item2.get("UI")
                     strMajortopic_Quali_JN = item2.get("MajorTopicYN")
 
-                    self.save_mesh_Insert(
+                    self.save_mesh_insert(
                         search,
                         pubmed,
                         con,
@@ -688,7 +688,7 @@ class DetailView(CsrfExemptMixin, DatabaseMixin, View):
                         strMajortopic_Quali_JN,
                     )
 
-    def save_mesh_Insert(
+    def save_mesh_insert(
         self,
         search,
         pubmed,
