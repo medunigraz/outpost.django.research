@@ -175,9 +175,9 @@ class SearchView(CsrfExemptMixin, DatabaseMixin, View):
                                     i,
                                     cid + 1,
                                 )
-        except pyodbc.Error:
+        except pyodbc.Error as e:
             con.rollback()
-            logger.error(f"Failed to write to ODBC DSN {settings.RESEARCH_DSN}")
+            logger.error(f"Failed to write to {database}/{schema}: {e}")
             return HttpResponse(_("ODBC connection failed"), status=503)
         else:
             con.commit()
@@ -244,7 +244,7 @@ class DetailView(CsrfExemptMixin, DatabaseMixin, View):
                 self.save_mesh(search, pubmed, xml, con, schema)
             except pyodbc.Error as e:
                 con.rollback()
-                logger.error(f"Failed to write to ODBC DSN {settings.RESEARCH_DSN}")
+                logger.error(f"Failed to write to {database}/{schema}: {e}")
                 return HttpResponse(_("ODBC connection failed"), status=503)
             else:
                 con.commit()
