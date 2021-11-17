@@ -415,6 +415,7 @@ class PublicationSerializer(FlexFieldsModelSerializer):
             "organization_authorship",
             "persons",
             "impact",
+            "imported",
         )
 
 

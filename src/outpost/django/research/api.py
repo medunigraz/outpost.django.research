@@ -397,7 +397,7 @@ class PublicationViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelV
     serializer_class = serializers.PublicationSerializer
     filter_backends = (SimpleDjangoFilterBackend, OrderingFilter)
     filter_class = filters.PublicationFilter
-    ordering_fields = ("year", "impact")
+    ordering_fields = ("year", "impact", "imported")
     permission_classes = (AllowAny,)
     permit_list_expands = (
         "persons",

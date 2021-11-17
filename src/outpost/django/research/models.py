@@ -763,6 +763,7 @@ class Publication(models.Model):
         related_name="publications",
     )
     impact = models.FloatField()
+    imported = models.DateTimeField()
 
     class Meta:
         managed = False
