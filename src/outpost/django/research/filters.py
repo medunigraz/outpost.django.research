@@ -94,6 +94,7 @@ class PublicationFilter(filterset.FilterSet):
       - `pmc`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`
       - `organization_authorship`: `in`
       - `organization_authorship__assigned`: `gt`, `gte`, `lt`, `lte`, `date`
+      - `impact`: `gt`, `gte`, `lt`, `lte`
     """
 
     class Meta:
@@ -143,6 +144,14 @@ class PublicationFilter(filterset.FilterSet):
                 "gte",
                 "lte",
                 "date",
+            ),
+            "impact": (
+                "exact",
+                "isnull",
+                "gt",
+                "lt",
+                "gte",
+                "lte",
             ),
         }
 

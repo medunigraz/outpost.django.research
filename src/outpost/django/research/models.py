@@ -762,6 +762,7 @@ class Publication(models.Model):
         db_constraint=False,
         related_name="publications",
     )
+    impact = models.FloatField()
 
     class Meta:
         managed = False
