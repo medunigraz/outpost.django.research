@@ -99,7 +99,7 @@ class Migration(migrations.Migration):
                 PMC_ID AS pmc,
                 ABSTRACT AS abstract_bytes,
                 IMPACT_FAKTOR_NORM_MAX::float AS impact,
-                ERFASSUNGSDATUM AT TIME ZONE '{tz}' AS imported
+                ERFASSUNGSDATUM AS imported
 
             FROM
                 "research"."publikation"
