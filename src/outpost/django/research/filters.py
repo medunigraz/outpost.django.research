@@ -137,7 +137,7 @@ class PublicationFilter(filterset.FilterSet):
                 "istartswith",
             ),
             "persons": ("exact",),
-            "organization_authorship": ("exact", "in"),
+            "organization_authorship": ("exact",),
             "organization_authorship__assigned": (
                 "exact",
                 "gt",
