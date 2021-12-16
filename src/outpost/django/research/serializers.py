@@ -52,7 +52,7 @@ class ClassificationSerializer(FlexFieldsModelSerializer):
         request = self.context.get("request", None)
         if request:
             if request.user:
-                if request.user.is_authenticated():
+                if request.user.is_authenticated:
                     person = "AuthenticatedPersonSerializer"
         return {
             "persons": (
@@ -87,7 +87,7 @@ class ExpertiseSerializer(FlexFieldsModelSerializer):
         request = self.context.get("request", None)
         if request:
             if request.user:
-                if request.user.is_authenticated():
+                if request.user.is_authenticated:
                     person = "AuthenticatedPersonSerializer"
         return {
             "person": (
@@ -124,7 +124,7 @@ class KnowledgeSerializer(FlexFieldsModelSerializer):
         request = self.context.get("request", None)
         if request:
             if request.user:
-                if request.user.is_authenticated():
+                if request.user.is_authenticated:
                     person = "AuthenticatedPersonSerializer"
         return {
             "person": (
@@ -161,7 +161,7 @@ class EducationSerializer(FlexFieldsModelSerializer):
         request = self.context.get("request", None)
         if request:
             if request.user:
-                if request.user.is_authenticated():
+                if request.user.is_authenticated:
                     person = "AuthenticatedPersonSerializer"
         return {
             "person": (
@@ -280,7 +280,7 @@ class ProjectSerializer(FlexFieldsModelSerializer):
         request = self.context.get("request", None)
         if request:
             if request.user:
-                if request.user.is_authenticated():
+                if request.user.is_authenticated:
                     person = "AuthenticatedPersonSerializer"
         return {
             "organization": (
@@ -382,7 +382,7 @@ class PublicationSerializer(FlexFieldsModelSerializer):
         request = self.context.get("request", None)
         if request:
             if request.user:
-                if request.user.is_authenticated():
+                if request.user.is_authenticated:
                     person = "AuthenticatedPersonSerializer"
         return {
             "persons": (
