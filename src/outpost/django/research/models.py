@@ -4,6 +4,7 @@ from textwrap import shorten
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField, HStoreField
 from django.db.models.signals import post_save
+from django.utils.translation import ugettext_lazy as _
 from memoize import memoize
 
 logger = logging.getLogger(__name__)
@@ -158,9 +159,13 @@ class Country(models.Model):
 
     ### `name` (`object`)
     Names of country, defined by language.
+
+    ### `iso` (`object`)
+    ISO codes of country.
     """
 
-    name = models.CharField(max_length=256, blank=True, null=True)
+    name = HStoreField()
+    iso = HStoreField()
 
     class Meta:
         managed = False
@@ -238,23 +243,84 @@ class Funder(models.Model):
 
     ### `name` (`object`)
     Names of funder, defined by language.
+
+    ### `street` (`string`)
+    Street address.
+
+    ### `zipcode` (`string`)
+    ZIP code.
+
+    ### `city` (`string`)
+    City.
+
+    ### `country` (`integer`)
+    Foreign key to [countries](../country).
+
+    ### `category` (`integer`)
+    Foreign key to [category](../funder:category).
+
+    ### `url` (`string`)
+    URL to website.
+
+    ### `telephone` (`string`)
+    Telephone number.
+
+    ### `email` (`string`)
+    Email address.
+
+    ### `patron` (`boolean`)
+    Has funder been classified as a sponsor at the Medical University of Graz (can be assigned as a sponsor to a research funding project).
+
+    ### `patron_peer_review` (`boolean`)
+    Is funder a provider with scientific peer review procedure, which at the Medical University of Graz is regarded as a sponsor of competitively acquired third-party funding for research funding projects.
+
+    ### `patron_ssociate_professor` (`boolean`)
+    Is funder a provider that is regarded at the Medical University of Graz as a funding provider of competitively acquired third-party funds for research funding projects (especially for the crediting of projects in evaluations of Assoz. Professors and the like).
+
+    ### `typeintellectualcapitalaccounting` (`integer`)
+    Foreign key to [type according to intellectual capital accounting](../funder:type:intellectualcapitalaccounting).
+
+    ### `typestatisticsaustria` (`integer`)
+    Foreign key to [type according to Statistic Austria](../funder:type:statisticsaustria).
     """
 
     name = models.CharField(max_length=256, blank=True, null=True)
     street = models.CharField(max_length=256, blank=True, null=True)
-    city = models.CharField(max_length=256, blank=True, null=True)
     zipcode = models.CharField(max_length=32, blank=True, null=True)
+    city = models.CharField(max_length=256, blank=True, null=True)
     country = models.ForeignKey(
         "Country", models.SET_NULL, db_constraint=False, null=True, blank=True
     )
-    url = models.CharField(max_length=256, blank=True, null=True)
     category = models.ForeignKey(
         "FunderCategory", models.SET_NULL, db_constraint=False, null=True, blank=True
+    )
+    url = models.CharField(max_length=256, blank=True, null=True)
+    telephone = models.CharField(max_length=256, blank=True, null=True)
+    email = models.CharField(max_length=256, blank=True, null=True)
+    patron = models.BooleanField()
+    patron_peer_review = models.BooleanField()
+    patron_associate_professor = models.BooleanField()
+    typeintellectualcapitalaccounting = models.ForeignKey(
+        "FunderTypeIntellectualCapitalAccounting",
+        models.DO_NOTHING,
+        db_constraint=False,
+        null=True,
+        blank=True,
+    )
+    typestatisticsaustria = models.ForeignKey(
+        "FunderTypeStatisticsAustria",
+        models.DO_NOTHING,
+        db_constraint=False,
+        null=True,
+        blank=True,
     )
 
     class Meta:
         managed = False
         db_table = "research_funder"
+        permissions = (
+            ("view_funder_non_patron", _("View funders that are not a patron")),
+        )
 
     class Refresh:
         interval = 86400
@@ -490,10 +556,19 @@ class Program(models.Model):
 
     ### `name` (`string`)
     Name of research program.
+
+    ### `active` (`boolean`)
+    Is research program active.
+
+    ### `funder` (`integer`)
+    Foreign key to [funder](../funder).
     """
 
     name = models.CharField(max_length=256, blank=True, null=True)
     active = models.BooleanField()
+    funder = models.ForeignKey(
+        "Funder", models.DO_NOTHING, db_constraint=False, null=True, blank=True
+    )
 
     class Meta:
         managed = False
@@ -917,3 +992,139 @@ class BiddingEndowment(models.Model):
 
     def __str__(self):
         return f"{self.bidding} (Endowment)"
+
+
+class Partner(models.Model):
+    """
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Name of partner.
+
+    ### `short` (`string`)
+    Short form of name.
+
+    ### `street` (`string`)
+    Street address of partner.
+
+    ### `zipcode` (`string`)
+    ZIP code of partner.
+
+    ### `city` (`string`)
+    City of partner.
+
+    ### `typeintellectualcapitalaccounting` (`integer`)
+    Foreign key to the [type of partner according to intellectual capital accounting](../partnertypeintellectualcapitalaccounting).
+
+    ### `url` (`string`)
+    URL to the homepage.
+
+    ### `telephone` (`string`)
+    Telephone number.
+
+    ### `email` (`string`)
+    Email address.
+
+    ### `information` (`string`)
+    General information.
+    """
+
+    name = models.CharField(max_length=256, blank=True, null=True)
+    short = models.CharField(max_length=128, blank=True, null=True)
+    street = models.CharField(max_length=128, blank=True, null=True)
+    zipcode = models.CharField(max_length=128, blank=True, null=True)
+    city = models.CharField(max_length=128, blank=True, null=True)
+    typeintellectualcapitalaccounting = models.ForeignKey(
+        "PartnerTypeIntellectualCapitalAccounting",
+        models.DO_NOTHING,
+        db_constraint=False,
+    )
+    url = models.CharField(max_length=128, blank=True, null=True)
+    telephone = models.CharField(max_length=128, blank=True, null=True)
+    email = models.CharField(max_length=128, blank=True, null=True)
+    information = models.TextField()
+
+    class Meta:
+        managed = False
+        db_table = "research_partner"
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.name
+
+
+class PartnerTypeIntellectualCapitalAccounting(models.Model):
+    """
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Name of the partner type according to intellectual capital accounting in multiple languages.
+    """
+
+    name = HStoreField()
+
+    class Meta:
+        managed = False
+        db_table = "research_partnertypeintellectualcapitalaccounting"
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return next((n for n in self.name if n is not None), _("Unknown"))
+
+
+class FunderTypeIntellectualCapitalAccounting(models.Model):
+    """
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Name of the funder type according to intellectual capital accounting in multiple languages.
+    """
+
+    name = HStoreField()
+
+    class Meta:
+        managed = False
+        db_table = "research_fundertypeintellectualcapitalaccounting"
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return next((n for n in self.name if n is not None), _("Unknown"))
+
+
+class FunderTypeStatisticsAustria(models.Model):
+    """
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Name of the funder type according to [Statistics Austria](https://www.statistik.at/web_en/statistics/index.html) in multiple languages.
+    """
+
+    name = HStoreField()
+
+    class Meta:
+        managed = False
+        db_table = "research_fundertypestatisticsaustria"
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return next((n for n in self.name if n is not None), _("Unknown"))

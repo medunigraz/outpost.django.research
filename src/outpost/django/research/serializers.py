@@ -21,12 +21,6 @@ class LanguageSerializer(FlexFieldsModelSerializer):
         fields = "__all__"
 
 
-class ProgramSerializer(FlexFieldsModelSerializer):
-    class Meta:
-        model = models.Program
-        fields = "__all__"
-
-
 class ClassificationSerializer(FlexFieldsModelSerializer):
     """
     ## Expansions
@@ -177,6 +171,18 @@ class FunderCategorySerializer(FlexFieldsModelSerializer):
         fields = "__all__"
 
 
+class FunderTypeIntellectualCapitalAccountingSerializer(FlexFieldsModelSerializer):
+    class Meta:
+        model = models.FunderTypeIntellectualCapitalAccounting
+        fields = "__all__"
+
+
+class FunderTypeStatisticsAustriaSerializer(FlexFieldsModelSerializer):
+    class Meta:
+        model = models.FunderTypeStatisticsAustria
+        fields = "__all__"
+
+
 class FunderSerializer(FlexFieldsModelSerializer):
     """
     ## Expansions
@@ -188,10 +194,10 @@ class FunderSerializer(FlexFieldsModelSerializer):
 
     The following relational fields can be expanded:
 
-     * `persons`
-     * `organizations`
      * `category`
-     * `document`
+     * `country`
+     * `typeintellectualcapitalaccounting`
+     * `typestatisticsaustria`
 
     """
 
@@ -202,6 +208,38 @@ class FunderSerializer(FlexFieldsModelSerializer):
     expandable_fields = {
         "category": (FunderCategorySerializer, {"source": "category"}),
         "country": (CountrySerializer, {"source": "country"}),
+        "typeintellectualcapitalaccounting": (
+            FunderTypeIntellectualCapitalAccountingSerializer,
+            {"source": "typeintellectualcapitalaccounting"},
+        ),
+        "typestatisticsaustria": (
+            FunderTypeStatisticsAustriaSerializer,
+            {"source": "typestatisticsaustria"},
+        ),
+    }
+
+
+class ProgramSerializer(FlexFieldsModelSerializer):
+    """
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `funder`
+
+    """
+
+    class Meta:
+        model = models.Program
+        fields = "__all__"
+
+    expandable_fields = {
+        "funder": (FunderSerializer, {"source": "funder"}),
     }
 
 
@@ -503,3 +541,57 @@ class BiddingEndowmentSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.BiddingEndowment
         fields = ("id", "bidding", "information", "amount", "currency")
+
+
+class PartnerSerializer(FlexFieldsModelSerializer):
+    """
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `typeintellectualcapitalaccounting`
+
+    """
+
+    @property
+    def expandable_fields(self):
+        base = "outpost.django.research.serializers"
+        return {
+            "typeintellectualcapitalaccounting": (
+                f"{base}.PartnerTypeIntellectualCapitalAccountingSerializer",
+                {"source": "typeintellectualcapitalaccounting"},
+            ),
+        }
+
+    class Meta:
+        model = models.Partner
+        fields = (
+            "id",
+            "name",
+            "short",
+            "street",
+            "zipcode",
+            "city",
+            "typeintellectualcapitalaccounting",
+            "url",
+            "telephone",
+            "email",
+            "information",
+        )
+
+
+class PartnerTypeIntellectualCapitalAccountingSerializer(FlexFieldsModelSerializer):
+    """
+    """
+
+    class Meta:
+        model = models.PartnerTypeIntellectualCapitalAccounting
+        fields = (
+            "id",
+            "name",
+        )

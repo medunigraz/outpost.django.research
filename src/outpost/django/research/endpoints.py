@@ -24,7 +24,23 @@ v1 = [
         api.FunderCategoryViewSet,
         "research-funder-category",
     ),
+    (
+        r"research/funder:type:intellectualcapitalaccounting",
+        api.FunderTypeIntellectualCapitalAccountingViewSet,
+        "research-funder-type-intellectualcapitalaccounting",
+    ),
+    (
+        r"research/funder:type:statisticsaustria",
+        api.FunderTypeStatisticsAustriaViewSet,
+        "research-funder-type-statisticsaustria",
+    ),
     (r"research/funder", api.FunderViewSet, "research-funder"),
+    (r"research/partner", api.PartnerViewSet, "research-partner"),
+    (
+        r"research/partner:type:intellectualcapitalaccounting",
+        api.PartnerTypeIntellectualCapitalAccountingViewSet,
+        "research-partner-type-intellectualcapitalaccounting",
+    ),
     (
         r"research/project:category",
         api.ProjectCategoryViewSet,

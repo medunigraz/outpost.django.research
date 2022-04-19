@@ -145,6 +145,42 @@ class FunderCategoryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
 
 
 @docstring_format(
+    model=models.FunderTypeIntellectualCapitalAccounting.__doc__,
+    serializer=serializers.FunderTypeIntellectualCapitalAccountingSerializer.__doc__,
+)
+class FunderTypeIntellectualCapitalAccountingViewSet(
+    ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet
+):
+    """
+    List funder types according to intellectual capital accounting.
+
+    {model}
+    {serializer}
+    """
+
+    queryset = models.FunderTypeIntellectualCapitalAccounting.objects.all()
+    serializer_class = serializers.FunderTypeIntellectualCapitalAccountingSerializer
+    permission_classes = (AllowAny,)
+
+
+@docstring_format(
+    model=models.FunderTypeStatisticsAustria.__doc__,
+    serializer=serializers.FunderTypeStatisticsAustriaSerializer.__doc__,
+)
+class FunderTypeStatisticsAustriaViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+    """
+    List funder types according to Statistics Austria.
+
+    {model}
+    {serializer}
+    """
+
+    queryset = models.FunderTypeStatisticsAustria.objects.all()
+    serializer_class = serializers.FunderTypeStatisticsAustriaSerializer
+    permission_classes = (AllowAny,)
+
+
+@docstring_format(
     model=models.Funder.__doc__, serializer=serializers.FunderSerializer.__doc__
 )
 class FunderViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
@@ -158,7 +194,19 @@ class FunderViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSe
     queryset = models.Funder.objects.all()
     serializer_class = serializers.FunderSerializer
     permission_classes = (AllowAny,)
-    permit_list_expands = ("category", "country")
+    permit_list_expands = (
+        "category",
+        "country",
+        "typeintellectualcapitalaccounting",
+        "typestatisticsaustria",
+    )
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.user.has_perm("research.view_funder_non_patron"):
+            return queryset
+        else:
+            return queryset.filter(patron=True)
 
 
 @docstring_format(
@@ -507,4 +555,52 @@ class BiddingViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewS
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.prefetch_related("funders", "deadlines", "endowments")
+        return queryset
+
+
+@docstring_format(
+    model=models.PartnerTypeIntellectualCapitalAccounting.__doc__,
+    serializer=serializers.PartnerTypeIntellectualCapitalAccountingSerializer.__doc__,
+)
+class PartnerTypeIntellectualCapitalAccountingViewSet(
+    ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet
+):
+    """
+    List partner types according to intellectual capital accounting.
+
+    {model}
+    {serializer}
+    """
+
+    queryset = models.PartnerTypeIntellectualCapitalAccounting.objects.all()
+    serializer_class = serializers.PartnerTypeIntellectualCapitalAccountingSerializer
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    permission_classes = (AllowAny,)
+
+
+@docstring_format(
+    model=models.Partner.__doc__,
+    serializer=serializers.PartnerSerializer.__doc__,
+    filter=filters.PartnerFilter.__doc__,
+)
+class PartnerViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
+    """
+    List partners.
+
+    {model}
+    {serializer}
+    {filter}
+    """
+
+    queryset = models.Partner.objects.all()
+    serializer_class = serializers.PartnerSerializer
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filter_class = filters.PartnerFilter
+    ordering_fields = ("start",)
+    permission_classes = (AllowAny,)
+    permit_list_expands = ("typeintellectualcapitalaccounting",)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.prefetch_related("typeintellectualcapitalaccounting")
         return queryset
