@@ -123,7 +123,7 @@ class Migration(migrations.Migration):
     ]
 
     dependencies = [
-        ('research', '0009_publication_imported'),
+        ("research", "0009_publication_imported"),
     ]
 
     operations = [

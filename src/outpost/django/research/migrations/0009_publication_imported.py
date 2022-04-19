@@ -153,7 +153,7 @@ class Migration(migrations.Migration):
     ]
 
     dependencies = [
-        ('research', '0008_publication_impact_factor'),
+        ("research", "0008_publication_impact_factor"),
     ]
 
     operations = [

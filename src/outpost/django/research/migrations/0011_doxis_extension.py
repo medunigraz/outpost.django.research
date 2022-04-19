@@ -336,5 +336,5 @@ class Migration(migrations.Migration):
         )
     ]
     dependencies = [
-        ('research', '0010_project_left_outer_join'),
+        ("research", "0010_project_left_outer_join"),
     ]

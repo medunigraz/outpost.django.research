@@ -128,7 +128,7 @@ class Migration(migrations.Migration):
     ]
 
     dependencies = [
-        ('research', '0007_bidding_biddingdeadline_biddingendowment'),
+        ("research", "0007_bidding_biddingdeadline_biddingendowment"),
     ]
 
     operations = [
