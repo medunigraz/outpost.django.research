@@ -81,6 +81,7 @@ class SearchView(CsrfExemptMixin, DatabaseMixin, View):
             term.append(combination)
 
         if (len(term)) == 0:
+            logger.warn("No search parameters specified")
             return HttpResponse(_("No search parameters specified"), status=400)
 
         url = self.url.query_param("term", "+".join(term))
@@ -90,19 +91,22 @@ class SearchView(CsrfExemptMixin, DatabaseMixin, View):
         # alle PubMed Ids, die anhand der Suche gefunden werden können, gespeichert
         if request.POST.get("retmax_in"):
             try:
-                logger.debug(f"PubMed IDs paketieren")
+                logger.debug("PubMed IDs paketieren")
                 url = url.query_param("RetMax", int(request.POST.get("retmax_in")))
             except ValueError:
+                logger.warn("Invalid RetMax specified")
                 return HttpResponse(_("Invalid RetMax specified"), status=400)
 
         logger.debug(f"Constructed search URL: {url.as_string()}")
 
         if not request.POST.get("suche_id_in"):
+            logger.warn("No search ID specified")
             return HttpResponse(_("No search ID specified"), status=400)
 
         try:
             search = int(request.POST.get("suche_id_in"))
         except ValueError:
+            logger.warn("Invalid search ID specified")
             return HttpResponse(_("Invalid search ID specified"), status=400)
 
         person_id = request.POST.get("person_id_in")
@@ -110,6 +114,7 @@ class SearchView(CsrfExemptMixin, DatabaseMixin, View):
             try:
                 person_id = int(person_id)
             except ValueError:
+                logger.warn("Invalid person ID specified")
                 return HttpResponse(_("Invalid person ID specified"), status=400)
 
         try:
@@ -209,14 +214,17 @@ class DetailView(CsrfExemptMixin, DatabaseMixin, View):
         logger.debug(f"Start detail")
         search = request.POST.get("suche_id_in")
         if not search:
+            logger.warn("No search ID specified")
             return HttpResponse(_("No search ID specified"), status=400)
 
         try:
             search = int(search)
         except ValueError:
+            logger.warn("Invalid search ID specified")
             return HttpResponse(_("Invalid search ID specified"), status=400)
 
         if not request.POST.get("ids_in"):
+            logger.warn("No PubMed IDs specified")
             return HttpResponse(_("No PubMed IDs specified"), status=400)
 
         ids = map(
