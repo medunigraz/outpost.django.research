@@ -370,9 +370,15 @@ class DjangoProjectCategory(models.Model):
 
     @classmethod
     def update(cls, **kwargs):
-        from ..base.tasks import RefreshMaterializedViewTask
+        from outpost.django.base.models import MaterializedView
+        from outpost.django.base.tasks import MaterializedViewTasks
 
-        RefreshMaterializedViewTask().delay(cls.id.field.related_model._meta.db_table)
+        try:
+            mv = MaterializedView.objects.get(name=cls.id.field.related_model._meta.db_table)
+        except MaterializedView.DoesNotExist:
+            logger.warn(f"No materialized view object found for {cls.id.field.related_model._meta.db_table}")
+            return
+        MaterializedViewTasks.refresh.apply_async((mv.pk,), queue="maintainance")
 
 
 post_save.connect(DjangoProjectCategory.update, sender=DjangoProjectCategory)
@@ -539,9 +545,15 @@ class DjangoProjectStatus(models.Model):
 
     @classmethod
     def update(cls, **kwargs):
-        from ..base.tasks import RefreshMaterializedViewTask
+        from outpost.django.base.models import MaterializedView
+        from outpost.django.base.tasks import MaterializedViewTasks
 
-        RefreshMaterializedViewTask().delay(cls.id.field.related_model._meta.db_table)
+        try:
+            mv = MaterializedView.objects.get(name=cls.id.field.related_model._meta.db_table)
+        except MaterializedView.DoesNotExist:
+            logger.warn(f"No materialized view object found for {cls.id.field.related_model._meta.db_table}")
+            return
+        MaterializedViewTasks.refresh.apply_async((mv.pk,), queue="maintainance")
 
 
 post_save.connect(DjangoProjectStatus.update, sender=DjangoProjectStatus)
