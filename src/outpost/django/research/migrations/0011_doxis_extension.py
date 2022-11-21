@@ -150,7 +150,7 @@ class Migration(migrations.Migration):
             CREATE MATERIALIZED VIEW "public"."research_program" AS SELECT
                 FORSCHUNG_PROGRAMM_ID::integer AS id,
                 FORSCHUNG_PROGRAMM_NAME AS name,
-                COALESCE((LOWER(AKTIV_JN) = 'n'), FALSE)::boolean AS active
+                COALESCE((LOWER(AKTIV_JN) = 'j'), FALSE)::boolean AS active
             FROM
                 "research"."forschung_programm"
             """,
@@ -160,7 +160,7 @@ class Migration(migrations.Migration):
             CREATE MATERIALIZED VIEW "public"."research_program" AS SELECT
                 FORSCHUNG_PROGRAMM_ID::integer AS id,
                 FORSCHUNG_PROGRAMM_NAME AS name,
-                COALESCE((LOWER(AKTIV_JN) = 'n'), FALSE)::boolean AS active,
+                COALESCE((LOWER(AKTIV_JN) = 'j'), FALSE)::boolean AS active,
                 GELDGEBER_ID::integer AS funder_id
             FROM
                 "research"."forschung_programm"
