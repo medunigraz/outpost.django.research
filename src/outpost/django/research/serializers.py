@@ -516,8 +516,7 @@ class BiddingSerializer(FlexFieldsModelSerializer):
 
 
 class BiddingDeadlineSerializer(FlexFieldsModelSerializer):
-    """
-    """
+    """"""
 
     @property
     def expandable_fields(self):
@@ -530,8 +529,7 @@ class BiddingDeadlineSerializer(FlexFieldsModelSerializer):
 
 
 class BiddingEndowmentSerializer(FlexFieldsModelSerializer):
-    """
-    """
+    """"""
 
     @property
     def expandable_fields(self):
@@ -586,8 +584,7 @@ class PartnerSerializer(FlexFieldsModelSerializer):
 
 
 class PartnerTypeIntellectualCapitalAccountingSerializer(FlexFieldsModelSerializer):
-    """
-    """
+    """"""
 
     class Meta:
         model = models.PartnerTypeIntellectualCapitalAccounting
