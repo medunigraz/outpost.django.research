@@ -48,7 +48,6 @@ class SearchView(CsrfExemptMixin, DatabaseMixin, View):
     )
 
     def post(self, request, database, schema):
-
         try:
             con = self.connection(database, schema)
         except DatabaseException as e:
@@ -58,21 +57,17 @@ class SearchView(CsrfExemptMixin, DatabaseMixin, View):
 
         author1 = request.POST.get("autor1_in")
         if author1:
-            term.append(
-                author1.replace(" ", "+") + settings.RESEARCH_PUBMED_AUTHOR_TOKEN
-            )
+            term.append(f"\"{author1}\"{settings.RESEARCH_PUBMED_AUTHOR_TOKEN}")
 
         author2 = request.POST.get("autor2_in")
         if author2:
-            term.append(
-                author2.replace(" ", "+") + settings.RESEARCH_PUBMED_AUTHOR_TOKEN
-            )
+            term.append(f"\"{author2}\"{settings.RESEARCH_PUBMED_AUTHOR_TOKEN}")
 
         year = request.POST.get("jahr_in")
         if year:
             try:
                 year = int(year)
-                term.append(f"{year}{settings.RESEARCH_PUBMED_PDAT_TOKEN}")
+                term.append(f"\"{year}\"{settings.RESEARCH_PUBMED_PDAT_TOKEN}")
             except ValueError:
                 return HttpResponse(_("Invalid Year specified"), status=400)
 
@@ -84,7 +79,7 @@ class SearchView(CsrfExemptMixin, DatabaseMixin, View):
             logger.warn("No search parameters specified")
             return HttpResponse(_("No search parameters specified"), status=400)
 
-        url = self.url.query_param("term", "+".join(term))
+        url = self.url.query_param("term", " ".join(term))
 
         # 2020-04-22: Nach Absprache mit Hrn. Schaffer wird in die Tabelle PUBMED_SUCHE_IDS
         # nur geschrieben, wenn der POST Parameter retmax_in mitübergeben wird. Es werden dann
