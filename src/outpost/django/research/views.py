@@ -57,17 +57,17 @@ class SearchView(CsrfExemptMixin, DatabaseMixin, View):
 
         author1 = request.POST.get("autor1_in")
         if author1:
-            term.append(f"\"{author1}\"{settings.RESEARCH_PUBMED_AUTHOR_TOKEN}")
+            term.append(f'"{author1}"{settings.RESEARCH_PUBMED_AUTHOR_TOKEN}')
 
         author2 = request.POST.get("autor2_in")
         if author2:
-            term.append(f"\"{author2}\"{settings.RESEARCH_PUBMED_AUTHOR_TOKEN}")
+            term.append(f'"{author2}"{settings.RESEARCH_PUBMED_AUTHOR_TOKEN}')
 
         year = request.POST.get("jahr_in")
         if year:
             try:
                 year = int(year)
-                term.append(f"\"{year}\"{settings.RESEARCH_PUBMED_PDAT_TOKEN}")
+                term.append(f'"{year}"{settings.RESEARCH_PUBMED_PDAT_TOKEN}')
             except ValueError:
                 return HttpResponse(_("Invalid Year specified"), status=400)
 

@@ -374,9 +374,13 @@ class DjangoProjectCategory(models.Model):
         from outpost.django.base.tasks import MaterializedViewTasks
 
         try:
-            mv = MaterializedView.objects.get(name=cls.id.field.related_model._meta.db_table)
+            mv = MaterializedView.objects.get(
+                name=cls.id.field.related_model._meta.db_table
+            )
         except MaterializedView.DoesNotExist:
-            logger.warn(f"No materialized view object found for {cls.id.field.related_model._meta.db_table}")
+            logger.warn(
+                f"No materialized view object found for {cls.id.field.related_model._meta.db_table}"
+            )
             return
         MaterializedViewTasks.refresh.apply_async((mv.pk,), queue="maintainance")
 
@@ -549,9 +553,13 @@ class DjangoProjectStatus(models.Model):
         from outpost.django.base.tasks import MaterializedViewTasks
 
         try:
-            mv = MaterializedView.objects.get(name=cls.id.field.related_model._meta.db_table)
+            mv = MaterializedView.objects.get(
+                name=cls.id.field.related_model._meta.db_table
+            )
         except MaterializedView.DoesNotExist:
-            logger.warn(f"No materialized view object found for {cls.id.field.related_model._meta.db_table}")
+            logger.warn(
+                f"No materialized view object found for {cls.id.field.related_model._meta.db_table}"
+            )
             return
         MaterializedViewTasks.refresh.apply_async((mv.pk,), queue="maintainance")
 

@@ -127,7 +127,7 @@ class Migration(migrations.Migration):
     ]
 
     dependencies = [
-        ('research', '0013_person_null'),
+        ("research", "0013_person_null"),
     ]
 
     operations = [
