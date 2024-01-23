@@ -103,7 +103,7 @@ class PublicationFilter(filterset.FilterSet):
         fields = {
             "year": ("exact", "gt", "lt", "gte", "lte"),
             "category": ("exact",),
-            "document": ("exact",),
+            "document_type": ("exact",),
             "sci": (
                 "exact",
                 "iexact",
@@ -137,8 +137,8 @@ class PublicationFilter(filterset.FilterSet):
                 "istartswith",
             ),
             "persons": ("exact",),
-            "organization_authorship": ("exact",),
-            "organization_authorship__assigned": (
+            "organizations": ("exact",),
+            "organizations__assigned": (
                 "exact",
                 "gt",
                 "lt",
@@ -146,7 +146,23 @@ class PublicationFilter(filterset.FilterSet):
                 "lte",
                 "date",
             ),
-            "impact": (
+            "impactfactor": (
+                "exact",
+                "isnull",
+                "gt",
+                "lt",
+                "gte",
+                "lte",
+            ),
+            "impactfactor_norm": (
+                "exact",
+                "isnull",
+                "gt",
+                "lt",
+                "gte",
+                "lte",
+            ),
+            "impactfactor_norm_super": (
                 "exact",
                 "isnull",
                 "gt",

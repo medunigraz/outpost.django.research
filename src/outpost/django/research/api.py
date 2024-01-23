@@ -445,20 +445,26 @@ class PublicationViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelV
     serializer_class = serializers.PublicationSerializer
     filter_backends = (SimpleDjangoFilterBackend, OrderingFilter)
     filter_class = filters.PublicationFilter
-    ordering_fields = ("year", "impact", "imported")
+    ordering_fields = (
+        "year",
+        "impactfactor",
+        "impactfactor_norm",
+        "impactfactor_nrm_super",
+        "imported",
+    )
     permission_classes = (AllowAny,)
     permit_list_expands = (
         "persons",
         "category",
-        "document",
+        "document_type",
         "status",
         "program",
-        "organization_authorship",
+        "organizations",
     )
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.select_related("category", "document")
+        queryset = queryset.select_related("category", "document_type")
         queryset = queryset.prefetch_related(
             "persons",
             "persons__room",
@@ -470,7 +476,7 @@ class PublicationViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelV
             "persons__expertise",
             "persons__knowledge",
             "persons__education",
-            "organization_authorship",
+            "organizations",
         )
         return queryset
 

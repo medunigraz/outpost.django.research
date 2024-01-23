@@ -784,7 +784,7 @@ class PublicationOrganization(models.Model):
         db_constraint=False,
         null=True,
         blank=True,
-        related_name="organization_authorship",
+        related_name="organizations",
     )
     organization = models.ForeignKey(
         "campusonline.Organization",
@@ -839,7 +839,7 @@ class Publication(models.Model):
         null=True,
         blank=True,
     )
-    document = models.ForeignKey(
+    document_type = models.ForeignKey(
         "PublicationDocument",
         models.SET_NULL,
         db_constraint=False,
@@ -850,15 +850,48 @@ class Publication(models.Model):
     pubmed = models.CharField(max_length=128, blank=True, null=True)
     doi = models.CharField(max_length=128, blank=True, null=True)
     pmc = models.CharField(max_length=128, blank=True, null=True)
-    abstract_bytes = models.BinaryField(blank=True, null=True)
+    abstract = models.TextField(blank=True, null=True)
     persons = models.ManyToManyField(
         "campusonline.Person",
         db_table="research_publication_person",
         db_constraint=False,
         related_name="publications",
     )
-    impact = models.FloatField()
     imported = models.DateTimeField()
+    journal = models.TextField(blank=True, null=True)
+    issn = models.CharField(max_length=20, blank=True, null=True)
+    collection_publisher = models.TextField(blank=True, null=True)
+    collection_title = models.TextField(blank=True, null=True)
+    edition = models.CharField(max_length=50, blank=True, null=True)
+    university = models.TextField()
+    country = models.ForeignKey(
+        "campusonline.Country",
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+    )
+    case_report = models.BooleanField(null=True)
+    impactfactor = models.FloatField()
+    impactfactor_year = models.PositiveSmallIntegerField()
+    impactfactor_norm = models.FloatField()
+    impactfactor_norm_year = models.PositiveSmallIntegerField()
+    impactfactor_norm_category = models.TextField()
+    impactfactor_norm_super = models.FloatField()
+    impactfactor_norm_super_year = models.PositiveSmallIntegerField()
+    impactfactor_norm_super_category = models.TextField()
+    citations = models.BooleanField(null=True)
+    conference_name = models.BooleanField(null=True)
+    conference_place = models.BooleanField(null=True)
+    conference_international = models.BooleanField(null=True)
+    scientific_event = models.BooleanField(null=True)
+    invited_lecture = models.BooleanField(null=True)
+    keynote_speaker = models.BooleanField(null=True)
+    selected_presentation = models.BooleanField(null=True)
+    biobank_use = models.BooleanField(null=True)
+    bmf_use = models.BooleanField(null=True)
+    zmf_use = models.BooleanField(null=True)
+    local_affiliation = models.BooleanField(null=True)
 
     class Meta:
         managed = False
@@ -866,13 +899,6 @@ class Publication(models.Model):
 
     class Refresh:
         interval = 3600
-
-    @property
-    @memoize(timeout=3600)
-    def abstract(self):
-        if not self.abstract_bytes:
-            return None
-        return self.abstract_bytes.tobytes().decode("utf-8").strip()
 
     def __repr__(self):
         return str(self.pk)
