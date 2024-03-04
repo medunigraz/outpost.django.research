@@ -8,6 +8,8 @@ class Migration(migrations.Migration):
     ops = [
         (
             """
+            CREATE SCHEMA research;
+
             CREATE FOREIGN TABLE research.ausschreibung (
             ausschreibung_id integer NULL,
             ausschreibung_titel varchar NULL,
@@ -1303,6 +1305,8 @@ class Migration(migrations.Migration):
             DROP FOREIGN TABLE research.rechtsgrundlage;
 
             DROP FOREIGN TABLE research.ueberwiegende_finanzierung;
+
+            DROP SCHEMA research;
             """,
         )
     ]
