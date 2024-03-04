@@ -320,3 +320,43 @@ class PartnerFilter(filterset.FilterSet):
             "short": ("exact", "iexact", "contains", "icontains"),
             "typeintellectualcapitalaccounting": ("exact",),
         }
+
+
+class ClassificationFilter(filterset.FilterSet):
+    """
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    Possible exact filters:
+
+      - `level`
+    """
+
+    class Meta:
+        model = models.Classification
+        fields = {
+            "level": ("exact",),
+        }
+
+
+class ProjectStudyFilter(filterset.FilterSet):
+    """
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    Possible exact filters:
+
+      - `active`
+    """
+
+    class Meta:
+        model = models.ProjectStudy
+        fields = {
+            "active": ("exact",),
+        }

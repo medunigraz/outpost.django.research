@@ -9,6 +9,24 @@ from . import models, search_indexes
 logger = logging.getLogger(__name__)
 
 
+class PredominantFunderSerializer(FlexFieldsModelSerializer):
+    class Meta:
+        model = models.PredominantFunder
+        fields = "__all__"
+
+
+class LegalBasisSerializer(FlexFieldsModelSerializer):
+    class Meta:
+        model = models.LegalBasis
+        fields = "__all__"
+
+
+class FieldSerializer(FlexFieldsModelSerializer):
+    class Meta:
+        model = models.Field
+        fields = "__all__"
+
+
 class CountrySerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.Country
@@ -246,6 +264,12 @@ class ProgramSerializer(FlexFieldsModelSerializer):
 class ProjectCategorySerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.ProjectCategory
+        fields = "__all__"
+
+
+class ProjectTypeSerializer(FlexFieldsModelSerializer):
+    class Meta:
+        model = models.ProjectType
         exclude = ("public",)
 
 
@@ -298,6 +322,7 @@ class ProjectSerializer(FlexFieldsModelSerializer):
 
      * `organization`
      * `category`
+     * `type`
      * `partner_function`
      * `manager`
      * `contact`
@@ -326,6 +351,7 @@ class ProjectSerializer(FlexFieldsModelSerializer):
                 {"source": "organization"},
             ),
             "category": (ProjectCategorySerializer, {"source": "category"}),
+            "type": (ProjectTypeSerializer, {"source": "type"}),
             "partner_function": (
                 ProjectPartnerFunctionSerializer,
                 {"source": "partner_function"},
@@ -346,11 +372,91 @@ class ProjectSerializer(FlexFieldsModelSerializer):
             "language": (LanguageSerializer, {"source": "language"}),
             "program": (ProgramSerializer, {"source": "program"}),
             "funders": (FunderSerializer, {"source": "funders", "many": True}),
+            "parent": (ProjectSerializer, {"source": "parent"}),
         }
 
     class Meta:
         model = models.Project
-        fields = "__all__"
+        fields = (
+            "id",
+            "title",
+            "short",
+            "url",
+            "abstract",
+            "begin_planned",
+            "begin_effective",
+            "end_planned",
+            "end_effective",
+            "assignment",
+            "program",
+            "subprogram",
+            "organization",
+            "category",
+            "type",
+            "partner_function",
+            "manager",
+            "contact",
+            "status",
+            "research",
+            "grant",
+            "event",
+            "study",
+            "language",
+            "funders",
+            "funder_projectcode",
+            "ethics_committee",
+            "edudract_number",
+        )
+
+
+class UnrestrictedProjectSerializer(ProjectSerializer):
+    @property
+    def expandable_fields(self):
+        base = "outpost.django.campusonline.serializers"
+        return {
+            **super().expandable_fields,
+            **{
+                "parent": (
+                    f"{self.__class__.__module__}.{self.__class__.__name__}",
+                    {"source": "parent"},
+                ),
+                "legalbasis": (
+                    f"{self.__class__.__module__}.LegalBasisSerializer",
+                    {"source": "persons"},
+                ),
+                "predominant_funder": (
+                    f"{self.__class__.__module__}.PredominantFunderSerializer",
+                    {"source": "predominant_funder"},
+                ),
+                "project_management_accountable": (
+                    f"{base}.AuthenticatedPersonSerializer",
+                    {"source": "project_management_accountable"},
+                ),
+                "co_accountable": (
+                    f"{base}.AuthenticatedPersonSerializer",
+                    {"source": "co_accountable"},
+                ),
+            },
+        }
+
+    class Meta(ProjectSerializer.Meta):
+        fields = ProjectSerializer.Meta.fields + (
+            "gender_studies",
+            "clinical_trial",
+            "invesitgator_init",
+            "legalbasis",
+            "project_total_requested",
+            "project_total_approved",
+            "predominant_funder",
+            "project_management_accountable",
+            "internal_order",
+            "parent",
+            "co_accountable",
+            "zmf_usage",
+            "biobank_usage",
+            "biomed_research",
+            "commercial",
+        )
 
 
 class ProjectSearchSerializer(HaystackSerializer):

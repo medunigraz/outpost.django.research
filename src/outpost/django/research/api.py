@@ -2,19 +2,69 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_haystack.viewsets import HaystackViewSet
 from outpost.django.base.decorators import docstring_format
 from outpost.django.base.filters import SimpleDjangoFilterBackend
-from outpost.django.base.mixins import ReadOnlyETAGCacheMixin
+from outpost.django.base.mixins import CacheResponseMixin
 from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from .conf import settings
 from . import filters, models, serializers
+
+
+@docstring_format(
+    model=models.PredominantFunder.__doc__,
+    serializer=serializers.PredominantFunderSerializer.__doc__,
+)
+class PredominantFunderViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
+    """
+    List predominant funders.
+
+    {model}
+    {serializer}
+    """
+
+    queryset = models.PredominantFunder.objects.all()
+    serializer_class = serializers.PredominantFunderSerializer
+    permission_classes = (AllowAny,)
+
+
+@docstring_format(
+    model=models.LegalBasis.__doc__, serializer=serializers.LegalBasisSerializer.__doc__
+)
+class LegalBasisViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
+    """
+    List legal basis.
+
+    {model}
+    {serializer}
+    """
+
+    queryset = models.LegalBasis.objects.all()
+    serializer_class = serializers.LegalBasisSerializer
+    permission_classes = (AllowAny,)
+
+
+@docstring_format(
+    model=models.Field.__doc__, serializer=serializers.FieldSerializer.__doc__
+)
+class FieldViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
+    """
+    List research fields.
+
+    {model}
+    {serializer}
+    """
+
+    queryset = models.Field.objects.all()
+    serializer_class = serializers.FieldSerializer
+    permission_classes = (AllowAny,)
 
 
 @docstring_format(
     model=models.Country.__doc__, serializer=serializers.CountrySerializer.__doc__
 )
-class CountryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class CountryViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List countries.
 
@@ -30,7 +80,7 @@ class CountryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
 @docstring_format(
     model=models.Language.__doc__, serializer=serializers.LanguageSerializer.__doc__
 )
-class LanguageViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class LanguageViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List languages.
 
@@ -46,7 +96,7 @@ class LanguageViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
 @docstring_format(
     model=models.Program.__doc__, serializer=serializers.ProgramSerializer.__doc__
 )
-class ProgramViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class ProgramViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List programs.
 
@@ -62,8 +112,9 @@ class ProgramViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
 @docstring_format(
     model=models.Classification.__doc__,
     serializer=serializers.ClassificationSerializer.__doc__,
+    filter=filters.ClassificationFilter.__doc__,
 )
-class ClassificationViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class ClassificationViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List OESTAT 2012 classifications.
 
@@ -74,12 +125,14 @@ class ClassificationViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     queryset = models.Classification.objects.all()
     serializer_class = serializers.ClassificationSerializer
     permission_classes = (AllowAny,)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filter_class = filters.ClassificationFilter
 
 
 @docstring_format(
     model=models.Expertise.__doc__, serializer=serializers.ExpertiseSerializer.__doc__
 )
-class ExpertiseViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
+class ExpertiseViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List expertise.
 
@@ -96,7 +149,7 @@ class ExpertiseViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelVie
 @docstring_format(
     model=models.Knowledge.__doc__, serializer=serializers.KnowledgeSerializer.__doc__
 )
-class KnowledgeViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
+class KnowledgeViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List knowledge.
 
@@ -113,7 +166,7 @@ class KnowledgeViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelVie
 @docstring_format(
     model=models.Education.__doc__, serializer=serializers.EducationSerializer.__doc__
 )
-class EducationViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
+class EducationViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List educations.
 
@@ -131,7 +184,7 @@ class EducationViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelVie
     model=models.FunderCategory.__doc__,
     serializer=serializers.FunderCategorySerializer.__doc__,
 )
-class FunderCategoryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class FunderCategoryViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List funder categories.
 
@@ -149,7 +202,7 @@ class FunderCategoryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     serializer=serializers.FunderTypeIntellectualCapitalAccountingSerializer.__doc__,
 )
 class FunderTypeIntellectualCapitalAccountingViewSet(
-    ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet
+    CacheResponseMixin, ReadOnlyModelViewSet
 ):
     """
     List funder types according to intellectual capital accounting.
@@ -167,7 +220,7 @@ class FunderTypeIntellectualCapitalAccountingViewSet(
     model=models.FunderTypeStatisticsAustria.__doc__,
     serializer=serializers.FunderTypeStatisticsAustriaSerializer.__doc__,
 )
-class FunderTypeStatisticsAustriaViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class FunderTypeStatisticsAustriaViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List funder types according to Statistics Austria.
 
@@ -183,7 +236,7 @@ class FunderTypeStatisticsAustriaViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelVi
 @docstring_format(
     model=models.Funder.__doc__, serializer=serializers.FunderSerializer.__doc__
 )
-class FunderViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
+class FunderViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List funders.
 
@@ -213,7 +266,7 @@ class FunderViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSe
     model=models.ProjectCategory.__doc__,
     serializer=serializers.ProjectCategorySerializer.__doc__,
 )
-class ProjectCategoryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class ProjectCategoryViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List project categories.
 
@@ -221,8 +274,25 @@ class ProjectCategoryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     {serializer}
     """
 
-    queryset = models.ProjectCategory.objects.filter(public=True)
+    queryset = models.ProjectCategory.objects.all()
     serializer_class = serializers.ProjectCategorySerializer
+    permission_classes = (AllowAny,)
+
+
+@docstring_format(
+    model=models.ProjectType.__doc__,
+    serializer=serializers.ProjectTypeSerializer.__doc__,
+)
+class ProjectTypeViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
+    """
+    List project types.
+
+    {model}
+    {serializer}
+    """
+
+    queryset = models.ProjectType.objects.all()
+    serializer_class = serializers.ProjectTypeSerializer
     permission_classes = (AllowAny,)
 
 
@@ -230,7 +300,7 @@ class ProjectCategoryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     model=models.ProjectResearch.__doc__,
     serializer=serializers.ProjectResearchSerializer.__doc__,
 )
-class ProjectResearchViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class ProjectResearchViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List project research.
 
@@ -247,7 +317,7 @@ class ProjectResearchViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     model=models.ProjectPartnerFunction.__doc__,
     serializer=serializers.ProjectPartnerFunctionSerializer.__doc__,
 )
-class ProjectPartnerFunctionViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class ProjectPartnerFunctionViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List project partner functions.
 
@@ -263,25 +333,29 @@ class ProjectPartnerFunctionViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet
 @docstring_format(
     model=models.ProjectStudy.__doc__,
     serializer=serializers.ProjectStudySerializer.__doc__,
+    filter=filters.ProjectStudyFilter.__doc__,
 )
-class ProjectStudyViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class ProjectStudyViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List project studies.
 
     {model}
     {serializer}
+    {filter}
     """
 
     queryset = models.ProjectStudy.objects.all()
     serializer_class = serializers.ProjectStudySerializer
     permission_classes = (AllowAny,)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filter_class = filters.ProjectStudyFilter
 
 
 @docstring_format(
     model=models.ProjectEvent.__doc__,
     serializer=serializers.ProjectEventSerializer.__doc__,
 )
-class ProjectEventViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class ProjectEventViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List project events.
 
@@ -298,7 +372,7 @@ class ProjectEventViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     model=models.ProjectGrant.__doc__,
     serializer=serializers.ProjectGrantSerializer.__doc__,
 )
-class ProjectGrantViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class ProjectGrantViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List project grants.
 
@@ -315,7 +389,7 @@ class ProjectGrantViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     model=models.ProjectStatus.__doc__,
     serializer=serializers.ProjectStatusSerializer.__doc__,
 )
-class ProjectStatusViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class ProjectStatusViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List project status.
 
@@ -323,7 +397,7 @@ class ProjectStatusViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     {serializer}
     """
 
-    queryset = models.ProjectStatus.objects.filter(public=True)
+    queryset = models.ProjectStatus.objects.all()
     serializer_class = serializers.ProjectStatusSerializer
     permission_classes = (AllowAny,)
 
@@ -333,7 +407,7 @@ class ProjectStatusViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     serializer=serializers.ProjectSerializer.__doc__,
     filter=filters.ProjectFilter.__doc__,
 )
-class ProjectViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
+class ProjectViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List projects.
 
@@ -342,7 +416,7 @@ class ProjectViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewS
     {filter}
     """
 
-    queryset = models.Project.objects.filter(status__public=True, category__public=True)
+    queryset = models.Project.objects.all()
     serializer_class = serializers.ProjectSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_class = filters.ProjectFilter
@@ -356,6 +430,7 @@ class ProjectViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewS
     permit_list_expands = (
         "organization",
         "category",
+        "type",
         "partner_function",
         "manager",
         "contact",
@@ -369,6 +444,28 @@ class ProjectViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewS
         "program",
     )
 
+    def get_serializer_class(self):
+        if self.request.user:
+            if self.request.user.has_perms(
+                settings.RESEARCH_PROJECT_UNRESTRICTED_PERMS
+            ):
+                return serializers.UnrestrictedProjectSerializer
+        return self.serializer_class
+
+    def get_serializer_context(self):
+        return {"request": self.request}
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.user:
+            if self.request.user.has_perms(
+                settings.RESEARCH_PROJECT_UNRESTRICTED_PERMS
+            ):
+                return queryset
+        return queryset.filter(
+            status__public=True, type__public=True, publish=True, visible=True
+        )
+
 
 class ProjectSearchViewSet(HaystackViewSet):
     index_models = [models.Project]
@@ -380,7 +477,7 @@ class ProjectSearchViewSet(HaystackViewSet):
     model=models.PublicationAuthorship.__doc__,
     serializer=serializers.PublicationAuthorshipSerializer.__doc__,
 )
-class PublicationAuthorshipViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class PublicationAuthorshipViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List publication authorships.
 
@@ -397,7 +494,7 @@ class PublicationAuthorshipViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet)
     model=models.PublicationCategory.__doc__,
     serializer=serializers.PublicationCategorySerializer.__doc__,
 )
-class PublicationCategoryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class PublicationCategoryViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List publication categories.
 
@@ -414,7 +511,7 @@ class PublicationCategoryViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     model=models.PublicationDocument.__doc__,
     serializer=serializers.PublicationDocumentSerializer.__doc__,
 )
-class PublicationDocumentViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
+class PublicationDocumentViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     List publication documents.
 
@@ -432,7 +529,7 @@ class PublicationDocumentViewSet(ReadOnlyETAGCacheMixin, ReadOnlyModelViewSet):
     serializer=serializers.PublicationSerializer.__doc__,
     filter=filters.PublicationFilter.__doc__,
 )
-class PublicationViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
+class PublicationViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List publications.
 
@@ -492,9 +589,7 @@ class PublicationSearchViewSet(HaystackViewSet):
     serializer=serializers.BiddingDeadlineSerializer.__doc__,
     filter=filters.BiddingDeadlineFilter.__doc__,
 )
-class BiddingDeadlineViewSet(
-    ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet
-):
+class BiddingDeadlineViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List bidding deadlines.
 
@@ -518,7 +613,7 @@ class BiddingDeadlineViewSet(
     filter=filters.BiddingEndowmentFilter.__doc__,
 )
 class BiddingEndowmentViewSet(
-    ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet
+    CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet
 ):
     """
     List bidding endowments.
@@ -541,7 +636,7 @@ class BiddingEndowmentViewSet(
     serializer=serializers.BiddingSerializer.__doc__,
     filter=filters.BiddingFilter.__doc__,
 )
-class BiddingViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
+class BiddingViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List biddings.
 
@@ -569,7 +664,7 @@ class BiddingViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewS
     serializer=serializers.PartnerTypeIntellectualCapitalAccountingSerializer.__doc__,
 )
 class PartnerTypeIntellectualCapitalAccountingViewSet(
-    ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet
+    CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet
 ):
     """
     List partner types according to intellectual capital accounting.
@@ -589,7 +684,7 @@ class PartnerTypeIntellectualCapitalAccountingViewSet(
     serializer=serializers.PartnerSerializer.__doc__,
     filter=filters.PartnerFilter.__doc__,
 )
-class PartnerViewSet(ReadOnlyETAGCacheMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
+class PartnerViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     """
     List partners.
 

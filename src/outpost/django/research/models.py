@@ -5,12 +5,120 @@ from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField, HStoreField
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
-from memoize import memoize
+from treebeard.al_tree import AL_Node
 
 logger = logging.getLogger(__name__)
 
 
-class Classification(models.Model):
+class PredominantFunder(models.Model):
+    """
+    Predominant funder.
+
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of predominant funder, defined by language.
+    """
+
+    name = HStoreField()
+
+    class Meta:
+        managed = False
+        db_table = "research_predominant_funder"
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.name.get("de")
+
+
+class LegalBasis(models.Model):
+    """
+    Legal basis.
+
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of legal basis, defined by language.
+    """
+
+    name = HStoreField()
+
+    class Meta:
+        managed = False
+        db_table = "research_legal_basis"
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.name.get("de")
+
+
+class Field(models.Model):
+    """
+    Research field.
+
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of research field, defined by language.
+
+    ### `short` (`string`)
+    Short identifier.
+    """
+
+    name = HStoreField()
+    short = models.CharField(max_length=12, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "research_field"
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.name.get("de")
+
+
+class ResearchType(models.Model):
+    """
+    Research type.
+
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of research field, defined by language.
+    """
+
+    name = HStoreField()
+
+    class Meta:
+        managed = False
+        db_table = "research_research_type"
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.name.get("de")
+
+
+class Classification(AL_Node):
     """
     Classification of a person as per (ÖFOS2012)[https://www.data.gv.at/katalog/dataset/stat_ofos-2012].
 
@@ -27,12 +135,24 @@ class Classification(models.Model):
     """
 
     name = HStoreField()
+    parent = models.ForeignKey(
+        "self",
+        models.SET_NULL,
+        related_name="children_set",
+        db_constraint=False,
+        db_index=False,
+        null=True,
+        blank=True,
+    )
     persons = models.ManyToManyField(
         "campusonline.Person",
         db_table="research_classification_person",
         db_constraint=False,
         related_name="classifications",
     )
+    level = models.PositiveSmallIntegerField()
+
+    node_order_by = ["id"]
 
     class Meta:
         managed = False
@@ -192,7 +312,7 @@ class Language(models.Model):
     ISO code of language.
     """
 
-    name = models.CharField(max_length=256, blank=True, null=True)
+    name = HStoreField()
     iso = models.CharField(max_length=2, blank=True, null=True)
 
     class Meta:
@@ -203,7 +323,7 @@ class Language(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name
+        return self.name.get("de")
 
 
 class FunderCategory(models.Model):
@@ -340,8 +460,8 @@ class ProjectCategory(models.Model):
     Names of project Category, defined by language.
     """
 
-    name = models.CharField(max_length=256, blank=True, null=True)
-    public = models.BooleanField()
+    name = HStoreField()
+    third_party_funding_policy = models.BooleanField()
 
     class Meta:
         managed = False
@@ -351,12 +471,37 @@ class ProjectCategory(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name
+        return self.name.get("de")
 
 
-class DjangoProjectCategory(models.Model):
+class ProjectType(models.Model):
+    """
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of project Type, defined by language.
+    """
+
+    name = HStoreField()
+    public = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = "research_projecttype"
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.name.get("de")
+
+
+class DjangoProjectType(models.Model):
     id = models.OneToOneField(
-        "ProjectCategory",
+        "ProjectType",
         models.DO_NOTHING,
         db_column="id",
         db_constraint=False,
@@ -385,7 +530,7 @@ class DjangoProjectCategory(models.Model):
         MaterializedViewTasks.refresh.apply_async((mv.pk,), queue="maintainance")
 
 
-post_save.connect(DjangoProjectCategory.update, sender=DjangoProjectCategory)
+post_save.connect(DjangoProjectType.update, sender=DjangoProjectType)
 
 
 class ProjectResearch(models.Model):
@@ -399,7 +544,7 @@ class ProjectResearch(models.Model):
     Names of project research type, defined by language.
     """
 
-    name = models.CharField(max_length=256, blank=True, null=True)
+    name = HStoreField()
 
     class Meta:
         managed = False
@@ -409,7 +554,7 @@ class ProjectResearch(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name
+        return self.name.get("de")
 
 
 class ProjectPartnerFunction(models.Model):
@@ -423,7 +568,7 @@ class ProjectPartnerFunction(models.Model):
     Names of project partner function, defined by language.
     """
 
-    name = models.CharField(max_length=256, blank=True, null=True)
+    name = HStoreField()
 
     class Meta:
         managed = False
@@ -447,7 +592,8 @@ class ProjectStudy(models.Model):
     Names of project study, defined by language.
     """
 
-    name = models.CharField(max_length=256, blank=True, null=True)
+    name = HStoreField()
+    active = models.BooleanField()
 
     class Meta:
         managed = False
@@ -457,7 +603,7 @@ class ProjectStudy(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name
+        return self.name.get("de")
 
 
 class ProjectEvent(models.Model):
@@ -471,7 +617,7 @@ class ProjectEvent(models.Model):
     Names of project event, defined by language.
     """
 
-    name = models.CharField(max_length=256, blank=True, null=True)
+    name = HStoreField()
 
     class Meta:
         managed = False
@@ -481,7 +627,7 @@ class ProjectEvent(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name
+        return self.name.get("de")
 
 
 class ProjectGrant(models.Model):
@@ -495,7 +641,7 @@ class ProjectGrant(models.Model):
     Names of project grant, defined by language.
     """
 
-    name = models.CharField(max_length=256, blank=True, null=True)
+    name = HStoreField()
 
     class Meta:
         managed = False
@@ -505,7 +651,7 @@ class ProjectGrant(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name
+        return self.name.get("de")
 
 
 class ProjectStatus(models.Model):
@@ -620,7 +766,10 @@ class Project(models.Model):
         blank=True,
     )
     category = models.ForeignKey(
-        "ProjectCategory", models.SET_NULL, db_constraint=False, null=True, blank=True
+        "ProjectCategory", models.DO_NOTHING, db_constraint=False, null=True, blank=True
+    )
+    type = models.ForeignKey(
+        "ProjectType", models.DO_NOTHING, db_constraint=False, null=True, blank=True
     )
     short = models.CharField(max_length=256, blank=True, null=True)
     title = HStoreField()
@@ -682,13 +831,58 @@ class Project(models.Model):
         "Program", models.SET_NULL, db_constraint=False, null=True, blank=True
     )
     subprogram = models.TextField(blank=True, null=True)
+    publish = models.BooleanField()
+    visible = models.BooleanField()
+    funder_projectcode = models.CharField(max_length=150, null=True, blank=True)
+    ethics_committee = models.CharField(max_length=50, null=True, blank=True)
+    gender_studies = models.BooleanField()
+    clinical_trial = models.BooleanField()
+    invesitgator_init = models.BooleanField()
+    legalbasis = models.ForeignKey(
+        LegalBasis, models.SET_NULL, db_constraint=False, null=True, blank=True
+    )
+    project_total_requested = models.DecimalField(max_digits=10, decimal_places=2)
+    project_total_approved = models.DecimalField(max_digits=10, decimal_places=2)
+    predominant_funder = models.ForeignKey(
+        PredominantFunder, models.SET_NULL, db_constraint=False, null=True, blank=True
+    )
+    project_management_accountable = models.ForeignKey(
+        "campusonline.Person",
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    internal_order = models.CharField(max_length=20, null=True, blank=True)
+    parent = models.ForeignKey(
+        "Project",
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name="children",
+    )
+    co_accountable = models.ForeignKey(
+        "campusonline.Person",
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    zmf_usage = models.BooleanField()
+    biobank_usage = models.BooleanField()
+    biomed_research = models.BooleanField()
+    commercial = models.BooleanField()
+    edudract_number = models.CharField(max_length=16, null=True, blank=True)
 
     class Meta:
         managed = False
         db_table = "research_project"
 
     class Refresh:
-        interval = 86400
+        interval = 3600
 
     def __str__(self):
         return self.title.get("de")

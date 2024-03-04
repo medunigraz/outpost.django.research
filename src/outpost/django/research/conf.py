@@ -10,6 +10,7 @@ class ResearchAppConf(AppConf):
     PUBMED_AUTHOR_TOKEN = "[Author]"
     PUBMED_PDAT_TOKEN = "[PDAT]"
     PUBMED_XPATH_PUBMEDARTICLE_MEDLINECITATION = "PubmedArticle/MedlineCitation/"
+    PROJECT_UNRESTRICTED_PERMS = (None,)
 
     class Meta:
         prefix = "research"
