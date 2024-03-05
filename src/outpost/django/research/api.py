@@ -8,8 +8,13 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from . import (
+    filters,
+    key_constructors,
+    models,
+    serializers,
+)
 from .conf import settings
-from . import filters, models, serializers
 
 
 @docstring_format(
@@ -442,6 +447,12 @@ class ProjectViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
         "language",
         "funders",
         "program",
+    )
+    object_cache_key_func = key_constructors.PermissionDetailKeyConstructor(
+        params={"permission": settings.RESEARCH_PROJECT_UNRESTRICTED_PERMS}
+    )
+    list_cache_key_func = key_constructors.PermissionListKeyConstructor(
+        params={"permission": settings.RESEARCH_PROJECT_UNRESTRICTED_PERMS}
     )
 
     def get_serializer_class(self):
