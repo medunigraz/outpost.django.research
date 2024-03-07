@@ -93,7 +93,6 @@ class PublicationFilter(filterset.FilterSet):
       - `doi`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`
       - `pmc`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`
       - `organization_authorship`: `in`
-      - `organization_authorship__assigned`: `gt`, `gte`, `lt`, `lte`, `date`
       - `impact`: `isnull`, `gt`, `gte`, `lt`, `lte`
       - `imported`: `isnull`, `gt`, `gte`, `lt`, `lte`, `date`
     """
