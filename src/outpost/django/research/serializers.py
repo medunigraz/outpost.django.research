@@ -2,9 +2,15 @@ import logging
 
 from drf_haystack.serializers import HaystackSerializer
 from rest_flex_fields import FlexFieldsModelSerializer
-from rest_framework.serializers import CharField, PrimaryKeyRelatedField
+from rest_framework.serializers import (
+    CharField,
+    PrimaryKeyRelatedField,
+)
 
-from . import models, search_indexes
+from . import (
+    models,
+    search_indexes,
+)
 
 logger = logging.getLogger(__name__)
 

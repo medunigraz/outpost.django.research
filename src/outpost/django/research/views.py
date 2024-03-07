@@ -5,7 +5,10 @@ from xml.etree import ElementTree
 import pyodbc
 import requests
 from braces.views import CsrfExemptMixin
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import (
+    HttpResponse,
+    HttpResponseBadRequest,
+)
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import View
 from more_itertools import chunked

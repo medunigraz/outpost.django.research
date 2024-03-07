@@ -2,7 +2,10 @@ import logging
 from textwrap import shorten
 
 from django.contrib.gis.db import models
-from django.contrib.postgres.fields import ArrayField, HStoreField
+from django.contrib.postgres.fields import (
+    ArrayField,
+    HStoreField,
+)
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 from treebeard.al_tree import AL_Node

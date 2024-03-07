@@ -1,7 +1,10 @@
 from celery_haystack.indexes import CelerySearchIndex
 from haystack import indexes
 
-from .models import Project, Publication
+from .models import (
+    Project,
+    Publication,
+)
 
 
 class ProjectIndex(CelerySearchIndex, indexes.Indexable):
