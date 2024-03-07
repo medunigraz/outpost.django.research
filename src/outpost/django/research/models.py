@@ -995,7 +995,6 @@ class PublicationOrganization(models.Model):
         null=True,
         blank=True,
     )
-    assigned = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
