@@ -137,14 +137,6 @@ class PublicationFilter(filterset.FilterSet):
             ),
             "persons": ("exact",),
             "organizations": ("exact",),
-            "organizations__assigned": (
-                "exact",
-                "gt",
-                "lt",
-                "gte",
-                "lte",
-                "date",
-            ),
             "impactfactor": (
                 "exact",
                 "isnull",
