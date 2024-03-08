@@ -53,6 +53,7 @@ class LegalBasis(models.Model):
     """
 
     name = HStoreField()
+    active = models.BooleanField()
 
     class Meta:
         managed = False

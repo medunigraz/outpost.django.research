@@ -508,7 +508,8 @@ class Migration(migrations.Migration):
             CREATE FOREIGN TABLE research.rechtsgrundlage (
                 RECHTSGRUNDLAGE_ID integer,
                 RECHTSGRUNDLAGE_DE varchar,
-                RECHTSGRUNDLAGE_EN varchar
+                RECHTSGRUNDLAGE_EN varchar,
+                AKTIV_JN varchar
             )
             SERVER research
             OPTIONS (schema 'API', table 'RECHTSGRUNDLAGE_L');
@@ -536,7 +537,8 @@ class Migration(migrations.Migration):
                 HSTORE(
                     ARRAY['de', 'en'],
                     ARRAY[rechtsgrundlage.rechtsgrundlage_de::text, rechtsgrundlage.rechtsgrundlage_en::text]
-                ) as name
+                ) as name,
+                coalesce(lower(rechtsgrundlage.aktiv_jn) = 'j', false) AS active
             FROM research.rechtsgrundlage
             WITH DATA;
             CREATE UNIQUE INDEX research_legal_basis_id_idx ON public.research_legal_basis (id);

@@ -35,7 +35,9 @@ class PredominantFunderViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
 
 @docstring_format(
-    model=models.LegalBasis.__doc__, serializer=serializers.LegalBasisSerializer.__doc__
+    model=models.LegalBasis.__doc__,
+    serializer=serializers.LegalBasisSerializer.__doc__,
+    filter=filters.LegalBasisFilter.__doc__,
 )
 class LegalBasisViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
@@ -43,11 +45,14 @@ class LegalBasisViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
     {model}
     {serializer}
+    {filter}
     """
 
     queryset = models.LegalBasis.objects.all()
     serializer_class = serializers.LegalBasisSerializer
     permission_classes = (AllowAny,)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filter_class = filters.LegalBasisFilter
 
 
 @docstring_format(
