@@ -51,7 +51,9 @@ class LegalBasisViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
 
 @docstring_format(
-    model=models.Field.__doc__, serializer=serializers.FieldSerializer.__doc__
+    model=models.Field.__doc__,
+    serializer=serializers.FieldSerializer.__doc__,
+    filter=filters.FieldFilter.__doc__,
 )
 class FieldViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
@@ -59,11 +61,14 @@ class FieldViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
     {model}
     {serializer}
+    {filter}
     """
 
     queryset = models.Field.objects.all()
     serializer_class = serializers.FieldSerializer
     permission_classes = (AllowAny,)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filter_class = filters.FieldFilter
 
 
 @docstring_format(
@@ -125,6 +130,7 @@ class ClassificationViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
     {model}
     {serializer}
+    {filter}
     """
 
     queryset = models.Classification.objects.all()

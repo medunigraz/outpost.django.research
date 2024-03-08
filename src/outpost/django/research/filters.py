@@ -351,3 +351,23 @@ class ProjectStudyFilter(filterset.FilterSet):
         fields = {
             "active": ("exact",),
         }
+
+
+class FieldFilter(filterset.FilterSet):
+    """
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    Possible exact filters:
+
+      - `active`
+    """
+
+    class Meta:
+        model = models.Field
+        fields = {
+            "active": ("exact",),
+        }
