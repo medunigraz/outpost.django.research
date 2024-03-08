@@ -826,10 +826,10 @@ class Migration(migrations.Migration):
                 projektsumme_beantragt AS project_total_requested,
                 projektsumme_genehmigt AS project_total_approved,
                 ueberwiegende_finanzierung_id AS predominant_funder_id,
-                pm_verantwortlicher_id AS project_management_accountable_id,
+                co_p_pma.pers_nr::integer AS project_management_accountable_id,
                 innenauftrag_nr AS internal_order,
                 projekt_id_m AS parent_id,
-                co_verantwortlicher_id AS co_accountable_id,
+                co_p_ca.pers_nr::integer AS co_accountable_id,
                 COALESCE(LOWER(zmf_nutzung_ja_nein) = 'ja'::text, false) AS zmf_usage,
                 COALESCE(LOWER(biobank_nutzung_ja_nein) = 'ja'::text, false) AS biobank_usage,
                 COALESCE(LOWER(biomed_forschung_ja_nein) = 'ja'::text, false) AS biomed_research,
@@ -838,6 +838,8 @@ class Migration(migrations.Migration):
             FROM research.projekt
                 LEFT JOIN campusonline.personen co_p_m ON projekt.projektleiter_id::integer = co_p_m.pers_nr::integer
                 LEFT JOIN campusonline.personen co_p_c ON projekt.kontaktperson_id::integer = co_p_c.pers_nr::integer
+                LEFT JOIN campusonline.personen co_p_pma ON projekt.pm_verantwortlicher_id::integer = co_p_pma.pers_nr::integer
+                LEFT JOIN campusonline.personen co_p_ca ON projekt.co_verantwortlicher_id::integer = co_p_ca.pers_nr::integer
                 JOIN campusonline.organisationen co_o ON projekt.orgeinheit_id::integer = co_o.nr::integer
             WITH DATA;
             CREATE UNIQUE INDEX research_project_id_idx ON public.research_project USING btree (id);
