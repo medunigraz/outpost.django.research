@@ -82,7 +82,7 @@ class Field(models.Model):
     """
 
     name = HStoreField()
-    short = models.CharField(max_length=12, blank=True, null=True)
+    active = models.BooleanField()
 
     class Meta:
         managed = False
