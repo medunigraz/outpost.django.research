@@ -522,6 +522,24 @@ class Migration(migrations.Migration):
             SERVER research
             OPTIONS (schema 'API', table 'UEBERWIEGENDE_FINANZIERUNG_L');
 
+            CREATE FOREIGN TABLE research.funktion_in_projekt (
+                FUNKTION_IN_PROJEKT_ID integer,
+                FUNKTION_IN_PROJEKT_DE varchar,
+                FUNKTION_IN_PROJEKT_EN varchar
+            )
+            SERVER research
+            OPTIONS (schema 'API', table 'FUNKTION_IN_PROJEKT_L');
+
+            CREATE MATERIALIZED VIEW public.research_projectfunction AS SELECT
+                funktion_in_projekt.funktion_in_projekt_id AS id,
+                HSTORE(
+                    ARRAY['de', 'en'],
+                    ARRAY[funktion_in_projekt.funktion_in_projekt_de::text, funktion_in_projekt.funktion_in_projekt_en::text]
+                ) as name
+            FROM research.funktion_in_projekt
+            WITH DATA;
+            CREATE UNIQUE INDEX research_projectfunction_id_idx ON public.research_projectfunction (id);
+
             CREATE MATERIALIZED VIEW public.research_predominant_funder AS SELECT
                 ueberwiegende_finanzierung.ueberwiegende_finanzierung_id AS id,
                 HSTORE(
@@ -1077,238 +1095,243 @@ class Migration(migrations.Migration):
             CREATE INDEX research_publicationorganization_publication_id_idx ON public.research_publicationorganization USING btree (publication_id);
             """,
             """
-            DROP INDEX research_predominant_funder_id_idx;
-            DROP MATERIALIZED VIEW public.research_predominant_funder;
-
-            DROP INDEX research_legal_basis_id_idx;
-            DROP MATERIALIZED VIEW public.research_legal_basis;
-
-            DROP INDEX research_research_type_id_idx;
-            DROP MATERIALIZED VIEW public.research_research_type;
-
-            DROP INDEX research_field_id_idx;
-            DROP MATERIALIZED VIEW public.research_field;
-
-            DROP INDEX research_bidding_id_idx;
-            DROP MATERIALIZED VIEW public.research_bidding;
-
-            DROP INDEX research_bidding_funder_idx;
-            DROP MATERIALIZED VIEW public.research_bidding_funder;
-
-            DROP INDEX research_biddingdeadline_id_idx;
-            DROP INDEX research_biddingdeadline_bidding_id_idx;
-            DROP MATERIALIZED VIEW public.research_biddingdeadline;
+            DROP INDEX IF EXISTS research_predominant_funder_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_predominant_funder;
+
+            DROP INDEX IF EXISTS research_legal_basis_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_legal_basis;
+
+            DROP INDEX IF EXISTS research_research_type_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_research_type;
+
+            DROP INDEX IF EXISTS research_field_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_field;
+
+            DROP INDEX IF EXISTS research_bidding_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_bidding;
+
+            DROP INDEX IF EXISTS research_bidding_funder_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_bidding_funder;
+
+            DROP INDEX IF EXISTS research_biddingdeadline_id_idx;
+            DROP INDEX IF EXISTS research_biddingdeadline_bidding_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_biddingdeadline;
 
-            DROP INDEX research_biddingendowment_id_idx;
-            DROP INDEX research_biddingendowment_bidding_id_idx;
-            DROP MATERIALIZED VIEW public.research_biddingendowment;
-
-            DROP INDEX research_classification_id_idx;
-            DROP INDEX research_classification_parent_id_idx;
-            DROP MATERIALIZED VIEW public.research_classification;
-
-            DROP INDEX research_classification_person_idx;
-            DROP MATERIALIZED VIEW public.research_classification_person;
-
-            DROP INDEX research_education_id_idx;
-            DROP INDEX research_education_person_id_idx;
-            DROP MATERIALIZED VIEW public.research_education;
-
-            DROP INDEX research_expertise_id_idx;
-            DROP INDEX research_expertise_person_id_idx;
-            DROP MATERIALIZED VIEW public.research_expertise;
-
-            DROP INDEX research_funder_id_idx;
-            DROP INDEX research_funder_country_id_idx;
-            DROP INDEX research_funder_category_id_idx;
-            DROP INDEX research_funder_patron_idx;
-            DROP INDEX research_funder_patron_associate_professor_idx;
-            DROP INDEX research_funder_patron_peer_review_idx;
-            DROP MATERIALIZED VIEW public.research_funder;
-
-            DROP INDEX research_fundercategory_id_idx;
-            DROP MATERIALIZED VIEW public.research_fundercategory;
+            DROP INDEX IF EXISTS research_biddingendowment_id_idx;
+            DROP INDEX IF EXISTS research_biddingendowment_bidding_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_biddingendowment;
+
+            DROP INDEX IF EXISTS research_classification_id_idx;
+            DROP INDEX IF EXISTS research_classification_parent_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_classification;
+
+            DROP INDEX IF EXISTS research_classification_person_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_classification_person;
+
+            DROP INDEX IF EXISTS research_education_id_idx;
+            DROP INDEX IF EXISTS research_education_person_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_education;
+
+            DROP INDEX IF EXISTS research_expertise_id_idx;
+            DROP INDEX IF EXISTS research_expertise_person_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_expertise;
+
+            DROP INDEX IF EXISTS research_funder_id_idx;
+            DROP INDEX IF EXISTS research_funder_country_id_idx;
+            DROP INDEX IF EXISTS research_funder_category_id_idx;
+            DROP INDEX IF EXISTS research_funder_patron_idx;
+            DROP INDEX IF EXISTS research_funder_patron_associate_professor_idx;
+            DROP INDEX IF EXISTS research_funder_patron_peer_review_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_funder;
+
+            DROP INDEX IF EXISTS research_fundercategory_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_fundercategory;
+
+            DROP INDEX IF EXISTS research_fundertypeintellectualcapitalaccounting_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_fundertypeintellectualcapitalaccounting;
 
-            DROP INDEX research_fundertypeintellectualcapitalaccounting_id_idx;
-            DROP MATERIALIZED VIEW public.research_fundertypeintellectualcapitalaccounting;
+            DROP INDEX IF EXISTS research_fundertypestatisticsaustria_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_fundertypestatisticsaustria;
 
-            DROP INDEX research_fundertypestatisticsaustria_id_idx;
-            DROP MATERIALIZED VIEW public.research_fundertypestatisticsaustria;
+            DROP INDEX IF EXISTS research_knowledge_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_knowledge;
 
-            DROP INDEX research_knowledge_id_idx;
-            DROP MATERIALIZED VIEW public.research_knowledge;
+            DROP INDEX IF EXISTS research_language_id_idx;
+            DROP INDEX IF EXISTS research_language_iso_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_language;
 
-            DROP INDEX research_language_id_idx;
-            DROP INDEX research_language_iso_idx;
-            DROP MATERIALIZED VIEW public.research_language;
+            DROP INDEX IF EXISTS research_partner_id_idx;
+            DROP INDEX IF EXISTS research_partner_country_id_idx;
+            DROP INDEX IF EXISTS research_partner_typeintellectualcapitalaccounting_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_partner;
 
-            DROP INDEX research_partner_id_idx;
-            DROP INDEX research_partner_country_id_idx;
-            DROP INDEX research_partner_typeintellectualcapitalaccounting_id_idx;
-            DROP MATERIALIZED VIEW public.research_partner;
+            DROP INDEX IF EXISTS research_partnertypeintellectualcapitalaccounting_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_partnertypeintellectualcapitalaccounting;
 
-            DROP INDEX research_partnertypeintellectualcapitalaccounting_id_idx;
-            DROP MATERIALIZED VIEW public.research_partnertypeintellectualcapitalaccounting;
+            DROP INDEX IF EXISTS research_program_id_idx;
+            DROP INDEX IF EXISTS research_program_funder_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_program;
 
-            DROP INDEX research_program_id_idx;
-            DROP INDEX research_program_funder_id_idx;
-            DROP MATERIALIZED VIEW public.research_program;
+            DROP INDEX IF EXISTS research_project_id_idx;
+            DROP INDEX IF EXISTS research_project_organization_id_idx;
+            DROP INDEX IF EXISTS research_project_category_id_idx;
+            DROP INDEX IF EXISTS research_project_partner_function_id_idx;
+            DROP INDEX IF EXISTS research_project_manager_id_idx;
+            DROP INDEX IF EXISTS research_project_contact_id_idx;
+            DROP INDEX IF EXISTS research_project_status_id_idx;
+            DROP INDEX IF EXISTS research_project_grant_id_idx;
+            DROP INDEX IF EXISTS research_project_research_id_idx;
+            DROP INDEX IF EXISTS research_project_event_id_idx;
+            DROP INDEX IF EXISTS research_project_study_id_idx;
+            DROP INDEX IF EXISTS research_project_language_id_idx;
+            DROP INDEX IF EXISTS research_project_program_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_project;
 
-            DROP INDEX research_project_id_idx;
-            DROP INDEX research_project_organization_id_idx;
-            DROP INDEX research_project_category_id_idx;
-            DROP INDEX research_project_partner_function_id_idx;
-            DROP INDEX research_project_manager_id_idx;
-            DROP INDEX research_project_contact_id_idx;
-            DROP INDEX research_project_status_id_idx;
-            DROP INDEX research_project_grant_id_idx;
-            DROP INDEX research_project_research_id_idx;
-            DROP INDEX research_project_event_id_idx;
-            DROP INDEX research_project_study_id_idx;
-            DROP INDEX research_project_language_id_idx;
-            DROP INDEX research_project_program_id_idx;
-            DROP MATERIALIZED VIEW public.research_project;
+            DROP INDEX IF EXISTS research_project_funder_idx;
+            DROP INDEX IF EXISTS research_project_funder_funder_id_idx;
+            DROP INDEX IF EXISTS research_project_funder_project_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_project_funder;
 
-            DROP INDEX research_project_funder_idx;
-            DROP INDEX research_project_funder_funder_id_idx;
-            DROP INDEX research_project_funder_project_id_idx;
-            DROP MATERIALIZED VIEW public.research_project_funder;
+            DROP INDEX IF EXISTS research_projectcategory_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_projectcategory;
 
-            DROP INDEX research_projectcategory_id_idx;
-            DROP MATERIALIZED VIEW public.research_projectcategory;
+            DROP INDEX IF EXISTS research_projecttype_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_projecttype;
 
-            DROP INDEX research_projecttype_id_idx;
-            DROP MATERIALIZED VIEW public.research_projecttype;
+            DROP INDEX IF EXISTS research_projectevent_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_projectevent;
 
-            DROP INDEX research_projectevent_id_idx;
-            DROP MATERIALIZED VIEW public.research_projectevent;
+            DROP INDEX IF EXISTS research_projectgrant_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_projectgrant;
 
-            DROP INDEX research_projectgrant_id_idx;
-            DROP MATERIALIZED VIEW public.research_projectgrant;
+            DROP INDEX IF EXISTS research_projectpartnerfunction_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_projectpartnerfunction;
 
-            DROP INDEX research_projectpartnerfunction_id_idx;
-            DROP MATERIALIZED VIEW public.research_projectpartnerfunction;
+            DROP INDEX IF EXISTS research_projectresearch_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_projectresearch;
 
-            DROP INDEX research_projectresearch_id_idx;
-            DROP MATERIALIZED VIEW public.research_projectresearch;
+            DROP INDEX IF EXISTS research_projectstatus_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_projectstatus;
 
-            DROP INDEX research_projectstatus_id_idx;
-            DROP MATERIALIZED VIEW public.research_projectstatus;
+            DROP INDEX IF EXISTS research_projectstudy_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_projectstudy;
 
-            DROP INDEX research_projectstudy_id_idx;
-            DROP MATERIALIZED VIEW public.research_projectstudy;
+            DROP INDEX IF EXISTS research_publication_id_idx;
+            DROP INDEX IF EXISTS research_publication_category_id_idx;
+            DROP INDEX IF EXISTS research_publication_document_type_id_idx;
+            DROP INDEX IF EXISTS research_publication_impactfactor_idx;
+            DROP INDEX IF EXISTS research_publication_impactfactor_norm_idx;
+            DROP INDEX IF EXISTS research_publication_impactfactor_norm_super_idx;
+            DROP INDEX IF EXISTS research_publication_year_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_publication;
 
-            DROP INDEX research_publication_id_idx;
-            DROP INDEX research_publication_category_id_idx;
-            DROP INDEX research_publication_document_type_id_idx;
-            DROP INDEX research_publication_impactfactor_idx;
-            DROP INDEX research_publication_impactfactor_norm_idx;
-            DROP INDEX research_publication_impactfactor_norm_super_idx;
-            DROP INDEX research_publication_year_idx;
-            DROP MATERIALIZED VIEW public.research_publication;
+            DROP INDEX IF EXISTS research_publication_person_idx;
+            DROP INDEX IF EXISTS research_publication_person_person_id_idx;
+            DROP INDEX IF EXISTS research_publication_person_publication_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_publication_person;
 
-            DROP INDEX research_publication_person_idx;
-            DROP INDEX research_publication_person_person_id_idx;
-            DROP INDEX research_publication_person_publication_id_idx;
-            DROP MATERIALIZED VIEW public.research_publication_person;
+            DROP INDEX IF EXISTS research_publicationauthorship_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_publicationauthorship;
 
-            DROP INDEX research_publicationauthorship_id_idx;
-            DROP MATERIALIZED VIEW public.research_publicationauthorship;
+            DROP INDEX IF EXISTS research_publicationcategory_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_publicationcategory;
 
-            DROP INDEX research_publicationcategory_id_idx;
-            DROP MATERIALIZED VIEW public.research_publicationcategory;
+            DROP INDEX IF EXISTS research_publicationdocument_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_publicationdocument;
 
-            DROP INDEX research_publicationdocument_id_idx;
-            DROP MATERIALIZED VIEW public.research_publicationdocument;
+            DROP INDEX IF EXISTS research_publicationorganization_idx;
+            DROP INDEX IF EXISTS research_publicationorganization_organization_id_idx;
+            DROP INDEX IF EXISTS research_publicationorganization_publication_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_publicationorganization;
 
-            DROP INDEX research_publicationorganization_idx;
-            DROP INDEX research_publicationorganization_organization_id_idx;
-            DROP INDEX research_publicationorganization_publication_id_idx;
-            DROP MATERIALIZED VIEW public.research_publicationorganization;
+            DROP INDEX IF EXISTS research_projectfunction_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_projectfunction;
 
-            DROP FOREIGN TABLE research.ausschreibung;
+            DROP FOREIGN TABLE IF EXISTS research.ausschreibung;
 
-            DROP FOREIGN TABLE research.ausschreibung_deadline;
+            DROP FOREIGN TABLE IF EXISTS research.ausschreibung_deadline;
 
-            DROP FOREIGN TABLE research.ausschreibung_dotierung;
+            DROP FOREIGN TABLE IF EXISTS research.ausschreibung_dotierung;
 
-            DROP FOREIGN TABLE research.ausschreibung_geldgeber;
+            DROP FOREIGN TABLE IF EXISTS research.ausschreibung_geldgeber;
 
-            DROP FOREIGN TABLE research.forschung_art;
+            DROP FOREIGN TABLE IF EXISTS research.forschung_art;
 
-            DROP FOREIGN TABLE research.forschung_programm;
+            DROP FOREIGN TABLE IF EXISTS research.forschung_programm;
 
-            DROP FOREIGN TABLE research.geldgeber;
+            DROP FOREIGN TABLE IF EXISTS research.geldgeber;
 
-            DROP FOREIGN TABLE research.geldgeber_typ;
+            DROP FOREIGN TABLE IF EXISTS research.geldgeber_typ;
 
-            DROP FOREIGN TABLE research.geldgeber_typ_stataut;
+            DROP FOREIGN TABLE IF EXISTS research.geldgeber_typ_stataut;
 
-            DROP FOREIGN TABLE research.geldgeber_typ_wissbil;
+            DROP FOREIGN TABLE IF EXISTS research.geldgeber_typ_wissbil;
 
-            DROP FOREIGN TABLE research.klassifikation_oestat_2012;
+            DROP FOREIGN TABLE IF EXISTS research.klassifikation_oestat_2012;
 
-            DROP FOREIGN TABLE research.land;
+            DROP FOREIGN TABLE IF EXISTS research.land;
 
-            DROP FOREIGN TABLE research.org_partner_projektfunktion;
+            DROP FOREIGN TABLE IF EXISTS research.org_partner_projektfunktion;
 
-            DROP FOREIGN TABLE research.publikation_orgeinheit;
+            DROP FOREIGN TABLE IF EXISTS research.publikation_orgeinheit;
 
-            DROP FOREIGN TABLE research.partner;
+            DROP FOREIGN TABLE IF EXISTS research.partner;
 
-            DROP FOREIGN TABLE research.partner_typ_wb;
+            DROP FOREIGN TABLE IF EXISTS research.partner_typ_wb;
 
-            DROP FOREIGN TABLE research.person_fachkenntnis;
+            DROP FOREIGN TABLE IF EXISTS research.person_fachkenntnis;
 
-            DROP FOREIGN TABLE research.person_kenntnis;
+            DROP FOREIGN TABLE IF EXISTS research.person_kenntnis;
 
-            DROP FOREIGN TABLE research.person_klass_oestat_2012;
+            DROP FOREIGN TABLE IF EXISTS research.person_klass_oestat_2012;
 
-            DROP FOREIGN TABLE research.publikation_person;
+            DROP FOREIGN TABLE IF EXISTS research.publikation_person;
 
-            DROP FOREIGN TABLE research.person_weiterbildung;
+            DROP FOREIGN TABLE IF EXISTS research.person_weiterbildung;
 
-            DROP FOREIGN TABLE research.projekt;
+            DROP FOREIGN TABLE IF EXISTS research.projekt;
 
-            DROP FOREIGN TABLE research.projekt_geldgeber;
+            DROP FOREIGN TABLE IF EXISTS research.projekt_geldgeber;
 
-            DROP FOREIGN TABLE research.projekt_status;
+            DROP FOREIGN TABLE IF EXISTS research.projekt_status;
 
-            DROP FOREIGN TABLE research.projekt_typ;
+            DROP FOREIGN TABLE IF EXISTS research.projekt_typ;
 
-            DROP FOREIGN TABLE research.publikation;
+            DROP FOREIGN TABLE IF EXISTS research.publikation;
 
-            DROP FOREIGN TABLE research.publikation_autorenschaft;
+            DROP FOREIGN TABLE IF EXISTS research.publikation_autorenschaft;
 
-            DROP FOREIGN TABLE research.publikation_dokumenttyp;
+            DROP FOREIGN TABLE IF EXISTS research.publikation_dokumenttyp;
 
-            DROP FOREIGN TABLE research.publikation_typ;
+            DROP FOREIGN TABLE IF EXISTS research.publikation_typ;
 
-            DROP FOREIGN TABLE research.pubmed_suche_autoren;
+            DROP FOREIGN TABLE IF EXISTS research.pubmed_suche_autoren;
 
-            DROP FOREIGN TABLE research.pubmed_suche_foerderung;
+            DROP FOREIGN TABLE IF EXISTS research.pubmed_suche_foerderung;
 
-            DROP FOREIGN TABLE research.pubmed_suche_id_detail;
+            DROP FOREIGN TABLE IF EXISTS research.pubmed_suche_id_detail;
 
-            DROP FOREIGN TABLE research.pubmed_suche_ids;
+            DROP FOREIGN TABLE IF EXISTS research.pubmed_suche_ids;
 
-            DROP FOREIGN TABLE research.pubmed_suche_mesh;
+            DROP FOREIGN TABLE IF EXISTS research.pubmed_suche_mesh;
 
-            DROP FOREIGN TABLE research.sprache;
+            DROP FOREIGN TABLE IF EXISTS research.sprache;
 
-            DROP FOREIGN TABLE research.studie_art;
+            DROP FOREIGN TABLE IF EXISTS research.studie_art;
 
-            DROP FOREIGN TABLE research.veranstaltung_art;
+            DROP FOREIGN TABLE IF EXISTS research.veranstaltung_art;
 
-            DROP FOREIGN TABLE research.vergabe_art;
+            DROP FOREIGN TABLE IF EXISTS research.vergabe_art;
 
-            DROP FOREIGN TABLE research.projekt_typ_neu;
+            DROP FOREIGN TABLE IF EXISTS research.projekt_typ_neu;
 
-            DROP FOREIGN TABLE research.forschungsfelder;
+            DROP FOREIGN TABLE IF EXISTS research.forschungsfelder;
 
-            DROP FOREIGN TABLE research.rechtsgrundlage;
+            DROP FOREIGN TABLE IF EXISTS research.rechtsgrundlage;
 
-            DROP FOREIGN TABLE research.ueberwiegende_finanzierung;
+            DROP FOREIGN TABLE IF EXISTS research.ueberwiegende_finanzierung;
+
+            DROP FOREIGN TABLE IF EXISTS research.funktion_in_projekt;
 
             DROP SCHEMA research;
             """,

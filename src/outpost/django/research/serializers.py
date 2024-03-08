@@ -285,6 +285,12 @@ class ProjectResearchSerializer(FlexFieldsModelSerializer):
         fields = "__all__"
 
 
+class ProjectFunctionSerializer(FlexFieldsModelSerializer):
+    class Meta:
+        model = models.ProjectFunction
+        fields = "__all__"
+
+
 class ProjectPartnerFunctionSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.ProjectPartnerFunction

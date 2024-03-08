@@ -330,6 +330,23 @@ class ProjectResearchViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
 
 @docstring_format(
+    model=models.ProjectFunction.__doc__,
+    serializer=serializers.ProjectFunctionSerializer.__doc__,
+)
+class ProjectFunctionViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
+    """
+    List project functions.
+
+    {model}
+    {serializer}
+    """
+
+    queryset = models.ProjectFunction.objects.all()
+    serializer_class = serializers.ProjectFunctionSerializer
+    permission_classes = (AllowAny,)
+
+
+@docstring_format(
     model=models.ProjectPartnerFunction.__doc__,
     serializer=serializers.ProjectPartnerFunctionSerializer.__doc__,
 )

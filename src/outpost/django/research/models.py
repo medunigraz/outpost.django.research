@@ -561,6 +561,30 @@ class ProjectResearch(models.Model):
         return self.name.get("de")
 
 
+class ProjectFunction(models.Model):
+    """
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of project function, defined by language.
+    """
+
+    name = HStoreField()
+
+    class Meta:
+        managed = False
+        db_table = "research_projectfunction"
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.name.get("de")
+
+
 class ProjectPartnerFunction(models.Model):
     """
     ## Fields
