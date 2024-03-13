@@ -69,6 +69,11 @@ v1 = [
         "research-project-function",
     ),
     (
+        r"research/project:person",
+        api.ProjectPersonViewSet,
+        "research-project-person",
+    ),
+    (
         r"research/project:partnerfunction",
         api.ProjectPartnerFunctionViewSet,
         "research-project-partner-function",

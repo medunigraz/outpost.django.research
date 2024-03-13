@@ -391,3 +391,27 @@ class LegalBasisFilter(filterset.FilterSet):
         fields = {
             "active": ("exact",),
         }
+
+
+class ProjectPersonFilter(filterset.FilterSet):
+    """
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    Possible exact filters:
+
+      - `project`
+      - `person`
+      - `function`
+    """
+
+    class Meta:
+        model = models.ProjectPerson
+        fields = {
+            "project": ("exact",),
+            "person": ("exact",),
+            "function": ("exact",),
+        }

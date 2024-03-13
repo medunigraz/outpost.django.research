@@ -585,6 +585,57 @@ class ProjectFunction(models.Model):
         return self.name.get("de")
 
 
+class ProjectPerson(models.Model):
+    """
+    ## Fields
+
+    ### `project` (`integer`)
+    Foreign key to [funder](../funder).
+
+    ### `person` (`integer`)
+    Foreign key to [funder](../funder).
+
+    ### `function` (`integer`)
+    Foreign key to [funder](../funder).
+    """
+
+    id = models.TextField(primary_key=True)
+    project = models.ForeignKey(
+        "Project",
+        models.DO_NOTHING,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name="persons",
+    )
+    person = models.ForeignKey(
+        "campusonline.Person",
+        models.DO_NOTHING,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    function = models.ForeignKey(
+        "ProjectFunction",
+        models.DO_NOTHING,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name="persons",
+    )
+
+    class Meta:
+        managed = False
+        db_table = "research_project_person"
+
+    class Refresh:
+        interval = 3600
+
+    def __str__(self):
+        return self.projec
+
+
 class ProjectPartnerFunction(models.Model):
     """
     ## Fields

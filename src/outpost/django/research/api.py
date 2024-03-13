@@ -5,7 +5,7 @@ from outpost.django.base.filters import SimpleDjangoFilterBackend
 from outpost.django.base.mixins import CacheResponseMixin
 from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.filters import OrderingFilter
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from . import (
@@ -344,6 +344,52 @@ class ProjectFunctionViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     queryset = models.ProjectFunction.objects.all()
     serializer_class = serializers.ProjectFunctionSerializer
     permission_classes = (AllowAny,)
+
+
+@docstring_format(
+    model=models.ProjectPerson.__doc__,
+    serializer=serializers.ProjectPersonSerializer.__doc__,
+    filter=filters.ProjectPersonFilter.__doc__,
+)
+class ProjectPersonViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
+    """
+    List project persons with assinged functions.
+
+    {model}
+    {serializer}
+    {filter}
+    """
+
+    queryset = models.ProjectPerson.objects.all()
+    serializer_class = serializers.ProjectPersonSerializer
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filter_class = filters.ProjectPersonFilter
+    permission_classes = (IsAuthenticated,)
+    permit_list_expands = (
+        "project",
+        "person",
+        "function",
+    )
+    object_cache_key_func = key_constructors.PermissionDetailKeyConstructor(
+        params={"permission": settings.RESEARCH_PROJECT_UNRESTRICTED_PERMS}
+    )
+    list_cache_key_func = key_constructors.PermissionListKeyConstructor(
+        params={"permission": settings.RESEARCH_PROJECT_UNRESTRICTED_PERMS}
+    )
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.user:
+            if self.request.user.has_perms(
+                settings.RESEARCH_PROJECT_UNRESTRICTED_PERMS
+            ):
+                return queryset
+        return queryset.filter(
+            project__status__public=True,
+            project__type__public=True,
+            project__publish=True,
+            project__visible=True,
+        )
 
 
 @docstring_format(

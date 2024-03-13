@@ -291,6 +291,51 @@ class ProjectFunctionSerializer(FlexFieldsModelSerializer):
         fields = "__all__"
 
 
+class ProjectPersonSerializer(FlexFieldsModelSerializer):
+    """
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `project`
+     * `person`
+     * `function`
+
+    """
+
+    @property
+    def expandable_fields(self):
+        person = "PersonSerializer"
+        request = self.context.get("request", None)
+        if request:
+            if request.user:
+                if request.user.is_authenticated:
+                    person = "AuthenticatedPersonSerializer"
+        return {
+            "project": (
+                f"{self.__class__.__module__}.ProjectSerializer",
+                {"source": "project"},
+            ),
+            "person": (
+                f"outpost.django.campusonline.serializers.{person}",
+                {"source": "person"},
+            ),
+            "function": (
+                f"{self.__class__.__module__}.ProjectFunctionSerializer",
+                {"source": "function"},
+            ),
+        }
+
+    class Meta:
+        model = models.ProjectPerson
+        fields = "__all__"
+
+
 class ProjectPartnerFunctionSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.ProjectPartnerFunction

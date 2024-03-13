@@ -530,6 +530,27 @@ class Migration(migrations.Migration):
             SERVER research
             OPTIONS (schema 'API', table 'FUNKTION_IN_PROJEKT_L');
 
+            CREATE FOREIGN TABLE research.projekt_person (
+                PROJEKT_ID integer,
+                PERSON_ID integer,
+                FUNKTION_IN_PROJEKT_ID integer
+            )
+            SERVER research
+            OPTIONS (schema 'API', table 'PROJEKT_PERSON');
+
+            CREATE MATERIALIZED VIEW public.research_project_person AS SELECT
+                CONCAT_WS('-', projekt_person.projekt_id, co_p.pers_nr::integer, projekt_person.funktion_in_projekt_id) AS id,
+                projekt_person.projekt_id AS project_id,
+                co_p.pers_nr::integer AS person_id,
+                projekt_person.funktion_in_projekt_id AS function_id
+            FROM research.projekt_person
+                INNER JOIN campusonline.personen co_p ON projekt_person.person_id::integer = co_p.pers_nr::integer
+                INNER JOIN research.projekt r_p ON projekt_person.projekt_id::integer = r_p.projekt_id::integer
+            WITH DATA;
+            CREATE INDEX research_project_person_project_id_idx ON public.research_project_person (project_id);
+            CREATE INDEX research_project_person_person_id_idx ON public.research_project_person (person_id);
+            CREATE INDEX research_project_person_function_id_idx ON public.research_project_person (function_id);
+
             CREATE MATERIALIZED VIEW public.research_projectfunction AS SELECT
                 funktion_in_projekt.funktion_in_projekt_id AS id,
                 HSTORE(
@@ -1247,6 +1268,11 @@ class Migration(migrations.Migration):
             DROP INDEX IF EXISTS research_projectfunction_id_idx;
             DROP MATERIALIZED VIEW IF EXISTS public.research_projectfunction;
 
+            DROP INDEX IF EXISTS research_project_person_project_id_idx;
+            DROP INDEX IF EXISTS research_project_person_person_id_idx;
+            DROP INDEX IF EXISTS research_project_person_function_id_idx;
+            DROP MATERIALIZED VIEW IF EXISTS public.research_project_person;
+
             DROP FOREIGN TABLE IF EXISTS research.ausschreibung;
 
             DROP FOREIGN TABLE IF EXISTS research.ausschreibung_deadline;
@@ -1332,6 +1358,8 @@ class Migration(migrations.Migration):
             DROP FOREIGN TABLE IF EXISTS research.ueberwiegende_finanzierung;
 
             DROP FOREIGN TABLE IF EXISTS research.funktion_in_projekt;
+
+            DROP FOREIGN TABLE IF EXISTS research.projekt_person;
 
             DROP SCHEMA research;
             """,
