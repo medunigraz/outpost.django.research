@@ -521,6 +521,7 @@ class ProjectViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
         "language",
         "funders",
         "program",
+        "persons",
     )
     object_cache_key_func = key_constructors.PermissionDetailKeyConstructor(
         params={"permission": settings.RESEARCH_PROJECT_UNRESTRICTED_PERMS}
@@ -535,6 +536,7 @@ class ProjectViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
                 settings.RESEARCH_PROJECT_UNRESTRICTED_PERMS
             ):
                 return serializers.UnrestrictedProjectSerializer
+            return serializers.AuthenticatedProjectSerializer
         return self.serializer_class
 
     def get_serializer_context(self):

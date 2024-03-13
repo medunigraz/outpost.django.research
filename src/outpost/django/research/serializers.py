@@ -466,7 +466,24 @@ class ProjectSerializer(FlexFieldsModelSerializer):
         )
 
 
-class UnrestrictedProjectSerializer(ProjectSerializer):
+class AuthenticatedProjectSerializer(ProjectSerializer):
+    @property
+    def expandable_fields(self):
+        return {
+            **super().expandable_fields,
+            **{
+                "persons": (
+                    f"{self.__class__.__module__}.ProjectPersonSerializer",
+                    {"source": "persons", "many": True},
+                ),
+            },
+        }
+
+    class Meta(ProjectSerializer.Meta):
+        fields = ProjectSerializer.Meta.fields + ("persons",)
+
+
+class UnrestrictedProjectSerializer(AuthenticatedProjectSerializer):
     @property
     def expandable_fields(self):
         base = "outpost.django.campusonline.serializers"
@@ -496,8 +513,8 @@ class UnrestrictedProjectSerializer(ProjectSerializer):
             },
         }
 
-    class Meta(ProjectSerializer.Meta):
-        fields = ProjectSerializer.Meta.fields + (
+    class Meta(AuthenticatedProjectSerializer.Meta):
+        fields = AuthenticatedProjectSerializer.Meta.fields + (
             "gender_studies",
             "clinical_trial",
             "invesitgator_init",
