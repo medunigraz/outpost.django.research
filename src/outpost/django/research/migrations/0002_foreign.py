@@ -562,7 +562,7 @@ class Migration(migrations.Migration):
                 coalesce(lower(funktion_in_projekt.aktiv_jn) = 'j', false) AS active
             FROM research.funktion_in_projekt
             WITH DATA;
-            CREATE UNIQUE INDEX research_projectfunction_active_idx ON public.research_projectfunction (active);
+            CREATE INDEX research_projectfunction_active_idx ON public.research_projectfunction (active);
             CREATE UNIQUE INDEX research_projectfunction_id_idx ON public.research_projectfunction (id);
 
             CREATE MATERIALIZED VIEW public.research_predominant_funder AS SELECT
@@ -980,8 +980,8 @@ class Migration(migrations.Migration):
                 coalesce(lower(forschung_art.aktiv_jn) = 'j', false) AS active
             FROM research.forschung_art
             WITH DATA;
-            CREATE UNIQUE INDEX research_projectresearch_id_idx ON public.research_projectresearch USING btree (id);
             CREATE INDEX research_projectresearch_active_idx ON public.research_projectresearch (active);
+            CREATE UNIQUE INDEX research_projectresearch_id_idx ON public.research_projectresearch USING btree (id);
 
             CREATE MATERIALIZED VIEW public.research_projectstatus
             AS SELECT
