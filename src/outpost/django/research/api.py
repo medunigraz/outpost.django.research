@@ -315,6 +315,7 @@ class ProjectTypeViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 @docstring_format(
     model=models.ProjectResearch.__doc__,
     serializer=serializers.ProjectResearchSerializer.__doc__,
+    filter=filters.ProjectResearchFilter.__doc__,
 )
 class ProjectResearchViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
@@ -322,16 +323,20 @@ class ProjectResearchViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
     {model}
     {serializer}
+    {filter}
     """
 
     queryset = models.ProjectResearch.objects.all()
     serializer_class = serializers.ProjectResearchSerializer
     permission_classes = (AllowAny,)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filter_class = filters.ProjectResearchFilter
 
 
 @docstring_format(
     model=models.ProjectFunction.__doc__,
     serializer=serializers.ProjectFunctionSerializer.__doc__,
+    filter=filters.ProjectFunctionFilter.__doc__,
 )
 class ProjectFunctionViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
@@ -339,11 +344,14 @@ class ProjectFunctionViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
     {model}
     {serializer}
+    {filter}
     """
 
     queryset = models.ProjectFunction.objects.all()
     serializer_class = serializers.ProjectFunctionSerializer
     permission_classes = (AllowAny,)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filter_class = filters.ProjectFunctionFilter
 
 
 @docstring_format(

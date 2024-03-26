@@ -353,6 +353,46 @@ class ProjectStudyFilter(filterset.FilterSet):
         }
 
 
+class ProjectResearchFilter(filterset.FilterSet):
+    """
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    Possible exact filters:
+
+      - `active`
+    """
+
+    class Meta:
+        model = models.ProjectResearch
+        fields = {
+            "active": ("exact",),
+        }
+
+
+class ProjectFunctionFilter(filterset.FilterSet):
+    """
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    Possible exact filters:
+
+      - `active`
+    """
+
+    class Meta:
+        model = models.ProjectFunction
+        fields = {
+            "active": ("exact",),
+        }
+
+
 class FieldFilter(filterset.FilterSet):
     """
     ## Filters

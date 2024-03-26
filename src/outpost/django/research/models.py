@@ -546,9 +546,13 @@ class ProjectResearch(models.Model):
 
     ### `name` (`object`)
     Names of project research type, defined by language.
+
+    ### `active` (`boolean`)
+    Is project research active.
     """
 
     name = HStoreField()
+    active = models.BooleanField()
 
     class Meta:
         managed = False
@@ -570,9 +574,13 @@ class ProjectFunction(models.Model):
 
     ### `name` (`object`)
     Names of project function, defined by language.
+
+    ### `active` (`boolean`)
+    Is project function active.
     """
 
     name = HStoreField()
+    active = models.BooleanField()
 
     class Meta:
         managed = False
@@ -832,9 +840,6 @@ class Project(models.Model):
 
     ### `id` (`integer`)
     Primary key.
-
-    ### `name` (`object`)
-    Names of project function, defined by language.
     """
 
     organization = models.ForeignKey(

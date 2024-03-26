@@ -53,7 +53,8 @@ class Migration(migrations.Migration):
             CREATE FOREIGN TABLE research.forschung_art (
             forschung_art_id integer NULL,
             forschung_art_de varchar NULL,
-            forschung_art_en varchar NULL
+            forschung_art_en varchar NULL,
+            aktiv_jn varchar NULL
             )
             SERVER research
             OPTIONS (schema 'API', table 'FORSCHUNG_ART_L');
@@ -525,7 +526,8 @@ class Migration(migrations.Migration):
             CREATE FOREIGN TABLE research.funktion_in_projekt (
                 FUNKTION_IN_PROJEKT_ID integer,
                 FUNKTION_IN_PROJEKT_DE varchar,
-                FUNKTION_IN_PROJEKT_EN varchar
+                FUNKTION_IN_PROJEKT_EN varchar,
+                AKTIV_JN varchar
             )
             SERVER research
             OPTIONS (schema 'API', table 'FUNKTION_IN_PROJEKT_L');
@@ -556,9 +558,11 @@ class Migration(migrations.Migration):
                 HSTORE(
                     ARRAY['de', 'en'],
                     ARRAY[funktion_in_projekt.funktion_in_projekt_de::text, funktion_in_projekt.funktion_in_projekt_en::text]
-                ) as name
+                ) as name,
+                coalesce(lower(funktion_in_projekt.aktiv_jn) = 'j', false) AS active
             FROM research.funktion_in_projekt
             WITH DATA;
+            CREATE UNIQUE INDEX research_projectfunction_active_idx ON public.research_projectfunction (active);
             CREATE UNIQUE INDEX research_projectfunction_id_idx ON public.research_projectfunction (id);
 
             CREATE MATERIALIZED VIEW public.research_predominant_funder AS SELECT
@@ -583,11 +587,11 @@ class Migration(migrations.Migration):
             CREATE UNIQUE INDEX research_legal_basis_id_idx ON public.research_legal_basis (id);
 
             CREATE MATERIALIZED VIEW public.research_research_type AS SELECT
-            forschung_art.forschung_art_id AS id,
-            hstore(
-                ARRAY['de', 'en'],
-                ARRAY[forschung_art.forschung_art_de, forschung_art.forschung_art_en]
-            ) as name
+                forschung_art.forschung_art_id AS id,
+                hstore(
+                    ARRAY['de', 'en'],
+                    ARRAY[forschung_art.forschung_art_de, forschung_art.forschung_art_en]
+                ) as name
             FROM research.forschung_art
             WITH DATA;
             CREATE UNIQUE INDEX research_research_type_id_idx ON public.research_research_type (id);
@@ -937,8 +941,8 @@ class Migration(migrations.Migration):
             AS SELECT
                 veranstaltung_art.veranstaltung_art_id::integer AS id,
                 hstore(
-                ARRAY['de'::text, 'en'::text],
-                ARRAY[veranstaltung_art.veranstaltung_art_de::text, veranstaltung_art.veranstaltung_art_en::text]
+                    ARRAY['de'::text, 'en'::text],
+                    ARRAY[veranstaltung_art.veranstaltung_art_de::text, veranstaltung_art.veranstaltung_art_en::text]
                 ) AS name
             FROM research.veranstaltung_art
             WITH DATA;
@@ -948,8 +952,8 @@ class Migration(migrations.Migration):
             AS SELECT
                 vergabe_art.vergabe_art_id::integer AS id,
                 hstore(
-                ARRAY['de'::text, 'en'::text],
-                ARRAY[vergabe_art.vergabe_art_de::text, vergabe_art.vergabe_art_en::text]
+                    ARRAY['de'::text, 'en'::text],
+                    ARRAY[vergabe_art.vergabe_art_de::text, vergabe_art.vergabe_art_en::text]
                 ) AS name
             FROM research.vergabe_art
             WITH DATA;
@@ -959,8 +963,8 @@ class Migration(migrations.Migration):
             AS SELECT
                 org_partner_projektfunktion.org_partner_projektfunktion_id::integer AS id,
                 hstore(
-                ARRAY['de'::text, 'en'::text],
-                ARRAY[org_partner_projektfunktion.org_partner_projektfunktion_de::text, org_partner_projektfunktion.org_partner_projektfunktion_en::text]
+                    ARRAY['de'::text, 'en'::text],
+                    ARRAY[org_partner_projektfunktion.org_partner_projektfunktion_de::text, org_partner_projektfunktion.org_partner_projektfunktion_en::text]
                 ) AS name
             FROM research.org_partner_projektfunktion
             WITH DATA;
@@ -970,12 +974,14 @@ class Migration(migrations.Migration):
             AS SELECT
                 forschung_art.forschung_art_id::integer AS id,
                 hstore(
-                ARRAY['de'::text, 'en'::text],
-                ARRAY[forschung_art.forschung_art_de::text, forschung_art.forschung_art_de::text]
-                ) AS name
+                    ARRAY['de'::text, 'en'::text],
+                    ARRAY[forschung_art.forschung_art_de::text, forschung_art.forschung_art_de::text]
+                ) AS name,
+                coalesce(lower(forschung_art.aktiv_jn) = 'j', false) AS active
             FROM research.forschung_art
             WITH DATA;
             CREATE UNIQUE INDEX research_projectresearch_id_idx ON public.research_projectresearch USING btree (id);
+            CREATE INDEX research_projectresearch_active_idx ON public.research_projectresearch (active);
 
             CREATE MATERIALIZED VIEW public.research_projectstatus
             AS SELECT
@@ -1228,6 +1234,7 @@ class Migration(migrations.Migration):
             DROP INDEX IF EXISTS research_projectpartnerfunction_id_idx;
             DROP MATERIALIZED VIEW IF EXISTS public.research_projectpartnerfunction;
 
+            DROP INDEX IF EXISTS research_projectresearch_active_idx;
             DROP INDEX IF EXISTS research_projectresearch_id_idx;
             DROP MATERIALIZED VIEW IF EXISTS public.research_projectresearch;
 
@@ -1265,6 +1272,7 @@ class Migration(migrations.Migration):
             DROP INDEX IF EXISTS research_publicationorganization_publication_id_idx;
             DROP MATERIALIZED VIEW IF EXISTS public.research_publicationorganization;
 
+            DROP INDEX IF EXISTS research_projectfunction_active_idx;
             DROP INDEX IF EXISTS research_projectfunction_id_idx;
             DROP MATERIALIZED VIEW IF EXISTS public.research_projectfunction;
 
