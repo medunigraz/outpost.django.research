@@ -230,14 +230,20 @@ class FunderSerializer(FlexFieldsModelSerializer):
         fields = "__all__"
 
     expandable_fields = {
-        "category": (FunderCategorySerializer, {"source": "category"}),
-        "country": (CountrySerializer, {"source": "country"}),
+        "category": (
+            f"{self.__class__.__module__}.FunderCategorySerializer",
+            {"source": "category"},
+        ),
+        "country": (
+            f"{self.__class__.__module__}.CountrySerializer",
+            {"source": "country"},
+        ),
         "typeintellectualcapitalaccounting": (
-            FunderTypeIntellectualCapitalAccountingSerializer,
+            f"{self.__class__.__module__}.FunderTypeIntellectualCapitalAccountingSerializer",
             {"source": "typeintellectualcapitalaccounting"},
         ),
         "typestatisticsaustria": (
-            FunderTypeStatisticsAustriaSerializer,
+            f"{self.__class__.__module__}.FunderTypeStatisticsAustriaSerializer",
             {"source": "typestatisticsaustria"},
         ),
     }
@@ -565,12 +571,63 @@ class PublicationOrganizationSerializer(FlexFieldsModelSerializer):
                 "outpost.django.campusonline.serializers.OrganizationSerializer",
                 {"source": "organization"},
             ),
-            "publication": ("PublicationSerializer", {"source": "publication"}),
-            "authorship": ("PublicationAuthorship", {"source": "authorship"}),
+            "publication": (
+                f"{self.__class__.__module__}.PublicationSerializer",
+                {"source": "publication"},
+            ),
+            "authorship": (
+                f"{self.__class__.__module__}.PublicationAuthorshipSerializer",
+                {"source": "authorship"},
+            ),
         }
 
     class Meta:
         model = models.PublicationOrganization
+        fields = "__all__"
+
+
+class PublicationPersonSerializer(FlexFieldsModelSerializer):
+    """
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `publication`
+     * `person`
+     * `authorship`
+
+    """
+
+    @property
+    def expandable_fields(self):
+        person = "PersonSerializer"
+        request = self.context.get("request", None)
+        if request:
+            if request.user:
+                if request.user.is_authenticated:
+                    person = "AuthenticatedPersonSerializer"
+        return {
+            "person": (
+                f"outpost.django.campusonline.serializers.{person}",
+                {"source": "person"},
+            ),
+            "publication": (
+                f"{self.__class__.__module__}.PublicationSerializer",
+                {"source": "publication"},
+            ),
+            "authorship": (
+                f"{self.__class__.__module__}.PublicationAuthorshipSerializer",
+                {"source": "authorship"},
+            ),
+        }
+
+    class Meta:
+        model = models.PublicationPerson
         fields = "__all__"
 
 
@@ -596,23 +653,23 @@ class PublicationSerializer(FlexFieldsModelSerializer):
 
     @property
     def expandable_fields(self):
-        person = "PersonSerializer"
-        request = self.context.get("request", None)
-        if request:
-            if request.user:
-                if request.user.is_authenticated:
-                    person = "AuthenticatedPersonSerializer"
         return {
             "persons": (
-                f"outpost.django.campusonline.serializers.{person}",
+                f"{self.__class__.__module__}.PublicationPersonSerializer",
                 {"source": "persons", "many": True},
             ),
             "organization_authorship": (
-                "outpost.django.research.serializers.PublicationOrganizationSerializer",
+                f"{self.__class__.__module__}.PublicationOrganizationSerializer",
                 {"source": "organization_authorship", "many": True},
             ),
-            "category": (PublicationCategorySerializer, {"source": "category"}),
-            "document": (PublicationDocumentSerializer, {"source": "document"}),
+            "category": (
+                f"{self.__class__.__module__}.PublicationCategorySerializer",
+                {"source": "category"},
+            ),
+            "document": (
+                f"{self.__class__.__module__}.PublicationDocumentSerializer",
+                {"source": "document"},
+            ),
         }
 
     class Meta:
@@ -689,18 +746,17 @@ class BiddingSerializer(FlexFieldsModelSerializer):
 
     @property
     def expandable_fields(self):
-        base = "outpost.django.research.serializers"
         return {
             "funders": (
-                f"{base}.FunderSerializer",
+                f"{self.__class__.__module__}.FunderSerializer",
                 {"source": "funders", "many": True},
             ),
             "deadlines": (
-                f"{base}.BiddingDeadlineSerializer",
+                f"{self.__class__.__module__}.BiddingDeadlineSerializer",
                 {"source": "deadlines", "many": True},
             ),
             "endowments": (
-                f"{base}.BiddingEndowmentSerializer",
+                f"{self.__class__.__module__}.BiddingEndowmentSerializer",
                 {"source": "endowments", "many": True},
             ),
         }
@@ -727,8 +783,12 @@ class BiddingDeadlineSerializer(FlexFieldsModelSerializer):
 
     @property
     def expandable_fields(self):
-        base = "outpost.django.research.serializers"
-        return {"bidding": (f"{base}.BiddingSerializer", {"source": "bidding"})}
+        return {
+            "bidding": (
+                f"{self.__class__.__module__}.BiddingSerializer",
+                {"source": "bidding"},
+            )
+        }
 
     class Meta:
         model = models.BiddingDeadline
@@ -740,8 +800,12 @@ class BiddingEndowmentSerializer(FlexFieldsModelSerializer):
 
     @property
     def expandable_fields(self):
-        base = "outpost.django.research.serializers"
-        return {"bidding": (f"{base}.BiddingSerializer", {"source": "bidding"})}
+        return {
+            "bidding": (
+                f"{self.__class__.__module__}.BiddingSerializer",
+                {"source": "bidding"},
+            )
+        }
 
     class Meta:
         model = models.BiddingEndowment
@@ -765,10 +829,9 @@ class PartnerSerializer(FlexFieldsModelSerializer):
 
     @property
     def expandable_fields(self):
-        base = "outpost.django.research.serializers"
         return {
             "typeintellectualcapitalaccounting": (
-                f"{base}.PartnerTypeIntellectualCapitalAccountingSerializer",
+                f"{self.__class__.__module__}.PartnerTypeIntellectualCapitalAccountingSerializer",
                 {"source": "typeintellectualcapitalaccounting"},
             ),
         }

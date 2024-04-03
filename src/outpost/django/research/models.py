@@ -1091,6 +1091,44 @@ class PublicationOrganization(models.Model):
         return f"{self.publication} ({self.organization})"
 
 
+class PublicationPerson(models.Model):
+    id = models.CharField(max_length=256, primary_key=True)
+    publication = models.ForeignKey(
+        "Publication",
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name="persons",
+    )
+    person = models.ForeignKey(
+        "campusonline.Person",
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name="publications",
+    )
+    authorship = models.ForeignKey(
+        "PublicationAuthorship",
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+    )
+    last_author = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = "research_publication_person"
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return f"{self.publication} ({self.person})"
+
+
 class Publication(models.Model):
     """
     ## Fields
@@ -1128,12 +1166,12 @@ class Publication(models.Model):
     doi = models.CharField(max_length=128, blank=True, null=True)
     pmc = models.CharField(max_length=128, blank=True, null=True)
     abstract = models.TextField(blank=True, null=True)
-    persons = models.ManyToManyField(
-        "campusonline.Person",
-        db_table="research_publication_person",
-        db_constraint=False,
-        related_name="publications",
-    )
+    # persons = models.ManyToManyField(
+    #    "campusonline.Person",
+    #    db_table="research_publication_person",
+    #    db_constraint=False,
+    #    related_name="publications",
+    # )
     imported = models.DateTimeField()
     journal = models.TextField(blank=True, null=True)
     issn = models.CharField(max_length=20, blank=True, null=True)
@@ -1181,7 +1219,7 @@ class Publication(models.Model):
         return str(self.pk)
 
     def __str__(self):
-        if not self.abstract_bytes:
+        if not self.abstract:
             return str(self.pk)
         short = shorten(self.abstract, 30)
         return f"{self.pk}: {short}"

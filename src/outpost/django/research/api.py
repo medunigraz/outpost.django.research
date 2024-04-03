@@ -620,6 +620,27 @@ class PublicationDocumentViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
 
 @docstring_format(
+    model=models.PublicationPerson.__doc__,
+    serializer=serializers.PublicationPersonSerializer.__doc__,
+    filter=filters.PublicationPersonFilter.__doc__,
+)
+class PublicationPersonViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
+    """
+    List persons and their authorship type for publications.
+
+    {model}
+    {serializer}
+    {filter}
+    """
+
+    queryset = models.PublicationPerson.objects.all()
+    serializer_class = serializers.PublicationPersonSerializer
+    permission_classes = (AllowAny,)
+    filter_backends = (SimpleDjangoFilterBackend, OrderingFilter)
+    filter_class = filters.PublicationPersonFilter
+
+
+@docstring_format(
     model=models.Publication.__doc__,
     serializer=serializers.PublicationSerializer.__doc__,
     filter=filters.PublicationFilter.__doc__,
@@ -659,15 +680,15 @@ class PublicationViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewS
         queryset = queryset.select_related("category", "document_type")
         queryset = queryset.prefetch_related(
             "persons",
-            "persons__room",
-            "persons__room__building",
-            "persons__room__floor",
-            "persons__room__geo",
-            "persons__room__category",
-            "persons__classifications",
-            "persons__expertise",
-            "persons__knowledge",
-            "persons__education",
+            "persons__person__room",
+            "persons__person__room__building",
+            "persons__person__room__floor",
+            "persons__person__room__geo",
+            "persons__person__room__category",
+            "persons__person__classifications",
+            "persons__person__expertise",
+            "persons__person__knowledge",
+            "persons__person__education",
             "organizations",
         )
         return queryset

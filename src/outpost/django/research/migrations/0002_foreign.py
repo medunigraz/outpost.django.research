@@ -1062,15 +1062,16 @@ class Migration(migrations.Migration):
 
             CREATE MATERIALIZED VIEW public.research_publication_person
             AS SELECT DISTINCT
+                CONCAT_WS('-',publikation_person.publikation_id::integer, co_p.pers_nr::integer, publikation_person.publikation_autorenschaft_id::integer) AS id,
                 publikation_person.publikation_id::integer AS publication_id,
                 publikation_person.medonline_person_id::integer AS person_id,
-                publikation_person.PUBLIKATION_AUTORENSCHAFT_ID AS publicationauthorship_id,
+                publikation_person.publikation_autorenschaft_id AS authorship_id,
                 coalesce(lower(publikation_person.letztautor_ja_nein::text) = 'ja'::text, false) AS last_author
             FROM research.publikation_person
             JOIN research.publikation r_p ON publikation_person.publikation_id::integer = r_p.publikation_id::integer
             JOIN campusonline.personen co_p ON publikation_person.medonline_person_id::integer = co_p.pers_nr::integer
             WITH DATA;
-            CREATE UNIQUE INDEX research_publication_person_idx ON public.research_publication_person USING btree (publication_id, person_id);
+            CREATE UNIQUE INDEX research_publication_person_idx ON public.research_publication_person USING btree (id);
             CREATE INDEX research_publication_person_person_id_idx ON public.research_publication_person USING btree (person_id);
             CREATE INDEX research_publication_person_publication_id_idx ON public.research_publication_person USING btree (publication_id);
 

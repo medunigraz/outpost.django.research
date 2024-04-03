@@ -99,6 +99,11 @@ v1 = [
         api.PublicationDocumentViewSet,
         "research-publication-document",
     ),
+    (
+        r"research/publication:person",
+        api.PublicationPersonViewSet,
+        "research-publication-person",
+    ),
     (r"research/publication", api.PublicationViewSet, "research-publication"),
     (
         r"research/search/publication",

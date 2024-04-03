@@ -178,6 +178,33 @@ class PublicationFilter(filterset.FilterSet):
         return qs
 
 
+class PublicationPersonFilter(filterset.FilterSet):
+    """
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    Possible exact filters:
+
+      - `publication`
+      - `person`
+      - `authorship`
+      - `last_author`
+
+    """
+
+    class Meta:
+        model = models.PublicationPerson
+        fields = {
+            "publication": ("exact",),
+            "person": ("exact",),
+            "authorship": ("exact",),
+            "last_author": ("exact",),
+        }
+
+
 class BiddingDeadlineFilter(filterset.FilterSet):
     """
     ## Filters
