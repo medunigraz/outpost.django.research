@@ -229,24 +229,26 @@ class FunderSerializer(FlexFieldsModelSerializer):
         model = models.Funder
         fields = "__all__"
 
-    expandable_fields = {
-        "category": (
-            f"{self.__class__.__module__}.FunderCategorySerializer",
-            {"source": "category"},
-        ),
-        "country": (
-            f"{self.__class__.__module__}.CountrySerializer",
-            {"source": "country"},
-        ),
-        "typeintellectualcapitalaccounting": (
-            f"{self.__class__.__module__}.FunderTypeIntellectualCapitalAccountingSerializer",
-            {"source": "typeintellectualcapitalaccounting"},
-        ),
-        "typestatisticsaustria": (
-            f"{self.__class__.__module__}.FunderTypeStatisticsAustriaSerializer",
-            {"source": "typestatisticsaustria"},
-        ),
-    }
+    @property
+    def expandable_fields(self):
+        return {
+            "category": (
+                f"{self.__class__.__module__}.FunderCategorySerializer",
+                {"source": "category"},
+            ),
+            "country": (
+                f"{self.__class__.__module__}.CountrySerializer",
+                {"source": "country"},
+            ),
+            "typeintellectualcapitalaccounting": (
+                f"{self.__class__.__module__}.FunderTypeIntellectualCapitalAccountingSerializer",
+                {"source": "typeintellectualcapitalaccounting"},
+            ),
+            "typestatisticsaustria": (
+                f"{self.__class__.__module__}.FunderTypeStatisticsAustriaSerializer",
+                {"source": "typestatisticsaustria"},
+            ),
+        }
 
 
 class ProgramSerializer(FlexFieldsModelSerializer):
@@ -268,9 +270,14 @@ class ProgramSerializer(FlexFieldsModelSerializer):
         model = models.Program
         fields = "__all__"
 
-    expandable_fields = {
-        "funder": (FunderSerializer, {"source": "funder"}),
-    }
+    @property
+    def expandable_fields(self):
+        return {
+            "funder": (
+                f"{self.__class__.__module__}.FunderSerializer",
+                {"source": "funder"},
+            ),
+        }
 
 
 class ProjectCategorySerializer(FlexFieldsModelSerializer):
