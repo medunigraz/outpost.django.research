@@ -636,7 +636,7 @@ class PublicationPersonViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     queryset = models.PublicationPerson.objects.all()
     serializer_class = serializers.PublicationPersonSerializer
     permission_classes = (AllowAny,)
-    filter_backends = (SimpleDjangoFilterBackend, OrderingFilter)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_class = filters.PublicationPersonFilter
 
 
