@@ -5,7 +5,10 @@ from outpost.django.base.filters import SimpleDjangoFilterBackend
 from outpost.django.base.mixins import CacheResponseMixin
 from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.filters import OrderingFilter
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+)
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from . import (
