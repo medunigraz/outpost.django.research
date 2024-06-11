@@ -869,3 +869,89 @@ class PartnerTypeIntellectualCapitalAccountingSerializer(FlexFieldsModelSerializ
             "id",
             "name",
         )
+
+
+class ServiceProviderSerializer(FlexFieldsModelSerializer):
+    """
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `contacts`
+     * `campusonline`
+
+    """
+
+    @property
+    def expandable_fields(self):
+        return {
+            "campusonline": (
+                "outpost.django.campusonline.serializers.OrganizationSerializer",
+                {"source": "campusonline", "many": False},
+            ),
+            "contacts": (
+                f"{self.__class__.__module__}.ServiceProviderContactSerializer",
+                {"source": "contacts", "many": True},
+            ),
+        }
+
+    class Meta:
+        model = models.ServiceProvider
+        fields = (
+            "id",
+            "campusonline",
+            "name",
+            "notes",
+            "active",
+            "contacts",
+        )
+
+
+class ServiceProviderContactSerializer(FlexFieldsModelSerializer):
+    """
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `serviceprovider`
+
+    """
+
+    @property
+    def expandable_fields(self):
+        # import pudb; pu.db
+        person = "PersonSerializer"
+        if (request := self.context.get("request")) :
+            if request.user.is_authenticated:
+                person = "AuthenticatedPersonSerializer"
+
+        return {
+            "campusonline": (
+                f"outpost.django.campusonline.serializers.{person}",
+                {"source": "campusonline", "many": False},
+            ),
+            "serviceprovider": (
+                f"{self.__class__.__module__}.ServiceProviderSerializer",
+                {"source": "serviceprovider", "many": False},
+            ),
+        }
+
+    class Meta:
+        model = models.ServiceProviderContact
+        fields = (
+            "id",
+            "serviceprovider",
+            "campusonline",
+            "name",
+            "email",
+        )

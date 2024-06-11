@@ -500,3 +500,43 @@ class ProjectPersonFilter(filterset.FilterSet):
             "person": ("exact",),
             "function": ("exact",),
         }
+
+
+class ServiceProviderFilter(filterset.FilterSet):
+    """
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    Possible exact filters:
+
+      - `active`
+    """
+
+    class Meta:
+        model = models.ServiceProvider
+        fields = {
+            "active": ("exact",),
+        }
+
+
+class ServiceProviderContactFilter(filterset.FilterSet):
+    """
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    Possible exact filters:
+
+      - `serviceprovider`
+    """
+
+    class Meta:
+        model = models.ServiceProviderContact
+        fields = {
+            "serviceprovider": ("exact",),
+        }

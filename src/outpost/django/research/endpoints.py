@@ -83,6 +83,16 @@ v1 = [
     (r"research/project:grant", api.ProjectGrantViewSet, "research-project-grant"),
     (r"research/project:status", api.ProjectStatusViewSet, "research-project-status"),
     (r"research/project", api.ProjectViewSet, "research-project"),
+    (
+        r"research/serviceprovider",
+        api.ServiceProviderViewSet,
+        "research-serviceprovider",
+    ),
+    (
+        r"research/serviceprovider:contact",
+        api.ServiceProviderContactViewSet,
+        "research-serviceprovider-contact",
+    ),
     (r"research/search/project", api.ProjectSearchViewSet, "research-project-search"),
     (
         r"research/publication:authorship",

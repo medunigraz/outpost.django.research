@@ -824,3 +824,47 @@ class PartnerViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
         queryset = super().get_queryset()
         queryset = queryset.prefetch_related("typeintellectualcapitalaccounting")
         return queryset
+
+
+@docstring_format(
+    model=models.ServiceProvider.__doc__,
+    filter=filters.ServiceProviderFilter.__doc__,
+    serializer=serializers.ServiceProviderSerializer.__doc__,
+)
+class ServiceProviderViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+    """
+    List service providers.
+
+    {model}
+    {filter}
+    {serializer}
+    """
+
+    queryset = models.ServiceProvider.objects.all()
+    serializer_class = serializers.ServiceProviderSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = filters.ServiceProviderFilter
+    permission_classes = (AllowAny,)
+    permit_list_expands = ("contacts", "campusonline")
+
+
+@docstring_format(
+    model=models.ServiceProviderContact.__doc__,
+    filter=filters.ServiceProviderContactFilter.__doc__,
+    serializer=serializers.ServiceProviderContactSerializer.__doc__,
+)
+class ServiceProviderContactViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+    """
+    List service provider contacts.
+
+    {model}
+    {filter}
+    {serializer}
+    """
+
+    queryset = models.ServiceProviderContact.objects.all()
+    serializer_class = serializers.ServiceProviderContactSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = filters.ServiceProviderContactFilter
+    permission_classes = (AllowAny,)
+    permit_list_expands = ("serviceprovider", "campusonline")

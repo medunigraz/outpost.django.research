@@ -7,10 +7,19 @@ from django.contrib.postgres.fields import (
     HStoreField,
 )
 from django.db.models.signals import post_save
+from django.utils.translation import get_language
 from django.utils.translation import ugettext_lazy as _
 from treebeard.al_tree import AL_Node
 
+from .conf import settings
+
 logger = logging.getLogger(__name__)
+
+
+class MultiLanguage:
+    @staticmethod
+    def empty_default():
+        return {lang: "" for lang, _ in settings.LANGUAGES}
 
 
 class PredominantFunder(models.Model):
@@ -1489,3 +1498,60 @@ class FunderTypeStatisticsAustria(models.Model):
 
     def __str__(self):
         return next((n for n in self.name if n is not None), _("Unknown"))
+
+
+class ServiceProvider(models.Model):
+    campusonline = models.ForeignKey(
+        "campusonline.Organization",
+        models.DO_NOTHING,
+        db_constraint=False,
+        null=True,
+        blank=True,
+    )
+    alternate_name = HStoreField(
+        default=MultiLanguage.empty_default, blank=True, null=True
+    )
+    notes = HStoreField(default=MultiLanguage.empty_default, blank=True, null=True)
+    active = models.BooleanField()
+
+    def __str__(self):
+        return self.name.get(get_language())
+
+    @property
+    def name(self):
+        if self.campusonline:
+            return {get_language(): self.campusonline.name}
+        return self.alternate_name
+
+
+class ServiceProviderContact(models.Model):
+    serviceprovider = models.ForeignKey(
+        "ServiceProvider",
+        models.CASCADE,
+        related_name="contacts",
+    )
+    campusonline = models.ForeignKey(
+        "campusonline.Person",
+        models.DO_NOTHING,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    alternate_name = models.CharField(max_length=1024, blank=True, null=True)
+    alternate_email = models.EmailField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def name(self):
+        if self.campusonline:
+            return f"{self.campusonline.last_name}, {self.campusonline.first_name}"
+        return self.alternate_name
+
+    @property
+    def email(self):
+        if self.campusonline:
+            return self.campusonline.email
+        return self.alternate_email
