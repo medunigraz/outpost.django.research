@@ -1,6 +1,12 @@
+from functools import reduce
+from operator import or_
+
+from django.db.models import Q
+from django_filters import CharFilter
 from django_filters.rest_framework import filterset
 
 from . import models
+from .conf import settings
 
 
 class ProjectFilter(filterset.FilterSet):
@@ -40,6 +46,8 @@ class ProjectFilter(filterset.FilterSet):
       - `end_effective`: `gt`, `gte`, `lt`, `lte`
     """
 
+    title = CharFilter(method="title_filter", label="Title")
+
     class Meta:
         model = models.Project
         fields = {
@@ -61,6 +69,16 @@ class ProjectFilter(filterset.FilterSet):
             "assignment": ("exact", "gt", "lt", "gte", "lte", "date"),
             "program": ("exact",),
         }
+
+    def title_filter(self, queryset, name, value):
+        f = reduce(
+            or_,
+            [
+                Q(**{f"{name}__{lang}__icontains": value})
+                for lang, _ in settings.LANGUAGES
+            ],
+        )
+        return queryset.filter(f)
 
 
 class PublicationFilter(filterset.FilterSet):
