@@ -1520,7 +1520,7 @@ class ServiceProvider(models.Model):
     @property
     def name(self):
         if self.campusonline:
-            return {get_language(): self.campusonline.name}
+            return self.campusonline.name
         return self.alternate_name
 
 
