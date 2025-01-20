@@ -9,6 +9,7 @@ from django.contrib.postgres.fields import (
 from django.db.models.signals import post_save
 from django.utils.translation import get_language
 from django.utils.translation import ugettext_lazy as _
+from ordered_model.models import OrderedModel
 from treebeard.al_tree import AL_Node
 
 from .conf import settings
@@ -1555,3 +1556,19 @@ class ServiceProviderContact(models.Model):
         if self.campusonline:
             return self.campusonline.email
         return self.alternate_email
+
+
+class ProjectMentorContribution(OrderedModel):
+    name = HStoreField(default=MultiLanguage.empty_default)
+    active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name.get("de")
+
+
+class Sponsorship(OrderedModel):
+    name = HStoreField(default=MultiLanguage.empty_default)
+    active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name.get("de")

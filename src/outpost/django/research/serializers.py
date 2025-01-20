@@ -955,3 +955,25 @@ class ServiceProviderContactSerializer(FlexFieldsModelSerializer):
             "name",
             "email",
         )
+
+
+class ProjectMentorContributionSerializer(FlexFieldsModelSerializer):
+    """"""
+
+    class Meta:
+        model = models.ProjectMentorContribution
+        fields = (
+            "id",
+            "name",
+        )
+
+
+class SponsorshipSerializer(FlexFieldsModelSerializer):
+    """"""
+
+    class Meta:
+        model = models.Sponsorship
+        fields = (
+            "id",
+            "name",
+        )

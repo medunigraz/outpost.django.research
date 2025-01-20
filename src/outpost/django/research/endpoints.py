@@ -93,6 +93,12 @@ v1 = [
         api.ServiceProviderContactViewSet,
         "research-serviceprovider-contact",
     ),
+    (
+        r"research/projectmentorcontribution",
+        api.ProjectMentorContributionViewSet,
+        "research-projectmentorcontribution",
+    ),
+    (r"research/sponsorship", api.SponsorshipViewSet, "research-sponsorship"),
     (r"research/search/project", api.ProjectSearchViewSet, "research-project-search"),
     (
         r"research/publication:authorship",

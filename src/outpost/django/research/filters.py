@@ -2,6 +2,7 @@ from functools import reduce
 from operator import or_
 
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
 from django_filters import CharFilter
 from django_filters.rest_framework import filterset
 
@@ -540,3 +541,71 @@ class ServiceProviderContactFilter(filterset.FilterSet):
         fields = {
             "serviceprovider": ("exact",),
         }
+
+
+class ProjectMentorContributionFilter(filterset.FilterSet):
+    """
+    ## Filters
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    All fields with advanced lookups can also be used for exact value matches
+    as described above.
+
+    Possible advanced lookups:
+
+      - `name`: `iexact`, `contains`, `icontains`
+    """
+
+    name = CharFilter(method="name_filter", label=_("Name"), lookup_expr="icontains")
+
+    class Meta:
+        model = models.ProjectMentorContribution
+        fields = {}
+
+    def name_filter(self, queryset, name, value):
+        lookup = self.filters.get(name).lookup_expr
+        f = reduce(
+            or_,
+            [
+                Q(**{f"{name}__{lang}__{lookup}": value})
+                for lang, _ in settings.LANGUAGES
+            ],
+        )
+        return queryset.filter(f)
+
+
+class SponsorshipFilter(filterset.FilterSet):
+    """
+    ## Filters
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    All fields with advanced lookups can also be used for exact value matches
+    as described above.
+
+    Possible advanced lookups:
+
+      - `name`: `iexact`, `contains`, `icontains`
+    """
+
+    name = CharFilter(method="name_filter", label=_("Name"), lookup_expr="icontains")
+
+    class Meta:
+        model = models.Sponsorship
+        fields = {}
+
+    def name_filter(self, queryset, name, value):
+        lookup = self.filters.get(name).lookup_expr
+        f = reduce(
+            or_,
+            [
+                Q(**{f"{name}__{lang}__{lookup}": value})
+                for lang, _ in settings.LANGUAGES
+            ],
+        )
+        return queryset.filter(f)

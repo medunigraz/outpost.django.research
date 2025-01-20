@@ -868,3 +868,45 @@ class ServiceProviderContactViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     filter_class = filters.ServiceProviderContactFilter
     permission_classes = (AllowAny,)
     permit_list_expands = ("serviceprovider", "campusonline")
+
+
+@docstring_format(
+    model=models.ProjectMentorContribution.__doc__,
+    filter=filters.ProjectMentorContributionFilter.__doc__,
+    serializer=serializers.ProjectMentorContributionSerializer.__doc__,
+)
+class ProjectMentorContributionViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+    """
+    List project mentor contributions.
+
+    {model}
+    {filter}
+    {serializer}
+    """
+
+    queryset = models.ProjectMentorContribution.objects.all()
+    serializer_class = serializers.ProjectMentorContributionSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = filters.ProjectMentorContributionFilter
+    permission_classes = (AllowAny,)
+
+
+@docstring_format(
+    model=models.Sponsorship.__doc__,
+    filter=filters.SponsorshipFilter.__doc__,
+    serializer=serializers.SponsorshipSerializer.__doc__,
+)
+class SponsorshipViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+    """
+    List sponsorships.
+
+    {model}
+    {filter}
+    {serializer}
+    """
+
+    queryset = models.Sponsorship.objects.all()
+    serializer_class = serializers.SponsorshipSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = filters.SponsorshipFilter
+    permission_classes = (AllowAny,)
