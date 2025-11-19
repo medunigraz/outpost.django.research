@@ -931,7 +931,7 @@ class ServiceProviderContactSerializer(FlexFieldsModelSerializer):
     def expandable_fields(self):
         # import pudb; pu.db
         person = "PersonSerializer"
-        if (request := self.context.get("request")) :
+        if request := self.context.get("request"):
             if request.user.is_authenticated:
                 person = "AuthenticatedPersonSerializer"
 

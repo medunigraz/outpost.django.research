@@ -7,8 +7,7 @@ from django.contrib.postgres.fields import (
     HStoreField,
 )
 from django.db.models.signals import post_save
-from django.utils.translation import get_language
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 from ordered_model.models import OrderedModel
 from treebeard.al_tree import AL_Node
 

@@ -1,6 +1,6 @@
-from django.conf.urls import (
+from django.urls import (
     include,
-    url,
+    path,
 )
 
 from . import views
@@ -8,10 +8,6 @@ from . import views
 app_name = "research"
 
 urlpatterns = [
-    url(
-        r"^search/(?P<database>[\w\-.]+)/(?P<schema>\w+)/$", views.SearchView.as_view()
-    ),
-    url(
-        r"^detail/(?P<database>[\w\-.]+)/(?P<schema>\w+)/$", views.DetailView.as_view()
-    ),
+    path("search/<str:database>/<str:schema>/", views.SearchView.as_view()),
+    path("detail/<str:database>/<str:schema>/", views.DetailView.as_view()),
 ]
