@@ -402,6 +402,9 @@ class Funder(models.Model):
     ### `email` (`string`)
     Email address.
 
+    ### `active` (`string`)
+    Is funder active.
+
     ### `patron` (`boolean`)
     Has funder been classified as a sponsor at the Medical University of Graz (can be assigned as a sponsor to a research funding project).
 
@@ -431,6 +434,7 @@ class Funder(models.Model):
     url = models.CharField(max_length=256, blank=True, null=True)
     telephone = models.CharField(max_length=256, blank=True, null=True)
     email = models.CharField(max_length=256, blank=True, null=True)
+    active = models.CharField(max_length=4, blank=True, null=True)
     patron = models.BooleanField()
     patron_peer_review = models.BooleanField()
     patron_associate_professor = models.BooleanField()
