@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                             geldgeber.geldgeber_typ_id AS category_id,
                             geldgeber.telefon AS telephone,
                             geldgeber.email,
-                            COALESCE(lower(geldgeber.aktiv_ja_nein::text = 'ja'::text), false) AS active,
+                            COALESCE(lower(geldgeber.aktiv_ja_nein::text) = 'ja'::text, false) AS active,
                             COALESCE(lower(geldgeber.fo_foe_ja_nein::text) = 'ja'::text, false) AS patron,
                             COALESCE(lower(geldgeber.peer_review_assozprof::text) = 'ja'::text, false) AS patron_associate_professor,
                             COALESCE(lower(geldgeber.peer_review_allg::text) = 'ja'::text, false) AS patron_peer_review,
