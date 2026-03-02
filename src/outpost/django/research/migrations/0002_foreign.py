@@ -2,6 +2,8 @@
 
 from django.db import migrations
 
+from ..conf import settings
+
 """
 CREATE EXTENSION IF NOT EXISTS oracle_fdw;
 GRANT USAGE ON FOREIGN DATA WRAPPER oracle_fdw to "{username}";
