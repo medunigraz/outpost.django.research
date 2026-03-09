@@ -2,12 +2,20 @@
 
 from django.db import migrations
 
+"""
+CREATE EXTENSION IF NOT EXISTS oracle_fdw;
+GRANT USAGE ON FOREIGN DATA WRAPPER oracle_fdw to "{username}";
+"""
 
 class Migration(migrations.Migration):
 
     ops = [
         (
             """
+            CREATE SERVER IF NOT EXISTS research FOREIGN DATA WRAPPER oracle_fdw OPTIONS (dbserver '//{hostname}:{port}/{database}');
+
+            CREATE USER MAPPING IF NOT EXISTS FOR CURRENT_USER SERVER research OPTIONS (user '{username}', password '{password}');
+
             CREATE SCHEMA research;
 
             CREATE FOREIGN TABLE research.ausschreibung (
@@ -21,7 +29,7 @@ class Migration(migrations.Migration):
             start_datum timestamp NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'AUSSCHREIBUNG');
+            OPTIONS (schema '{schema}', table 'AUSSCHREIBUNG');
 
             CREATE FOREIGN TABLE research.ausschreibung_deadline (
             deadline_id integer NULL,
@@ -31,7 +39,7 @@ class Migration(migrations.Migration):
             anmerkung_deadline varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'AUSSCHREIBUNG_DEADLINE');
+            OPTIONS (schema '{schema}', table 'AUSSCHREIBUNG_DEADLINE');
 
             CREATE FOREIGN TABLE research.ausschreibung_dotierung (
             dotierung_id integer NULL,
@@ -41,14 +49,14 @@ class Migration(migrations.Migration):
             waehrung varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'AUSSCHREIBUNG_DOTIERUNG');
+            OPTIONS (schema '{schema}', table 'AUSSCHREIBUNG_DOTIERUNG');
 
             CREATE FOREIGN TABLE research.ausschreibung_geldgeber (
             ausschreibung_id integer NULL,
             geldgeber_id integer NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'AUSSCHREIBUNG_GELDGEBER');
+            OPTIONS (schema '{schema}', table 'AUSSCHREIBUNG_GELDGEBER');
 
             CREATE FOREIGN TABLE research.forschung_art (
             forschung_art_id integer NULL,
@@ -57,7 +65,7 @@ class Migration(migrations.Migration):
             aktiv_jn varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'FORSCHUNG_ART_L');
+            OPTIONS (schema '{schema}', table 'FORSCHUNG_ART_L');
 
             CREATE FOREIGN TABLE research.forschung_programm (
             forschung_programm_id integer NULL,
@@ -66,7 +74,7 @@ class Migration(migrations.Migration):
             geldgeber_id integer NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'FORSCHUNG_PROGRAMM_L');
+            OPTIONS (schema '{schema}', table 'FORSCHUNG_PROGRAMM_L');
 
             CREATE FOREIGN TABLE research.geldgeber (
             geldgeber_id integer NULL,
@@ -91,7 +99,7 @@ class Migration(migrations.Migration):
             land_en varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'GELDGEBER');
+            OPTIONS (schema '{schema}', table 'GELDGEBER');
 
             CREATE FOREIGN TABLE research.geldgeber_typ (
             geldgeber_typ_id integer NULL,
@@ -100,7 +108,7 @@ class Migration(migrations.Migration):
             geldgeber_typ_kurz varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'GELDGEBER_TYP_L');
+            OPTIONS (schema '{schema}', table 'GELDGEBER_TYP_L');
 
             CREATE FOREIGN TABLE research.geldgeber_typ_stataut (
             statistik_aut_typ_id integer NULL,
@@ -108,7 +116,7 @@ class Migration(migrations.Migration):
             bezeichnung_en varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'GELDGEBER_TYP_STATAUT_L');
+            OPTIONS (schema '{schema}', table 'GELDGEBER_TYP_STATAUT_L');
 
             CREATE FOREIGN TABLE research.geldgeber_typ_wissbil (
             wibi_typ_id integer NULL,
@@ -116,7 +124,7 @@ class Migration(migrations.Migration):
             bezeichnung_en varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'GELDGEBER_TYP_WISSBIL_L');
+            OPTIONS (schema '{schema}', table 'GELDGEBER_TYP_WISSBIL_L');
 
             CREATE FOREIGN TABLE research.klassifikation_oestat_2012 (
             klassifikation_oestat_id integer NULL,
@@ -126,7 +134,7 @@ class Migration(migrations.Migration):
             parent_id integer
             )
             SERVER research
-            OPTIONS (schema 'API', table 'KLASSIFIKATION_OESTAT_2012_L');
+            OPTIONS (schema '{schema}', table 'KLASSIFIKATION_OESTAT_2012_L');
 
             CREATE FOREIGN TABLE research.land (
             land_id integer NULL,
@@ -137,7 +145,7 @@ class Migration(migrations.Migration):
             iso_alpha3 varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'LAND_L');
+            OPTIONS (schema '{schema}', table 'LAND_L');
 
             CREATE FOREIGN TABLE research.org_partner_projektfunktion (
             org_partner_projektfunktion_id integer NULL,
@@ -145,7 +153,7 @@ class Migration(migrations.Migration):
             org_partner_projektfunktion_en varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'ORG_PARTNER_PROJEKTFUNKTION_L');
+            OPTIONS (schema '{schema}', table 'ORG_PARTNER_PROJEKTFUNKTION_L');
 
             CREATE FOREIGN TABLE research.publikation_orgeinheit (
             publikation_id integer NULL,
@@ -153,7 +161,7 @@ class Migration(migrations.Migration):
             publikation_autorenschaft_id integer NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PUBLIKATION_ORGEINHEIT');
+            OPTIONS (schema '{schema}', table 'PUBLIKATION_ORGEINHEIT');
 
             CREATE FOREIGN TABLE research.partner (
             partner_id integer NULL,
@@ -176,7 +184,7 @@ class Migration(migrations.Migration):
             anmerkungen varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PARTNER');
+            OPTIONS (schema '{schema}', table 'PARTNER');
 
             CREATE FOREIGN TABLE research.partner_typ_wb (
             wibi_typ_id integer NULL,
@@ -184,7 +192,7 @@ class Migration(migrations.Migration):
             bezeichnung_en varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PARTNER_TYP_WB_L');
+            OPTIONS (schema '{schema}', table 'PARTNER_TYP_WB_L');
 
             CREATE FOREIGN TABLE research.person_fachkenntnis (
             person_fachkenntnis_id integer NULL,
@@ -193,7 +201,7 @@ class Migration(migrations.Migration):
             fachkenntnis_en varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PERSON_FACHKENNTNIS');
+            OPTIONS (schema '{schema}', table 'PERSON_FACHKENNTNIS');
 
             CREATE FOREIGN TABLE research.person_kenntnis (
             person_kenntnis_id integer NULL,
@@ -202,14 +210,14 @@ class Migration(migrations.Migration):
             kenntnis_en varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PERSON_KENNTNIS');
+            OPTIONS (schema '{schema}', table 'PERSON_KENNTNIS');
 
             CREATE FOREIGN TABLE research.person_klass_oestat_2012 (
             klassifikation_oestat_id integer NULL,
             medonline_person_id integer NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PERSON_KLASS_OESTAT_2012');
+            OPTIONS (schema '{schema}', table 'PERSON_KLASS_OESTAT_2012');
 
             CREATE FOREIGN TABLE research.publikation_person (
             publikation_id integer NULL,
@@ -218,7 +226,7 @@ class Migration(migrations.Migration):
             letztautor_ja_nein varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PUBLIKATION_PERSON');
+            OPTIONS (schema '{schema}', table 'PUBLIKATION_PERSON');
 
             CREATE FOREIGN TABLE research.person_weiterbildung (
             person_weiterbildung_id integer NULL,
@@ -229,7 +237,7 @@ class Migration(migrations.Migration):
             jahr_bis varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PERSON_WEITERBILDUNG');
+            OPTIONS (schema '{schema}', table 'PERSON_WEITERBILDUNG');
 
             CREATE FOREIGN TABLE research.projekt (
             projekt_id integer NULL,
@@ -281,7 +289,7 @@ class Migration(migrations.Migration):
             eudract_nr varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PROJEKT');
+            OPTIONS (schema '{schema}', table 'PROJEKT');
 
             CREATE FOREIGN TABLE research.projekt_geldgeber (
             projekt_id integer NULL,
@@ -289,14 +297,14 @@ class Migration(migrations.Migration):
             hauptgeldgeber_ja_nein varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PROJEKT_GELDGEBER');
+            OPTIONS (schema '{schema}', table 'PROJEKT_GELDGEBER');
 
             CREATE FOREIGN TABLE research.projekt_status (
             projekt_status_id integer NULL,
             projekt_status varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PROJEKT_STATUS_L');
+            OPTIONS (schema '{schema}', table 'PROJEKT_STATUS_L');
 
             CREATE FOREIGN TABLE research.projekt_typ (
             projekt_typ_id integer NULL,
@@ -305,7 +313,7 @@ class Migration(migrations.Migration):
             projekt_typ_kurz_de varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PROJEKT_TYP_L');
+            OPTIONS (schema '{schema}', table 'PROJEKT_TYP_L');
 
             CREATE FOREIGN TABLE research.publikation (
             publikation_id integer NULL,
@@ -353,7 +361,7 @@ class Migration(migrations.Migration):
             abstract text NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PUBLIKATION');
+            OPTIONS (schema '{schema}', table 'PUBLIKATION');
 
             CREATE FOREIGN TABLE research.publikation_autorenschaft (
             publikation_autorenschaft_id integer NULL,
@@ -361,7 +369,7 @@ class Migration(migrations.Migration):
             publikation_autorenschaft_en varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PUBLIKATION_AUTORENSCHAFT_L');
+            OPTIONS (schema '{schema}', table 'PUBLIKATION_AUTORENSCHAFT_L');
 
             CREATE FOREIGN TABLE research.publikation_dokumenttyp (
             publikation_dokumenttyp_id integer NULL,
@@ -369,7 +377,7 @@ class Migration(migrations.Migration):
             publikation_dokumenttyp_en varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PUBLIKATION_DOKUMENTTYP_L');
+            OPTIONS (schema '{schema}', table 'PUBLIKATION_DOKUMENTTYP_L');
 
             CREATE FOREIGN TABLE research.publikation_typ (
             publikation_typ_id integer NULL,
@@ -378,7 +386,7 @@ class Migration(migrations.Migration):
             sortierung_id integer NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PUBLIKATION_TYP_L');
+            OPTIONS (schema '{schema}', table 'PUBLIKATION_TYP_L');
 
             CREATE FOREIGN TABLE research.pubmed_suche_autoren (
             suche_id integer NULL,
@@ -461,7 +469,7 @@ class Migration(migrations.Migration):
             sprache_en_kurz varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'SPRACHE_L');
+            OPTIONS (schema '{schema}', table 'SPRACHE_L');
 
             CREATE FOREIGN TABLE research.studie_art (
             studie_art_id numeric NULL,
@@ -470,7 +478,7 @@ class Migration(migrations.Migration):
             aktiv_ja_nein varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'STUDIE_ART_L');
+            OPTIONS (schema '{schema}', table 'STUDIE_ART_L');
 
             CREATE FOREIGN TABLE research.veranstaltung_art (
             veranstaltung_art_id numeric NULL,
@@ -478,7 +486,7 @@ class Migration(migrations.Migration):
             veranstaltung_art_en varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'VERANSTALTUNG_ART_L');
+            OPTIONS (schema '{schema}', table 'VERANSTALTUNG_ART_L');
 
             CREATE FOREIGN TABLE research.vergabe_art (
             vergabe_art_id numeric NULL,
@@ -486,7 +494,7 @@ class Migration(migrations.Migration):
             vergabe_art_en varchar NULL
             )
             SERVER research
-            OPTIONS (schema 'API', table 'VERGABE_ART_L');
+            OPTIONS (schema '{schema}', table 'VERGABE_ART_L');
 
             CREATE FOREIGN TABLE research.projekt_typ_neu (
             projekttyp_neu_id integer,
@@ -495,7 +503,7 @@ class Migration(migrations.Migration):
             drittmittelrichtlinie_jn text
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PROJEKT_TYP_NEU_L');
+            OPTIONS (schema '{schema}', table 'PROJEKT_TYP_NEU_L');
 
             CREATE FOREIGN TABLE research.forschungsfelder (
             FORSCHUNGSFELD_ID integer,
@@ -504,7 +512,7 @@ class Migration(migrations.Migration):
             AKTIV_JA_NEIN varchar
             )
             SERVER research
-            OPTIONS (schema 'API', table 'FORSCHUNGSFELDER_L');
+            OPTIONS (schema '{schema}', table 'FORSCHUNGSFELDER_L');
 
             CREATE FOREIGN TABLE research.rechtsgrundlage (
                 RECHTSGRUNDLAGE_ID integer,
@@ -513,7 +521,7 @@ class Migration(migrations.Migration):
                 AKTIV_JN varchar
             )
             SERVER research
-            OPTIONS (schema 'API', table 'RECHTSGRUNDLAGE_L');
+            OPTIONS (schema '{schema}', table 'RECHTSGRUNDLAGE_L');
 
             CREATE FOREIGN TABLE research.ueberwiegende_finanzierung (
                 UEBERWIEGENDE_FINANZIERUNG_ID integer,
@@ -521,7 +529,7 @@ class Migration(migrations.Migration):
                 UEBERWIEGENDE_FINANZIERUNG_EN varchar
             )
             SERVER research
-            OPTIONS (schema 'API', table 'UEBERWIEGENDE_FINANZIERUNG_L');
+            OPTIONS (schema '{schema}', table 'UEBERWIEGENDE_FINANZIERUNG_L');
 
             CREATE FOREIGN TABLE research.funktion_in_projekt (
                 FUNKTION_IN_PROJEKT_ID integer,
@@ -530,7 +538,7 @@ class Migration(migrations.Migration):
                 AKTIV_JN varchar
             )
             SERVER research
-            OPTIONS (schema 'API', table 'FUNKTION_IN_PROJEKT_L');
+            OPTIONS (schema '{schema}', table 'FUNKTION_IN_PROJEKT_L');
 
             CREATE FOREIGN TABLE research.projekt_person (
                 PROJEKT_ID integer,
@@ -538,7 +546,7 @@ class Migration(migrations.Migration):
                 FUNKTION_IN_PROJEKT_ID integer
             )
             SERVER research
-            OPTIONS (schema 'API', table 'PROJEKT_PERSON');
+            OPTIONS (schema '{schema}', table 'PROJEKT_PERSON');
 
             CREATE MATERIALIZED VIEW public.research_project_person AS SELECT
                 CONCAT_WS('-', projekt_person.projekt_id, co_p.pers_nr::integer, projekt_person.funktion_in_projekt_id) AS id,
@@ -1121,7 +1129,14 @@ class Migration(migrations.Migration):
             CREATE UNIQUE INDEX research_publicationorganization_idx ON public.research_publicationorganization USING btree (publication_id, organization_id);
             CREATE INDEX research_publicationorganization_organization_id_idx ON public.research_publicationorganization USING btree (organization_id);
             CREATE INDEX research_publicationorganization_publication_id_idx ON public.research_publicationorganization USING btree (publication_id);
-            """,
+            """.format(
+                schema=settings.RESEARCH_FDW_SCHEMA,
+                hostname=settings.RESEARCH_FDW_HOSTNAME,
+                database=settings.RESEARCH_FDW_DATABASE,
+                port=settings.RESEARCH_FDW_PORT or 1521,
+                username=settings.RESEARCH_FDW_USERNAME,
+                password=settings.RESEARCH_FDW_PASSWORD
+            ),
             """
             DROP INDEX IF EXISTS research_predominant_funder_id_idx;
             DROP MATERIALIZED VIEW IF EXISTS public.research_predominant_funder;
@@ -1371,16 +1386,20 @@ class Migration(migrations.Migration):
             DROP FOREIGN TABLE IF EXISTS research.projekt_person;
 
             DROP SCHEMA research;
+
+            DROP USER MAPPING IF EXISTS FOR CURRENT_USER SERVER research;
+
+            DROP SERVER IF EXISTS research;
             """,
         )
     ]
     dependencies = [
-        ("research", "0001_initial"),
-    ]
+            ("research", "0001_initial"),
+            ]
 
     operations = [
-        migrations.RunSQL(
-            [forward for forward, reverse in ops],
-            [reverse for forward, reverse in reversed(ops)],
-        )
-    ]
+            migrations.RunSQL(
+                [forward for forward, reverse in ops],
+                [reverse for forward, reverse in reversed(ops)],
+                )
+            ]
