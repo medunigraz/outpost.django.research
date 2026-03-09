@@ -3,15 +3,13 @@
 from django.db import migrations
 from django.conf import settings
 
-from ..conf import settings
-
 """
 CREATE EXTENSION IF NOT EXISTS oracle_fdw;
 GRANT USAGE ON FOREIGN DATA WRAPPER oracle_fdw to "{username}";
 """
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     ops = [
         (
             """
@@ -1138,7 +1136,7 @@ class Migration(migrations.Migration):
                 database=settings.RESEARCH_FDW_DATABASE,
                 port=settings.RESEARCH_FDW_PORT or 1521,
                 username=settings.RESEARCH_FDW_USERNAME,
-                password=settings.RESEARCH_FDW_PASSWORD
+                password=settings.RESEARCH_FDW_PASSWORD,
             ),
             """
             DROP INDEX IF EXISTS research_predominant_funder_id_idx;
@@ -1397,12 +1395,12 @@ class Migration(migrations.Migration):
         )
     ]
     dependencies = [
-            ("research", "0001_initial"),
-            ]
+        ("research", "0001_initial"),
+    ]
 
     operations = [
-            migrations.RunSQL(
-                [forward for forward, reverse in ops],
-                [reverse for forward, reverse in reversed(ops)],
-                )
-            ]
+        migrations.RunSQL(
+            [forward for forward, reverse in ops],
+            [reverse for forward, reverse in reversed(ops)],
+        )
+    ]
