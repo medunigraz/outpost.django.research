@@ -294,12 +294,12 @@ class Country(models.Model):
     ### `name` (`object`)
     Names of country, defined by language.
 
-    ### `iso` (`string`)
+    ### `iso` (`object`)
     ISO codes of country.
     """
 
     name = HStoreField()
-    iso = models.CharField(max_length=2, blank=True, null=True)
+    iso = HStoreField()
 
     class Meta:
         managed = False
