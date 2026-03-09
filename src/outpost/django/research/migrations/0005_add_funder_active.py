@@ -4,9 +4,8 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('research', '0004_projectmentorcontribution_sponsorship'),
+        ("research", "0004_projectmentorcontribution_sponsorship"),
     ]
 
     operations = [
@@ -116,9 +115,7 @@ class Migration(migrations.Migration):
             ],
             state_operations=[
                 migrations.AddField(
-                    model_name="funder",
-                    name="active",
-                    field=models.BooleanField()
+                    model_name="funder", name="active", field=models.BooleanField()
                 )
             ],
         )
