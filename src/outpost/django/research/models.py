@@ -402,7 +402,7 @@ class Funder(models.Model):
     ### `email` (`string`)
     Email address.
 
-    ### `active` (`string`)
+    ### `active` (`boolean`)
     Is funder active.
 
     ### `patron` (`boolean`)
@@ -434,7 +434,7 @@ class Funder(models.Model):
     url = models.CharField(max_length=256, blank=True, null=True)
     telephone = models.CharField(max_length=256, blank=True, null=True)
     email = models.CharField(max_length=256, blank=True, null=True)
-    active = models.CharField(max_length=4, blank=True, null=True)
+    active = models.BooleanField()
     patron = models.BooleanField()
     patron_peer_review = models.BooleanField()
     patron_associate_professor = models.BooleanField()

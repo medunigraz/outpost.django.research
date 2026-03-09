@@ -4,9 +4,8 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('research', '0004_projectmentorcontribution_sponsorship'),
+        ("research", "0004_projectmentorcontribution_sponsorship"),
     ]
 
     operations = [
@@ -24,14 +23,9 @@ class Migration(migrations.Migration):
                 ),
                 migrations.RunSQL(
                     sql="""
-                        SET ROLE "api.medunigraz.at";
-
                         DROP MATERIALIZED VIEW IF EXISTS public.research_funder;
 
-                        CREATE MATERIALIZED VIEW public.research_funder
-                        TABLESPACE pg_default
-                        AS
-                        SELECT
+                        CREATE MATERIALIZED VIEW public.research_funder AS SELECT
                             geldgeber.geldgeber_id AS id,
                             geldgeber.geldgeber_de AS name,
                             geldgeber.strasse AS street,
@@ -42,7 +36,7 @@ class Migration(migrations.Migration):
                             geldgeber.geldgeber_typ_id AS category_id,
                             geldgeber.telefon AS telephone,
                             geldgeber.email,
-                            geldgeber.aktiv_ja_nein AS active,
+                            COALESCE(lower(geldgeber.aktiv_ja_nein::text) = 'ja'::text, false) AS active,
                             COALESCE(lower(geldgeber.fo_foe_ja_nein::text) = 'ja'::text, false) AS patron,
                             COALESCE(lower(geldgeber.peer_review_assozprof::text) = 'ja'::text, false) AS patron_associate_professor,
                             COALESCE(lower(geldgeber.peer_review_allg::text) = 'ja'::text, false) AS patron_peer_review,
@@ -74,14 +68,9 @@ class Migration(migrations.Migration):
                             ON public.research_funder (patron_peer_review);
                     """,
                     reverse_sql="""
-                        SET ROLE "api.medunigraz.at";
-                        
                         DROP MATERIALIZED VIEW IF EXISTS public.research_funder;
 
-                        CREATE MATERIALIZED VIEW public.research_funder
-                            TABLESPACE pg_default
-                            AS
-                            SELECT
+                        CREATE MATERIALIZED VIEW public.research_funder AS SELECT
                                 geldgeber.geldgeber_id AS id,
                                 geldgeber.geldgeber_de AS name,
                                 geldgeber.strasse AS street,
@@ -92,7 +81,6 @@ class Migration(migrations.Migration):
                                 geldgeber.geldgeber_typ_id AS category_id,
                                 geldgeber.telefon AS telephone,
                                 geldgeber.email,
-                                geldgeber.aktiv_ja_nein AS active,
                                 COALESCE(lower(geldgeber.fo_foe_ja_nein::text) = 'ja'::text, false) AS patron,
                                 COALESCE(lower(geldgeber.peer_review_assozprof::text) = 'ja'::text, false) AS patron_associate_professor,
                                 COALESCE(lower(geldgeber.peer_review_allg::text) = 'ja'::text, false) AS patron_peer_review,
@@ -127,9 +115,7 @@ class Migration(migrations.Migration):
             ],
             state_operations=[
                 migrations.AddField(
-                    model_name="funder",
-                    name="active",
-                    field=models.CharField(max_length=4, blank=True, null=True)
+                    model_name="funder", name="active", field=models.BooleanField()
                 )
             ],
         )
