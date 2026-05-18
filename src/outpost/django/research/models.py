@@ -1520,7 +1520,10 @@ class ServiceProvider(models.Model):
     active = models.BooleanField()
 
     def __str__(self):
-        return self.name.get(get_language())
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return str(self.name)
 
     @property
     def name(self):
