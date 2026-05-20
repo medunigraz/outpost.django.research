@@ -834,7 +834,7 @@ class Migration(migrations.Migration):
             AS SELECT
                 forschung_programm.forschung_programm_id::integer AS id,
                 forschung_programm.forschung_programm_name AS name,
-                COALESCE(lower(forschung_programm.aktiv_jn::text) = 'n'::text, false) AS active,
+                COALESCE(lower(forschung_programm.aktiv_jn::text) = 'j'::text, false) AS active,
                 forschung_programm.geldgeber_id::integer AS funder_id
             FROM research.forschung_programm
             WITH DATA;
