@@ -37,13 +37,6 @@ class PredominantFunder(models.Model):
 
     name = HStoreField()
 
-    class Meta:
-        managed = False
-        db_table = "research_predominant_funder"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return self.name.get("de")
 
@@ -63,13 +56,6 @@ class LegalBasis(models.Model):
 
     name = HStoreField()
     active = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = "research_legal_basis"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name.get("de")
@@ -94,13 +80,6 @@ class Field(models.Model):
     name = HStoreField()
     active = models.BooleanField()
 
-    class Meta:
-        managed = False
-        db_table = "research_field"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return self.name.get("de")
 
@@ -119,13 +98,6 @@ class ResearchType(models.Model):
     """
 
     name = HStoreField()
-
-    class Meta:
-        managed = False
-        db_table = "research_research_type"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name.get("de")
@@ -167,13 +139,6 @@ class Classification(AL_Node):
 
     node_order_by = ["id"]
 
-    class Meta:
-        managed = False
-        db_table = "research_classification"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return self.name.get("de")
 
@@ -201,13 +166,6 @@ class Expertise(models.Model):
         db_constraint=False,
         related_name="expertise",
     )
-
-    class Meta:
-        managed = False
-        db_table = "research_expertise"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name.get("de")
@@ -237,13 +195,6 @@ class Knowledge(models.Model):
         related_name="knowledge",
     )
 
-    class Meta:
-        managed = False
-        db_table = "research_knowledge"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return self.name.get("de")
 
@@ -272,13 +223,6 @@ class Education(models.Model):
         related_name="education",
     )
 
-    class Meta:
-        managed = False
-        db_table = "research_education"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return self.name.get("de")
 
@@ -299,13 +243,6 @@ class Country(models.Model):
 
     name = HStoreField()
     iso = HStoreField()
-
-    class Meta:
-        managed = False
-        db_table = "research_country"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name
@@ -328,13 +265,6 @@ class Language(models.Model):
     name = HStoreField()
     iso = models.CharField(max_length=2, blank=True, null=True)
 
-    class Meta:
-        managed = False
-        db_table = "research_language"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return self.name.get("de")
 
@@ -355,13 +285,6 @@ class FunderCategory(models.Model):
 
     name = models.CharField(max_length=256, blank=True, null=True)
     short = models.CharField(max_length=256, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = "research_fundercategory"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name
@@ -453,14 +376,9 @@ class Funder(models.Model):
     )
 
     class Meta:
-        managed = False
-        db_table = "research_funder"
         permissions = (
             ("view_funder_non_patron", _("View funders that are not a patron")),
         )
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name
@@ -504,13 +422,6 @@ class ProjectType(models.Model):
 
     name = HStoreField()
     public = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = "research_projecttype"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name.get("de")
@@ -567,13 +478,6 @@ class ProjectResearch(models.Model):
     name = HStoreField()
     active = models.BooleanField()
 
-    class Meta:
-        managed = False
-        db_table = "research_projectresearch"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return self.name.get("de")
 
@@ -594,13 +498,6 @@ class ProjectFunction(models.Model):
 
     name = HStoreField()
     active = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = "research_projectfunction"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name.get("de")
@@ -646,13 +543,6 @@ class ProjectPerson(models.Model):
         related_name="persons",
     )
 
-    class Meta:
-        managed = False
-        db_table = "research_project_person"
-
-    class Refresh:
-        interval = 3600
-
     def __str__(self):
         return self.projec
 
@@ -669,13 +559,6 @@ class ProjectPartnerFunction(models.Model):
     """
 
     name = HStoreField()
-
-    class Meta:
-        managed = False
-        db_table = "research_projectpartnerfunction"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name
@@ -695,13 +578,6 @@ class ProjectStudy(models.Model):
     name = HStoreField()
     active = models.BooleanField()
 
-    class Meta:
-        managed = False
-        db_table = "research_projectstudy"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return self.name.get("de")
 
@@ -718,13 +594,6 @@ class ProjectEvent(models.Model):
     """
 
     name = HStoreField()
-
-    class Meta:
-        managed = False
-        db_table = "research_projectevent"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name.get("de")
@@ -743,13 +612,6 @@ class ProjectGrant(models.Model):
 
     name = HStoreField()
 
-    class Meta:
-        managed = False
-        db_table = "research_projectgrant"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return self.name.get("de")
 
@@ -767,13 +629,6 @@ class ProjectStatus(models.Model):
 
     name = models.CharField(max_length=256, blank=True, null=True)
     public = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = "research_projectstatus"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name
@@ -835,13 +690,6 @@ class Program(models.Model):
     funder = models.ForeignKey(
         "Funder", models.DO_NOTHING, db_constraint=False, null=True, blank=True
     )
-
-    class Meta:
-        managed = False
-        db_table = "research_program"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name
@@ -974,13 +822,6 @@ class Project(models.Model):
     commercial = models.BooleanField()
     edudract_number = models.CharField(max_length=16, null=True, blank=True)
 
-    class Meta:
-        managed = False
-        db_table = "research_project"
-
-    class Refresh:
-        interval = 3600
-
     def __str__(self):
         return self.title.get("de")
 
@@ -997,13 +838,6 @@ class PublicationCategory(models.Model):
     """
 
     name = HStoreField()
-
-    class Meta:
-        managed = False
-        db_table = "research_publicationcategory"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name.get("de")
@@ -1022,13 +856,6 @@ class PublicationDocument(models.Model):
 
     name = HStoreField()
 
-    class Meta:
-        managed = False
-        db_table = "research_publicationdocument"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return self.name.get("de")
 
@@ -1045,13 +872,6 @@ class PublicationAuthorship(models.Model):
     """
 
     name = HStoreField()
-
-    class Meta:
-        managed = False
-        db_table = "research_publicationauthorship"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return self.name.get("de")
@@ -1093,13 +913,6 @@ class PublicationOrganization(models.Model):
         blank=True,
     )
 
-    class Meta:
-        managed = False
-        db_table = "research_publicationorganization"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return f"{self.publication} ({self.organization})"
 
@@ -1130,13 +943,6 @@ class PublicationPerson(models.Model):
         blank=True,
     )
     last_author = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = "research_publication_person"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return f"{self.publication} ({self.person})"
@@ -1221,13 +1027,6 @@ class Publication(models.Model):
     zmf_use = models.BooleanField(null=True)
     local_affiliation = models.BooleanField(null=True)
 
-    class Meta:
-        managed = False
-        db_table = "research_publication"
-
-    class Refresh:
-        interval = 3600
-
     def __repr__(self):
         return str(self.pk)
 
@@ -1281,13 +1080,6 @@ class Bidding(models.Model):
     )
     start = models.DateTimeField()
 
-    class Meta:
-        managed = False
-        db_table = "research_bidding"
-
-    class Refresh:
-        interval = 3600
-
     def __str__(self):
         return self.title
 
@@ -1319,13 +1111,6 @@ class BiddingDeadline(models.Model):
     time = models.CharField(max_length=16, blank=True, null=True)
     comment = models.TextField()
 
-    class Meta:
-        managed = False
-        db_table = "research_biddingdeadline"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return f"{self.bidding} (Deadline: {self.deadline})"
 
@@ -1356,13 +1141,6 @@ class BiddingEndowment(models.Model):
     information = models.TextField()
     amount = models.DecimalField(max_digits=20, decimal_places=2)
     currency = models.CharField(max_length=16, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = "research_biddingendowment"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return f"{self.bidding} (Endowment)"
@@ -1421,13 +1199,6 @@ class Partner(models.Model):
     email = models.CharField(max_length=128, blank=True, null=True)
     information = models.TextField()
 
-    class Meta:
-        managed = False
-        db_table = "research_partner"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return self.name
 
@@ -1444,13 +1215,6 @@ class PartnerTypeIntellectualCapitalAccounting(models.Model):
     """
 
     name = HStoreField()
-
-    class Meta:
-        managed = False
-        db_table = "research_partnertypeintellectualcapitalaccounting"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return next((n for n in self.name if n is not None), _("Unknown"))
@@ -1469,13 +1233,6 @@ class FunderTypeIntellectualCapitalAccounting(models.Model):
 
     name = HStoreField()
 
-    class Meta:
-        managed = False
-        db_table = "research_fundertypeintellectualcapitalaccounting"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return next((n for n in self.name if n is not None), _("Unknown"))
 
@@ -1492,13 +1249,6 @@ class FunderTypeStatisticsAustria(models.Model):
     """
 
     name = HStoreField()
-
-    class Meta:
-        managed = False
-        db_table = "research_fundertypestatisticsaustria"
-
-    class Refresh:
-        interval = 86400
 
     def __str__(self):
         return next((n for n in self.name if n is not None), _("Unknown"))
