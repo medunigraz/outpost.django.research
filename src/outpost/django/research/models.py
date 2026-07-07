@@ -398,13 +398,6 @@ class ProjectCategory(models.Model):
     name = HStoreField()
     third_party_funding_policy = models.BooleanField()
 
-    class Meta:
-        managed = False
-        db_table = "research_projectcategory"
-
-    class Refresh:
-        interval = 86400
-
     def __str__(self):
         return self.name.get("de")
 
