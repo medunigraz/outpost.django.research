@@ -427,40 +427,6 @@ class ProjectType(models.Model):
         return self.name.get("de")
 
 
-class DjangoProjectType(models.Model):
-    id = models.OneToOneField(
-        "ProjectType",
-        models.DO_NOTHING,
-        db_column="id",
-        db_constraint=False,
-        related_name="+",
-        primary_key=True,
-    )
-    public = models.BooleanField(default=False)
-
-    def __str__(self):
-        return str(self.id)
-
-    @classmethod
-    def update(cls, **kwargs):
-        from outpost.django.base.models import MaterializedView
-        from outpost.django.base.tasks import MaterializedViewTasks
-
-        try:
-            mv = MaterializedView.objects.get(
-                name=cls.id.field.related_model._meta.db_table
-            )
-        except MaterializedView.DoesNotExist:
-            logger.warn(
-                f"No materialized view object found for {cls.id.field.related_model._meta.db_table}"
-            )
-            return
-        MaterializedViewTasks.refresh.apply_async((mv.pk,), queue="maintainance")
-
-
-post_save.connect(DjangoProjectType.update, sender=DjangoProjectType)
-
-
 class ProjectResearch(models.Model):
     """
     ## Fields
@@ -632,40 +598,6 @@ class ProjectStatus(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class DjangoProjectStatus(models.Model):
-    id = models.OneToOneField(
-        "ProjectStatus",
-        models.DO_NOTHING,
-        db_column="id",
-        db_constraint=False,
-        related_name="+",
-        primary_key=True,
-    )
-    public = models.BooleanField(default=False)
-
-    def __str__(self):
-        return str(self.id)
-
-    @classmethod
-    def update(cls, **kwargs):
-        from outpost.django.base.models import MaterializedView
-        from outpost.django.base.tasks import MaterializedViewTasks
-
-        try:
-            mv = MaterializedView.objects.get(
-                name=cls.id.field.related_model._meta.db_table
-            )
-        except MaterializedView.DoesNotExist:
-            logger.warn(
-                f"No materialized view object found for {cls.id.field.related_model._meta.db_table}"
-            )
-            return
-        MaterializedViewTasks.refresh.apply_async((mv.pk,), queue="maintainance")
-
-
-post_save.connect(DjangoProjectStatus.update, sender=DjangoProjectStatus)
 
 
 class Program(models.Model):
