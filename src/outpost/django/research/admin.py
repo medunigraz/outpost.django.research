@@ -68,11 +68,6 @@ class ProjectCategoryAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(models.ProjectCategory)
-class ProjectCategoryAdmin(admin.ModelAdmin):
-    pass
-
-
 @admin.register(models.ProjectType)
 class ProjectTypeAdmin(admin.ModelAdmin):
     pass
