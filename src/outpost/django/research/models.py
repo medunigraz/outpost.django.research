@@ -1085,7 +1085,7 @@ class Partner(models.Model):
     url = models.CharField(max_length=128, blank=True, null=True)
     telephone = models.CharField(max_length=128, blank=True, null=True)
     email = models.CharField(max_length=128, blank=True, null=True)
-    information = models.TextField()
+    information = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
