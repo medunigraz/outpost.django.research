@@ -943,7 +943,7 @@ class Publication(models.Model):
     impactfactor_norm_super = models.FloatField()
     impactfactor_norm_super_year = models.PositiveSmallIntegerField()
     impactfactor_norm_super_category = models.TextField()
-    citations = models.BooleanField(null=True)
+    citations = models.PositiveIntegerField(null=True)
     conference_name = models.BooleanField(null=True)
     conference_place = models.BooleanField(null=True)
     conference_international = models.BooleanField(null=True)
