@@ -1146,6 +1146,7 @@ class ServiceProvider(models.Model):
     campusonline = models.ForeignKey(
         "campusonline.Organization",
         models.DO_NOTHING,
+        db_constraint=False,
         null=True,
         blank=True,
     )
