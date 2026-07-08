@@ -920,7 +920,7 @@ class Publication(models.Model):
     #    db_constraint=False,
     #    related_name="publications",
     # )
-    imported = models.DateTimeField()
+    imported = models.DateTimeField(blank=True, null=True)
     journal = models.TextField(blank=True, null=True)
     issn = models.CharField(max_length=20, blank=True, null=True)
     collection_publisher = models.TextField(blank=True, null=True)
