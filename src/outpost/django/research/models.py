@@ -1082,7 +1082,7 @@ class Partner(models.Model):
         "PartnerTypeIntellectualCapitalAccounting",
         models.CASCADE,
     )
-    url = models.CharField(max_length=128, blank=True, null=True)
+    url = models.URLField(max_length=512, blank=True, null=True)
     telephone = models.CharField(max_length=128, blank=True, null=True)
     email = models.CharField(max_length=128, blank=True, null=True)
     information = models.TextField(blank=True, null=True)
