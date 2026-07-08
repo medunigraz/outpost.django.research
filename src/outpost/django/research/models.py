@@ -861,7 +861,7 @@ class Publication(models.Model):
     title = models.CharField(max_length=1024, blank=True, null=True)
     authors = ArrayField(models.CharField(max_length=256), blank=True, null=True)
     year = models.PositiveSmallIntegerField()
-    source = models.TextField()
+    source = models.TextField(blank=True, null=True)
     category = models.ForeignKey(
         "PublicationCategory",
         models.SET_NULL,
