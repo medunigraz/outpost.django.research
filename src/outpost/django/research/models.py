@@ -711,8 +711,12 @@ class Project(models.Model):
     legalbasis = models.ForeignKey(
         LegalBasis, models.SET_NULL, db_constraint=False, null=True, blank=True
     )
-    project_total_requested = models.DecimalField(max_digits=10, decimal_places=2)
-    project_total_approved = models.DecimalField(max_digits=10, decimal_places=2)
+    project_total_requested = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True
+    )
+    project_total_approved = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True
+    )
     predominant_funder = models.ForeignKey(
         PredominantFunder, models.SET_NULL, db_constraint=False, null=True, blank=True
     )
