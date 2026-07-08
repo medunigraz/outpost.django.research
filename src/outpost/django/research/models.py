@@ -1000,7 +1000,7 @@ class BiddingDeadline(models.Model):
     bidding = models.ForeignKey("Bidding", models.DO_NOTHING, related_name="deadlines")
     deadline = models.DateTimeField()
     time = models.CharField(max_length=16, blank=True, null=True)
-    comment = models.TextField()
+    comment = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.bidding} (Deadline: {self.deadline})"
