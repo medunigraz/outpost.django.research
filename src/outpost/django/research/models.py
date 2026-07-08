@@ -1081,6 +1081,8 @@ class Partner(models.Model):
     typeintellectualcapitalaccounting = models.ForeignKey(
         "PartnerTypeIntellectualCapitalAccounting",
         models.CASCADE,
+        blank=True,
+        null=True,
     )
     url = models.URLField(max_length=512, blank=True, null=True)
     telephone = models.CharField(max_length=128, blank=True, null=True)
