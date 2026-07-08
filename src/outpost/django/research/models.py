@@ -124,15 +124,13 @@ class Classification(AL_Node):
         "self",
         models.SET_NULL,
         related_name="children_set",
-        db_constraint=False,
-        db_index=False,
         null=True,
         blank=True,
     )
     persons = models.ManyToManyField(
         "campusonline.Person",
-        db_table="research_classification_person",
         db_constraint=False,
+        db_table="research_classification_person",
         related_name="classifications",
     )
     level = models.PositiveSmallIntegerField()
@@ -347,11 +345,9 @@ class Funder(models.Model):
     street = models.CharField(max_length=256, blank=True, null=True)
     zipcode = models.CharField(max_length=32, blank=True, null=True)
     city = models.CharField(max_length=256, blank=True, null=True)
-    country = models.ForeignKey(
-        "Country", models.SET_NULL, db_constraint=False, null=True, blank=True
-    )
+    country = models.ForeignKey("Country", models.SET_NULL, null=True, blank=True)
     category = models.ForeignKey(
-        "FunderCategory", models.SET_NULL, db_constraint=False, null=True, blank=True
+        "FunderCategory", models.SET_NULL, null=True, blank=True
     )
     url = models.CharField(max_length=256, blank=True, null=True)
     telephone = models.CharField(max_length=256, blank=True, null=True)
@@ -362,15 +358,13 @@ class Funder(models.Model):
     patron_associate_professor = models.BooleanField()
     typeintellectualcapitalaccounting = models.ForeignKey(
         "FunderTypeIntellectualCapitalAccounting",
-        models.DO_NOTHING,
-        db_constraint=False,
+        models.SET_NULL,
         null=True,
         blank=True,
     )
     typestatisticsaustria = models.ForeignKey(
         "FunderTypeStatisticsAustria",
-        models.DO_NOTHING,
-        db_constraint=False,
+        models.SET_NULL,
         null=True,
         blank=True,
     )
@@ -479,8 +473,7 @@ class ProjectPerson(models.Model):
     id = models.TextField(primary_key=True)
     project = models.ForeignKey(
         "Project",
-        models.DO_NOTHING,
-        db_constraint=False,
+        models.CASCADE,
         null=True,
         blank=True,
         related_name="persons",
@@ -495,8 +488,7 @@ class ProjectPerson(models.Model):
     )
     function = models.ForeignKey(
         "ProjectFunction",
-        models.DO_NOTHING,
-        db_constraint=False,
+        models.CASCADE,
         null=True,
         blank=True,
         related_name="persons",
@@ -612,9 +604,7 @@ class Program(models.Model):
 
     name = models.CharField(max_length=256, blank=True, null=True)
     active = models.BooleanField()
-    funder = models.ForeignKey(
-        "Funder", models.DO_NOTHING, db_constraint=False, null=True, blank=True
-    )
+    funder = models.ForeignKey("Funder", models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -630,29 +620,26 @@ class Project(models.Model):
 
     organization = models.ForeignKey(
         "campusonline.Organization",
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
         null=True,
         blank=True,
     )
     category = models.ForeignKey(
-        "ProjectCategory", models.DO_NOTHING, db_constraint=False, null=True, blank=True
+        "ProjectCategory", models.CASCADE, null=True, blank=True
     )
-    type = models.ForeignKey(
-        "ProjectType", models.DO_NOTHING, db_constraint=False, null=True, blank=True
-    )
+    type = models.ForeignKey("ProjectType", models.CASCADE, null=True, blank=True)
     short = models.CharField(max_length=256, blank=True, null=True)
     title = HStoreField()
     partner_function = models.ForeignKey(
         "ProjectPartnerFunction",
-        models.SET_NULL,
-        db_constraint=False,
+        models.CASCADE,
         null=True,
         blank=True,
     )
     manager = models.ForeignKey(
         "campusonline.Person",
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
         null=True,
         blank=True,
@@ -660,46 +647,33 @@ class Project(models.Model):
     )
     contact = models.ForeignKey(
         "campusonline.Person",
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
         null=True,
         blank=True,
         related_name="+",
     )
-    status = models.ForeignKey(
-        "ProjectStatus", models.SET_NULL, db_constraint=False, null=True, blank=True
-    )
+    status = models.ForeignKey("ProjectStatus", models.CASCADE, null=True, blank=True)
     url = models.URLField(blank=True, null=True)
     abstract = HStoreField()
     begin_planned = models.DateTimeField(blank=True, null=True)
     begin_effective = models.DateTimeField(blank=True, null=True)
     end_planned = models.DateTimeField(blank=True, null=True)
     end_effective = models.DateTimeField(blank=True, null=True)
-    grant = models.ForeignKey(
-        "ProjectGrant", models.SET_NULL, db_constraint=False, null=True, blank=True
-    )
+    grant = models.ForeignKey("ProjectGrant", models.SET_NULL, null=True, blank=True)
     research = models.ForeignKey(
-        "ProjectResearch", models.SET_NULL, db_constraint=False, null=True, blank=True
+        "ProjectResearch", models.SET_NULL, null=True, blank=True
     )
-    event = models.ForeignKey(
-        "ProjectEvent", models.SET_NULL, db_constraint=False, null=True, blank=True
-    )
-    study = models.ForeignKey(
-        "ProjectStudy", models.SET_NULL, db_constraint=False, null=True, blank=True
-    )
-    language = models.ForeignKey(
-        "Language", models.SET_NULL, db_constraint=False, null=True, blank=True
-    )
+    event = models.ForeignKey("ProjectEvent", models.SET_NULL, null=True, blank=True)
+    study = models.ForeignKey("ProjectStudy", models.SET_NULL, null=True, blank=True)
+    language = models.ForeignKey("Language", models.SET_NULL, null=True, blank=True)
     funders = models.ManyToManyField(
         "Funder",
         db_table="research_project_funder",
-        db_constraint=False,
         related_name="projects",
     )
     assignment = models.DateTimeField(blank=True, null=True)
-    program = models.ForeignKey(
-        "Program", models.SET_NULL, db_constraint=False, null=True, blank=True
-    )
+    program = models.ForeignKey("Program", models.SET_NULL, null=True, blank=True)
     subprogram = models.TextField(blank=True, null=True)
     publish = models.BooleanField()
     visible = models.BooleanField()
@@ -708,9 +682,7 @@ class Project(models.Model):
     gender_studies = models.BooleanField()
     clinical_trial = models.BooleanField()
     invesitgator_init = models.BooleanField()
-    legalbasis = models.ForeignKey(
-        LegalBasis, models.SET_NULL, db_constraint=False, null=True, blank=True
-    )
+    legalbasis = models.ForeignKey("LegalBasis", models.SET_NULL, null=True, blank=True)
     project_total_requested = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True
     )
@@ -718,11 +690,11 @@ class Project(models.Model):
         max_digits=10, decimal_places=2, blank=True, null=True
     )
     predominant_funder = models.ForeignKey(
-        PredominantFunder, models.SET_NULL, db_constraint=False, null=True, blank=True
+        "PredominantFunder", models.SET_NULL, null=True, blank=True
     )
     project_management_accountable = models.ForeignKey(
         "campusonline.Person",
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
         null=True,
         blank=True,
@@ -731,15 +703,14 @@ class Project(models.Model):
     internal_order = models.CharField(max_length=20, null=True, blank=True)
     parent = models.ForeignKey(
         "Project",
-        models.SET_NULL,
-        db_constraint=False,
+        models.CASCADE,
         null=True,
         blank=True,
         related_name="children",
     )
     co_accountable = models.ForeignKey(
         "campusonline.Person",
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
         null=True,
         blank=True,
@@ -820,15 +791,14 @@ class PublicationOrganization(models.Model):
     id = models.CharField(max_length=256, primary_key=True)
     publication = models.ForeignKey(
         "Publication",
-        models.SET_NULL,
-        db_constraint=False,
+        models.CASCADE,
         null=True,
         blank=True,
         related_name="organizations",
     )
     organization = models.ForeignKey(
         "campusonline.Organization",
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
         null=True,
         blank=True,
@@ -837,7 +807,6 @@ class PublicationOrganization(models.Model):
     authorship = models.ForeignKey(
         "PublicationAuthorship",
         models.SET_NULL,
-        db_constraint=False,
         null=True,
         blank=True,
     )
@@ -850,15 +819,14 @@ class PublicationPerson(models.Model):
     id = models.CharField(max_length=256, primary_key=True)
     publication = models.ForeignKey(
         "Publication",
-        models.SET_NULL,
-        db_constraint=False,
+        models.CASCADE,
         null=True,
         blank=True,
         related_name="persons",
     )
     person = models.ForeignKey(
         "campusonline.Person",
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
         null=True,
         blank=True,
@@ -867,7 +835,6 @@ class PublicationPerson(models.Model):
     authorship = models.ForeignKey(
         "PublicationAuthorship",
         models.SET_NULL,
-        db_constraint=False,
         null=True,
         blank=True,
     )
@@ -898,14 +865,12 @@ class Publication(models.Model):
     category = models.ForeignKey(
         "PublicationCategory",
         models.SET_NULL,
-        db_constraint=False,
         null=True,
         blank=True,
     )
     document_type = models.ForeignKey(
         "PublicationDocument",
         models.SET_NULL,
-        db_constraint=False,
         null=True,
         blank=True,
     )
@@ -917,7 +882,6 @@ class Publication(models.Model):
     # persons = models.ManyToManyField(
     #    "campusonline.Person",
     #    db_table="research_publication_person",
-    #    db_constraint=False,
     #    related_name="publications",
     # )
     imported = models.DateTimeField(blank=True, null=True)
@@ -928,9 +892,8 @@ class Publication(models.Model):
     edition = models.CharField(max_length=50, blank=True, null=True)
     university = models.TextField(blank=True, null=True)
     country = models.ForeignKey(
-        "campusonline.Country",
+        "Country",
         models.SET_NULL,
-        db_constraint=False,
         null=True,
         blank=True,
     )
@@ -1006,7 +969,6 @@ class Bidding(models.Model):
     funders = models.ManyToManyField(
         "Funder",
         db_table="research_bidding_funder",
-        db_constraint=False,
         related_name="biddings",
     )
     start = models.DateTimeField()
@@ -1035,9 +997,7 @@ class BiddingDeadline(models.Model):
     Generic comment.
     """
 
-    bidding = models.ForeignKey(
-        "Bidding", models.DO_NOTHING, db_constraint=False, related_name="deadlines"
-    )
+    bidding = models.ForeignKey("Bidding", models.DO_NOTHING, related_name="deadlines")
     deadline = models.DateTimeField()
     time = models.CharField(max_length=16, blank=True, null=True)
     comment = models.TextField()
@@ -1066,9 +1026,7 @@ class BiddingEndowment(models.Model):
     Currency used to define amount.
     """
 
-    bidding = models.ForeignKey(
-        "Bidding", models.DO_NOTHING, db_constraint=False, related_name="endowments"
-    )
+    bidding = models.ForeignKey("Bidding", models.DO_NOTHING, related_name="endowments")
     information = models.TextField()
     amount = models.DecimalField(max_digits=20, decimal_places=2)
     currency = models.CharField(max_length=16, blank=True, null=True)
@@ -1122,8 +1080,7 @@ class Partner(models.Model):
     city = models.CharField(max_length=128, blank=True, null=True)
     typeintellectualcapitalaccounting = models.ForeignKey(
         "PartnerTypeIntellectualCapitalAccounting",
-        models.DO_NOTHING,
-        db_constraint=False,
+        models.CASCADE,
     )
     url = models.CharField(max_length=128, blank=True, null=True)
     telephone = models.CharField(max_length=128, blank=True, null=True)
@@ -1189,7 +1146,6 @@ class ServiceProvider(models.Model):
     campusonline = models.ForeignKey(
         "campusonline.Organization",
         models.DO_NOTHING,
-        db_constraint=False,
         null=True,
         blank=True,
     )
