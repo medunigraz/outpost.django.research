@@ -891,7 +891,7 @@ class Publication(models.Model):
     Contact emails.
     """
 
-    title = models.CharField(max_length=256, blank=True, null=True)
+    title = models.CharField(max_length=1024, blank=True, null=True)
     authors = ArrayField(models.CharField(max_length=256))
     year = models.PositiveSmallIntegerField()
     source = models.TextField()
