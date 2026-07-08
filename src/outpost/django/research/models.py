@@ -926,7 +926,7 @@ class Publication(models.Model):
     collection_publisher = models.TextField(blank=True, null=True)
     collection_title = models.TextField(blank=True, null=True)
     edition = models.CharField(max_length=50, blank=True, null=True)
-    university = models.TextField()
+    university = models.TextField(blank=True, null=True)
     country = models.ForeignKey(
         "campusonline.Country",
         models.SET_NULL,
