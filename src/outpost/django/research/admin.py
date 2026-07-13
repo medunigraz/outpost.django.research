@@ -85,7 +85,7 @@ class ProjectFunctionAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProjectPerson)
 class ProjectPersonAdmin(admin.ModelAdmin):
-    autocomplete_fields = ("publication", "person", "authorship")
+    pass
 
 
 @admin.register(models.ProjectPartnerFunction)
@@ -145,7 +145,11 @@ class PublicationOrganizationAdmin(admin.ModelAdmin):
 
 @admin.register(models.PublicationPerson)
 class PublicationPersonAdmin(admin.ModelAdmin):
-    pass
+    autocomplete_fields = ("publication", "person", "authorship")
+    list_display = ("person", "publication", "authorship")
+    list_display_links = ("person", "publication")
+    list_filter = ("authorship", "last_author")
+    search_fields = ("person__first_name", "person__last_name", "publication__title")
 
 
 @admin.register(models.Publication)
