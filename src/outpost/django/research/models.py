@@ -536,7 +536,10 @@ class ProjectStudy(models.Model):
     active = models.BooleanField()
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class ProjectEvent(models.Model):
@@ -553,7 +556,10 @@ class ProjectEvent(models.Model):
     name = HStoreField()
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class ProjectGrant(models.Model):
@@ -570,7 +576,10 @@ class ProjectGrant(models.Model):
     name = HStoreField()
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class ProjectStatus(models.Model):
@@ -729,7 +738,10 @@ class Project(models.Model):
     edudract_number = models.CharField(max_length=16, null=True, blank=True)
 
     def __str__(self):
-        return self.title.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class PublicationCategory(models.Model):
@@ -746,7 +758,10 @@ class PublicationCategory(models.Model):
     name = HStoreField()
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class PublicationDocument(models.Model):
@@ -763,7 +778,10 @@ class PublicationDocument(models.Model):
     name = HStoreField()
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class PublicationAuthorship(models.Model):
@@ -780,7 +798,10 @@ class PublicationAuthorship(models.Model):
     name = HStoreField()
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class PublicationOrganization(models.Model):
@@ -927,14 +948,13 @@ class Publication(models.Model):
     zmf_use = models.BooleanField(blank=True, null=True)
     local_affiliation = models.BooleanField(blank=True, null=True)
 
-    def __repr__(self):
-        return str(self.pk)
-
     def __str__(self):
-        if not self.abstract:
-            return str(self.pk)
-        short = shorten(self.abstract, 30)
-        return f"{self.pk}: {short}"
+        if self.title:
+            return f"{self.pk}: {self.title}"
+        if self.abstract:
+            short = shorten(self.abstract, 30)
+            return f"{self.pk}: {short}"
+        return str(self.pk)
 
 
 class Bidding(models.Model):
@@ -1113,7 +1133,10 @@ class PartnerTypeIntellectualCapitalAccounting(models.Model):
     name = HStoreField()
 
     def __str__(self):
-        return next((n for n in self.name if n is not None), _("Unknown"))
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class FunderTypeIntellectualCapitalAccounting(models.Model):
@@ -1130,7 +1153,10 @@ class FunderTypeIntellectualCapitalAccounting(models.Model):
     name = HStoreField()
 
     def __str__(self):
-        return next((n for n in self.name if n is not None), _("Unknown"))
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class FunderTypeStatisticsAustria(models.Model):
@@ -1147,7 +1173,10 @@ class FunderTypeStatisticsAustria(models.Model):
     name = HStoreField()
 
     def __str__(self):
-        return next((n for n in self.name if n is not None), _("Unknown"))
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class ServiceProvider(models.Model):
@@ -1223,4 +1252,7 @@ class Sponsorship(OrderedModel):
     active = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
