@@ -85,7 +85,7 @@ class ProjectFunctionAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProjectPerson)
 class ProjectPersonAdmin(admin.ModelAdmin):
-    pass
+    autocomplete_fields = ("publication", "person", "authorship")
 
 
 @admin.register(models.ProjectPartnerFunction)
