@@ -334,7 +334,7 @@ class Funder(models.Model):
     ### `patron_peer_review` (`boolean`)
     Is funder a provider with scientific peer review procedure, which at the Medical University of Graz is regarded as a sponsor of competitively acquired third-party funding for research funding projects.
 
-    ### `patron_ssociate_professor` (`boolean`)
+    ### `patron_associate_professor` (`boolean`)
     Is funder a provider that is regarded at the Medical University of Graz as a funding provider of competitively acquired third-party funds for research funding projects (especially for the crediting of projects in evaluations of Assoz. Professors and the like).
 
     ### `typeintellectualcapitalaccounting` (`integer`)
