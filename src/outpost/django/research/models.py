@@ -243,7 +243,10 @@ class Country(models.Model):
     iso = HStoreField()
 
     def __str__(self):
-        return self.name
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class Language(models.Model):
