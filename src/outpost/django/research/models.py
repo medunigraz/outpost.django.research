@@ -498,7 +498,7 @@ class ProjectPerson(models.Model):
     )
 
     def __str__(self):
-        return self.projec
+        return str(self.project)
 
 
 class ProjectPartnerFunction(models.Model):
