@@ -125,17 +125,17 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(models.PublicationCategory)
 class PublicationCategoryAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("name",)
 
 
 @admin.register(models.PublicationDocument)
 class PublicationDocumentAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("name",)
 
 
 @admin.register(models.PublicationAuthorship)
 class PublicationAuthorshipAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("name",)
 
 
 @admin.register(models.PublicationOrganization)
@@ -154,7 +154,8 @@ class PublicationPersonAdmin(admin.ModelAdmin):
 
 @admin.register(models.Publication)
 class PublicationAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("id", "title", "authors", "source", "sci", "pubmed", "doi", "pmc", "issn")
+    autocomplete_fields = ("category", "document_type")
 
 
 @admin.register(models.Bidding)
