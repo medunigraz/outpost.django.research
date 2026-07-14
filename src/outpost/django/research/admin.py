@@ -5,17 +5,18 @@ from . import models
 
 @admin.register(models.PredominantFunder)
 class PredominantFunderAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("name",)
 
 
 @admin.register(models.LegalBasis)
 class LegalBasisAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("active",)
+    search_fields = ("name",)
 
 
 @admin.register(models.Field)
 class FieldAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("name",)
 
 
 @admin.register(models.ResearchType)
@@ -25,82 +26,109 @@ class ResearchTypeAdmin(admin.ModelAdmin):
 
 @admin.register(models.Classification)
 class ClassificationAdmin(admin.ModelAdmin):
-    pass
+    autocomplete_fields = ("parent",)
+    list_filter = ("active",)
+    search_fields = ("name",)
 
 
 @admin.register(models.Expertise)
 class ExpertiseAdmin(admin.ModelAdmin):
-    pass
+    autocomplete_fields = ("person",)
+    list_display = ("__str__", "person")
+    search_fields = ("name", "person__first_name", "person__last_name")
 
 
 @admin.register(models.Knowledge)
 class KnowledgeAdmin(admin.ModelAdmin):
-    pass
+    autocomplete_fields = ("person",)
+    list_display = ("__str__", "person")
+    search_fields = ("name", "person__first_name", "person__last_name")
 
 
 @admin.register(models.Education)
 class EducationAdmin(admin.ModelAdmin):
-    pass
+    autocomplete_fields = ("person",)
+    list_display = ("__str__", "person")
+    search_fields = ("name", "person__first_name", "person__last_name")
 
 
 @admin.register(models.Country)
 class CountryAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("name", "iso")
 
 
 @admin.register(models.Language)
 class LanguageAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("__str__", "iso")
+    search_fields = ("name", "iso")
 
 
 @admin.register(models.FunderCategory)
 class FunderCategoryAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("name", "short")
 
 
 @admin.register(models.Funder)
 class FunderAdmin(admin.ModelAdmin):
-    pass
+    autocomplete_fields = (
+        "country",
+        "category",
+        "typeintellectualcapitalaccounting",
+        "typestatisticsaustria",
+        "parent",
+    )
+    list_display = ("__str__", "url")
+    list_display_links = ("__str__",)
+    list_filter = ("active", "patron", "category")
+    search_fields = ("country__name", "name", "street", "city", "email")
 
 
 @admin.register(models.ProjectCategory)
 class ProjectCategoryAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("third_party_funding_policy",)
+    search_fields = ("name",)
 
 
 @admin.register(models.ProjectType)
 class ProjectTypeAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("public",)
+    search_fields = ("name",)
 
 
 @admin.register(models.ProjectResearch)
 class ProjectResearchAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("active",)
+    search_fields = ("name",)
 
 
 @admin.register(models.ProjectFunction)
 class ProjectFunctionAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("active",)
+    search_fields = ("name",)
 
 
 @admin.register(models.ProjectPerson)
 class ProjectPersonAdmin(admin.ModelAdmin):
-    pass
+    autocomplete_fields = ("project", "person", "function")
+    list_display = ("project", "person", "function")
+    list_filter = ("function",)
+    search_fields = ("project__name", "person__last_name", "person__first_name")
 
 
 @admin.register(models.ProjectPartnerFunction)
 class ProjectPartnerFunctionAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("name",)
 
 
 @admin.register(models.ProjectStudy)
 class ProjectStudyAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("active",)
+    search_fields = ("name",)
 
 
 @admin.register(models.ProjectEvent)
 class ProjectEventAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("name",)
 
 
 @admin.register(models.ProjectGrant)
@@ -110,17 +138,54 @@ class ProjectGrantAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProjectStatus)
 class ProjectStatusAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("public",)
+    search_fields = ("name",)
 
 
 @admin.register(models.Program)
 class ProgramAdmin(admin.ModelAdmin):
-    pass
+    autocomplete_fields = ("funder",)
+    list_display = ("name", "funder")
+    list_filter = ("active",)
+    search_fields = ("name", "funder__name")
 
 
 @admin.register(models.Project)
 class ProjectAdmin(admin.ModelAdmin):
-    pass
+    autocomplete_fields = (
+        "organization",
+        "category",
+        "type",
+        "partner_function",
+        "manager",
+        "contact",
+        "status",
+        "grant",
+        "research",
+        "event",
+        "study",
+        "language",
+        "program",
+        "legalbasis",
+        "predominant_funder",
+        "project_management_accountable",
+        "parent",
+        "co_accountable",
+    )
+    list_display = ("__str__", "short", "organization")
+    list_filter = (
+        "category",
+        "type",
+        "status",
+        "grant",
+        "research",
+        "event",
+        "language",
+        "publish",
+        "visible",
+    )
+    search_fields = ("title", "short")
+    date_hierarchy = "assignment"
 
 
 @admin.register(models.PublicationCategory)
@@ -154,43 +219,66 @@ class PublicationPersonAdmin(admin.ModelAdmin):
 
 @admin.register(models.Publication)
 class PublicationAdmin(admin.ModelAdmin):
-    search_fields = ("id", "title", "authors", "source", "sci", "pubmed", "doi", "pmc", "issn")
+    search_fields = (
+        "id",
+        "title",
+        "authors",
+        "source",
+        "sci",
+        "pubmed",
+        "doi",
+        "pmc",
+        "issn",
+    )
     autocomplete_fields = ("category", "document_type")
 
 
 @admin.register(models.Bidding)
 class BiddingAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("title", "url", "start")
+    list_display_links = ("title",)
+    list_filter = ("running",)
+    search_fields = ("title",)
+    date_hierarchy = "start"
 
 
 @admin.register(models.BiddingDeadline)
 class BiddingDeadlineAdmin(admin.ModelAdmin):
-    pass
+    autocomplete_fields = ("bidding",)
+    list_display = ("bidding", "deadline")
+    list_display_links = ("bidding",)
+    search_fields = ("bidding__title", "comment")
 
 
 @admin.register(models.BiddingEndowment)
 class BiddingEndowmentAdmin(admin.ModelAdmin):
-    pass
+    autocomplete_fields = ("bidding",)
+    list_display = ("bidding", "amount", "currency")
+    list_display_links = ("bidding",)
+    search_fields = ("bidding__title", "information")
 
 
 @admin.register(models.Partner)
 class PartnerAdmin(admin.ModelAdmin):
-    pass
+    autocomplete_fields = ("typeintellectualcapitalaccounting",)
+    list_display = ("name", "url")
+    list_filter = ("typeintellectualcapitalaccounting",)
+    search_fields = ("name", "short", "street", "city", "email", "information")
 
 
 @admin.register(models.PartnerTypeIntellectualCapitalAccounting)
 class PartnerTypeIntellectualCapitalAccountingAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("name",)
 
 
 @admin.register(models.FunderTypeIntellectualCapitalAccounting)
 class FunderTypeIntellectualCapitalAccountingAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("name",)
 
 
 @admin.register(models.FunderTypeStatisticsAustria)
 class FunderTypeStatisticsAustriaAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("name",)
 
 
 @admin.register(models.ServiceProvider)
@@ -205,7 +293,8 @@ class ServiceProviderContactAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProjectMentorContribution)
 class ProjectMentorContributionAdmin(admin.ModelAdmin):
-    list_display = ("id", "__str__", "active")
+    list_filter = ("active",)
+    search_fields = ("name",)
 
 
 @admin.register(models.Sponsorship)

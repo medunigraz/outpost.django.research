@@ -38,7 +38,10 @@ class PredominantFunder(models.Model):
     name = HStoreField()
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class LegalBasis(models.Model):
@@ -58,7 +61,10 @@ class LegalBasis(models.Model):
     active = models.BooleanField()
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class Field(models.Model):
@@ -81,7 +87,10 @@ class Field(models.Model):
     active = models.BooleanField()
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class ResearchType(models.Model):
@@ -100,7 +109,10 @@ class ResearchType(models.Model):
     name = HStoreField()
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class Classification(AL_Node):
@@ -138,7 +150,10 @@ class Classification(AL_Node):
     node_order_by = ["id"]
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class Expertise(models.Model):
@@ -166,7 +181,10 @@ class Expertise(models.Model):
     )
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class Knowledge(models.Model):
@@ -194,7 +212,10 @@ class Knowledge(models.Model):
     )
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class Education(models.Model):
@@ -222,7 +243,10 @@ class Education(models.Model):
     )
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class Country(models.Model):
@@ -267,7 +291,10 @@ class Language(models.Model):
     iso = models.CharField(max_length=2, blank=True, null=True)
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class FunderCategory(models.Model):
@@ -287,11 +314,14 @@ class FunderCategory(models.Model):
     name = models.CharField(max_length=256, blank=True, null=True)
     short = models.CharField(max_length=256, blank=True, null=True)
 
+    class Meta:
+        ordering = ("name",)
+
     def __str__(self):
         return self.name
 
 
-class Funder(models.Model):
+class Funder(AL_Node):
     """
     ## Fields
 
@@ -356,9 +386,15 @@ class Funder(models.Model):
     telephone = models.CharField(max_length=256, blank=True, null=True)
     email = models.CharField(max_length=256, blank=True, null=True)
     active = models.BooleanField()
+    parent = models.ForeignKey(
+        "self",
+        models.SET_NULL,
+        related_name="children_set",
+        null=True,
+        blank=True,
+    )
     patron = models.BooleanField()
     patron_peer_review = models.BooleanField()
-    patron_associate_professor = models.BooleanField()
     typeintellectualcapitalaccounting = models.ForeignKey(
         "FunderTypeIntellectualCapitalAccounting",
         models.SET_NULL,
@@ -372,7 +408,10 @@ class Funder(models.Model):
         blank=True,
     )
 
+    node_order_by = ("name",)
+
     class Meta:
+        ordering = ("name",)
         permissions = (
             ("view_funder_non_patron", _("View funders that are not a patron")),
         )
@@ -395,8 +434,14 @@ class ProjectCategory(models.Model):
     name = HStoreField()
     third_party_funding_policy = models.BooleanField()
 
+    class Meta:
+        ordering = ("name",)
+
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class ProjectType(models.Model):
@@ -414,7 +459,10 @@ class ProjectType(models.Model):
     public = models.BooleanField()
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class ProjectResearch(models.Model):
@@ -435,7 +483,10 @@ class ProjectResearch(models.Model):
     active = models.BooleanField()
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class ProjectFunction(models.Model):
@@ -456,7 +507,10 @@ class ProjectFunction(models.Model):
     active = models.BooleanField()
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
 
 class ProjectPerson(models.Model):
@@ -621,6 +675,9 @@ class Program(models.Model):
     active = models.BooleanField()
     funder = models.ForeignKey("Funder", models.CASCADE, null=True, blank=True)
 
+    class Meta:
+        ordering = ("name",)
+
     def __str__(self):
         return self.name
 
@@ -739,9 +796,9 @@ class Project(models.Model):
 
     def __str__(self):
         lang = get_language()
-        if lang in self.name:
-            return self.name.get(lang)
-        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
+        if lang in self.title:
+            return self.title.get(lang)
+        return self.title.get(settings.LANGUAGE_CODE, next(self.title.values()))
 
 
 class PublicationCategory(models.Model):
@@ -999,6 +1056,9 @@ class Bidding(models.Model):
     )
     start = models.DateTimeField()
 
+    class Meta:
+        ordering = ("title",)
+
     def __str__(self):
         return self.title
 
@@ -1028,6 +1088,9 @@ class BiddingDeadline(models.Model):
     time = models.CharField(max_length=16, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
 
+    class Meta:
+        ordering = ("bidding__title",)
+
     def __str__(self):
         return f"{self.bidding} (Deadline: {self.deadline})"
 
@@ -1056,6 +1119,9 @@ class BiddingEndowment(models.Model):
     information = models.TextField()
     amount = models.DecimalField(max_digits=20, decimal_places=2)
     currency = models.CharField(max_length=16, blank=True, null=True)
+
+    class Meta:
+        ordering = ("bidding__title",)
 
     def __str__(self):
         return f"{self.bidding} (Endowment)"
@@ -1114,6 +1180,9 @@ class Partner(models.Model):
     telephone = models.CharField(max_length=128, blank=True, null=True)
     email = models.CharField(max_length=128, blank=True, null=True)
     information = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         return self.name
@@ -1244,7 +1313,10 @@ class ProjectMentorContribution(OrderedModel):
     active = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name.get("de")
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return str(self.name)
 
 
 class Sponsorship(OrderedModel):
