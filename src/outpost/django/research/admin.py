@@ -132,7 +132,7 @@ class ProjectEventAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProjectGrant)
 class ProjectGrantAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("name",)
 
 
 @admin.register(models.ProjectStatus)
