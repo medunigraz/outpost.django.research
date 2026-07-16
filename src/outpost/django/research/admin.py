@@ -27,7 +27,6 @@ class ResearchTypeAdmin(admin.ModelAdmin):
 @admin.register(models.Classification)
 class ClassificationAdmin(admin.ModelAdmin):
     autocomplete_fields = ("parent",)
-    list_filter = ("active",)
     search_fields = ("name",)
 
 
