@@ -55,7 +55,7 @@ class LegalBasisViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.LegalBasisSerializer
     permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = filters.LegalBasisFilter
+    filterset_class = filters.LegalBasisFilter
 
 
 @docstring_format(
@@ -76,7 +76,7 @@ class FieldViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.FieldSerializer
     permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = filters.FieldFilter
+    filterset_class = filters.FieldFilter
 
 
 @docstring_format(
@@ -145,7 +145,7 @@ class ClassificationViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.ClassificationSerializer
     permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = filters.ClassificationFilter
+    filterset_class = filters.ClassificationFilter
 
 
 @docstring_format(
@@ -333,7 +333,7 @@ class ProjectResearchViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.ProjectResearchSerializer
     permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = filters.ProjectResearchFilter
+    filterset_class = filters.ProjectResearchFilter
 
 
 @docstring_format(
@@ -354,7 +354,7 @@ class ProjectFunctionViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.ProjectFunctionSerializer
     permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = filters.ProjectFunctionFilter
+    filterset_class = filters.ProjectFunctionFilter
 
 
 @docstring_format(
@@ -374,7 +374,7 @@ class ProjectPersonViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelVie
     queryset = models.ProjectPerson.objects.all()
     serializer_class = serializers.ProjectPersonSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = filters.ProjectPersonFilter
+    filterset_class = filters.ProjectPersonFilter
     permission_classes = (IsAuthenticated,)
     permit_list_expands = (
         "project",
@@ -438,7 +438,7 @@ class ProjectStudyViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.ProjectStudySerializer
     permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = filters.ProjectStudyFilter
+    filterset_class = filters.ProjectStudyFilter
 
 
 @docstring_format(
@@ -509,7 +509,7 @@ class ProjectViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     queryset = models.Project.objects.all()
     serializer_class = serializers.ProjectSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = filters.ProjectFilter
+    filterset_class = filters.ProjectFilter
     ordering_fields = (
         "begin_planned",
         "begin_effective",
@@ -640,7 +640,7 @@ class PublicationPersonViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.PublicationPersonSerializer
     permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = filters.PublicationPersonFilter
+    filterset_class = filters.PublicationPersonFilter
 
 
 @docstring_format(
@@ -660,7 +660,7 @@ class PublicationViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewS
     queryset = models.Publication.objects.all()
     serializer_class = serializers.PublicationSerializer
     filter_backends = (SimpleDjangoFilterBackend, OrderingFilter)
-    filter_class = filters.PublicationFilter
+    filterset_class = filters.PublicationFilter
     ordering_fields = (
         "year",
         "impactfactor",
@@ -720,7 +720,7 @@ class BiddingDeadlineViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelV
     queryset = models.BiddingDeadline.objects.all()
     serializer_class = serializers.BiddingDeadlineSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = filters.BiddingDeadlineFilter
+    filterset_class = filters.BiddingDeadlineFilter
     ordering_fields = ("deadline",)
     permission_classes = (AllowAny,)
     permit_list_expands = ("deadline",)
@@ -745,7 +745,7 @@ class BiddingEndowmentViewSet(
     queryset = models.BiddingEndowment.objects.all()
     serializer_class = serializers.BiddingEndowmentSerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_class = filters.BiddingEndowmentFilter
+    filterset_class = filters.BiddingEndowmentFilter
     permission_classes = (AllowAny,)
     permit_list_expands = ("bidding",)
 
@@ -767,7 +767,7 @@ class BiddingViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     queryset = models.Bidding.objects.all()
     serializer_class = serializers.BiddingSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = filters.BiddingFilter
+    filterset_class = filters.BiddingFilter
     ordering_fields = ("start",)
     permission_classes = (AllowAny,)
     permit_list_expands = ("funders", "deadlines", "endowments")
@@ -815,7 +815,7 @@ class PartnerViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     queryset = models.Partner.objects.all()
     serializer_class = serializers.PartnerSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = filters.PartnerFilter
+    filterset_class = filters.PartnerFilter
     ordering_fields = ("start",)
     permission_classes = (AllowAny,)
     permit_list_expands = ("typeintellectualcapitalaccounting",)
@@ -843,7 +843,7 @@ class ServiceProviderViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     queryset = models.ServiceProvider.objects.all()
     serializer_class = serializers.ServiceProviderSerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_class = filters.ServiceProviderFilter
+    filterset_class = filters.ServiceProviderFilter
     permission_classes = (AllowAny,)
     permit_list_expands = ("contacts", "campusonline")
 
@@ -865,7 +865,7 @@ class ServiceProviderContactViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     queryset = models.ServiceProviderContact.objects.all()
     serializer_class = serializers.ServiceProviderContactSerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_class = filters.ServiceProviderContactFilter
+    filterset_class = filters.ServiceProviderContactFilter
     permission_classes = (AllowAny,)
     permit_list_expands = ("serviceprovider", "campusonline")
 
@@ -887,7 +887,7 @@ class ProjectMentorContributionViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     queryset = models.ProjectMentorContribution.objects.all()
     serializer_class = serializers.ProjectMentorContributionSerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_class = filters.ProjectMentorContributionFilter
+    filterset_class = filters.ProjectMentorContributionFilter
     permission_classes = (AllowAny,)
 
 
@@ -908,5 +908,5 @@ class SponsorshipViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     queryset = models.Sponsorship.objects.all()
     serializer_class = serializers.SponsorshipSerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_class = filters.SponsorshipFilter
+    filterset_class = filters.SponsorshipFilter
     permission_classes = (AllowAny,)
