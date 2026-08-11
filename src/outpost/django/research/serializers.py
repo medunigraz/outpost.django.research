@@ -75,7 +75,7 @@ class ClassificationSerializer(FlexFieldsModelSerializer):
         return {
             "persons": (
                 f"outpost.django.campusonline.serializers.{person}",
-                {"source": "persons", "many": True},
+                {"many": True},
             )
         }
 
@@ -107,12 +107,7 @@ class ExpertiseSerializer(FlexFieldsModelSerializer):
             if request.user:
                 if request.user.is_authenticated:
                     person = "AuthenticatedPersonSerializer"
-        return {
-            "person": (
-                f"outpost.django.campusonline.serializers.{person}",
-                {"source": "person"},
-            )
-        }
+        return {"person": (f"outpost.django.campusonline.serializers.{person}",)}
 
 
 class KnowledgeSerializer(FlexFieldsModelSerializer):
@@ -144,12 +139,7 @@ class KnowledgeSerializer(FlexFieldsModelSerializer):
             if request.user:
                 if request.user.is_authenticated:
                     person = "AuthenticatedPersonSerializer"
-        return {
-            "person": (
-                f"outpost.django.campusonline.serializers.{person}",
-                {"source": "person"},
-            )
-        }
+        return {"person": (f"outpost.django.campusonline.serializers.{person}",)}
 
 
 class EducationSerializer(FlexFieldsModelSerializer):
@@ -181,12 +171,7 @@ class EducationSerializer(FlexFieldsModelSerializer):
             if request.user:
                 if request.user.is_authenticated:
                     person = "AuthenticatedPersonSerializer"
-        return {
-            "person": (
-                f"outpost.django.campusonline.serializers.{person}",
-                {"source": "person"},
-            )
-        }
+        return {"person": (f"outpost.django.campusonline.serializers.{person}",)}
 
 
 class FunderCategorySerializer(FlexFieldsModelSerializer):
@@ -232,21 +217,13 @@ class FunderSerializer(FlexFieldsModelSerializer):
     @property
     def expandable_fields(self):
         return {
-            "category": (
-                f"{self.__class__.__module__}.FunderCategorySerializer",
-                {"source": "category"},
-            ),
-            "country": (
-                f"{self.__class__.__module__}.CountrySerializer",
-                {"source": "country"},
-            ),
+            "category": (f"{self.__class__.__module__}.FunderCategorySerializer",),
+            "country": (f"{self.__class__.__module__}.CountrySerializer",),
             "typeintellectualcapitalaccounting": (
                 f"{self.__class__.__module__}.FunderTypeIntellectualCapitalAccountingSerializer",
-                {"source": "typeintellectualcapitalaccounting"},
             ),
             "typestatisticsaustria": (
                 f"{self.__class__.__module__}.FunderTypeStatisticsAustriaSerializer",
-                {"source": "typestatisticsaustria"},
             ),
         }
 
@@ -273,10 +250,7 @@ class ProgramSerializer(FlexFieldsModelSerializer):
     @property
     def expandable_fields(self):
         return {
-            "funder": (
-                f"{self.__class__.__module__}.FunderSerializer",
-                {"source": "funder"},
-            ),
+            "funder": (f"{self.__class__.__module__}.FunderSerializer",),
         }
 
 
@@ -330,18 +304,9 @@ class ProjectPersonSerializer(FlexFieldsModelSerializer):
                 if request.user.is_authenticated:
                     person = "AuthenticatedPersonSerializer"
         return {
-            "project": (
-                f"{self.__class__.__module__}.ProjectSerializer",
-                {"source": "project"},
-            ),
-            "person": (
-                f"outpost.django.campusonline.serializers.{person}",
-                {"source": "person"},
-            ),
-            "function": (
-                f"{self.__class__.__module__}.ProjectFunctionSerializer",
-                {"source": "function"},
-            ),
+            "project": (f"{self.__class__.__module__}.ProjectSerializer",),
+            "person": (f"outpost.django.campusonline.serializers.{person}",),
+            "function": (f"{self.__class__.__module__}.ProjectFunctionSerializer",),
         }
 
     class Meta:
@@ -418,31 +383,21 @@ class ProjectSerializer(FlexFieldsModelSerializer):
         return {
             "organization": (
                 "outpost.django.campusonline.serializers.OrganizationSerializer",
-                {"source": "organization"},
             ),
-            "category": (ProjectCategorySerializer, {"source": "category"}),
-            "type": (ProjectTypeSerializer, {"source": "type"}),
-            "partner_function": (
-                ProjectPartnerFunctionSerializer,
-                {"source": "partner_function"},
-            ),
-            "manager": (
-                f"outpost.django.campusonline.serializers.{person}",
-                {"source": "manager"},
-            ),
-            "contact": (
-                f"outpost.django.campusonline.serializers.{person}",
-                {"source": "contact"},
-            ),
-            "status": (ProjectStatusSerializer, {"source": "status"}),
-            "grant": (ProjectGrantSerializer, {"source": "grant"}),
-            "research": (ProjectResearchSerializer, {"source": "research"}),
-            "event": (ProjectEventSerializer, {"source": "event"}),
-            "study": (ProjectStudySerializer, {"source": "study"}),
-            "language": (LanguageSerializer, {"source": "language"}),
-            "program": (ProgramSerializer, {"source": "program"}),
-            "funders": (FunderSerializer, {"source": "funders", "many": True}),
-            "parent": (ProjectSerializer, {"source": "parent"}),
+            "category": (ProjectCategorySerializer,),
+            "type": (ProjectTypeSerializer,),
+            "partner_function": (ProjectPartnerFunctionSerializer,),
+            "manager": (f"outpost.django.campusonline.serializers.{person}",),
+            "contact": (f"outpost.django.campusonline.serializers.{person}",),
+            "status": (ProjectStatusSerializer,),
+            "grant": (ProjectGrantSerializer,),
+            "research": (ProjectResearchSerializer,),
+            "event": (ProjectEventSerializer,),
+            "study": (ProjectStudySerializer,),
+            "language": (LanguageSerializer,),
+            "program": (ProgramSerializer,),
+            "funders": (FunderSerializer, {"many": True}),
+            "parent": (ProjectSerializer,),
         }
 
     class Meta:
@@ -485,10 +440,7 @@ class AuthenticatedProjectSerializer(ProjectSerializer):
         return {
             **super().expandable_fields,
             **{
-                "persons": (
-                    f"{self.__class__.__module__}.ProjectPersonSerializer",
-                    {"source": "persons", "many": True},
-                ),
+                "persons": (f"{self.__class__.__module__}.ProjectPersonSerializer",),
             },
         }
 
@@ -503,26 +455,15 @@ class UnrestrictedProjectSerializer(AuthenticatedProjectSerializer):
         return {
             **super().expandable_fields,
             **{
-                "parent": (
-                    f"{self.__class__.__module__}.{self.__class__.__name__}",
-                    {"source": "parent"},
-                ),
-                "legalbasis": (
-                    f"{self.__class__.__module__}.LegalBasisSerializer",
-                    {"source": "persons"},
-                ),
+                "parent": (f"{self.__class__.__module__}.{self.__class__.__name__}",),
+                "legalbasis": (f"{self.__class__.__module__}.LegalBasisSerializer",),
                 "predominant_funder": (
                     f"{self.__class__.__module__}.PredominantFunderSerializer",
-                    {"source": "predominant_funder"},
                 ),
                 "project_management_accountable": (
                     f"{base}.AuthenticatedPersonSerializer",
-                    {"source": "project_management_accountable"},
                 ),
-                "co_accountable": (
-                    f"{base}.AuthenticatedPersonSerializer",
-                    {"source": "co_accountable"},
-                ),
+                "co_accountable": (f"{base}.AuthenticatedPersonSerializer",),
             },
         }
 
@@ -576,15 +517,10 @@ class PublicationOrganizationSerializer(FlexFieldsModelSerializer):
         return {
             "organization": (
                 "outpost.django.campusonline.serializers.OrganizationSerializer",
-                {"source": "organization"},
             ),
-            "publication": (
-                f"{self.__class__.__module__}.PublicationSerializer",
-                {"source": "publication"},
-            ),
+            "publication": (f"{self.__class__.__module__}.PublicationSerializer",),
             "authorship": (
                 f"{self.__class__.__module__}.PublicationAuthorshipSerializer",
-                {"source": "authorship"},
             ),
         }
 
@@ -619,17 +555,10 @@ class PublicationPersonSerializer(FlexFieldsModelSerializer):
                 if request.user.is_authenticated:
                     person = "AuthenticatedPersonSerializer"
         return {
-            "person": (
-                f"outpost.django.campusonline.serializers.{person}",
-                {"source": "person"},
-            ),
-            "publication": (
-                f"{self.__class__.__module__}.PublicationSerializer",
-                {"source": "publication"},
-            ),
+            "person": (f"outpost.django.campusonline.serializers.{person}",),
+            "publication": (f"{self.__class__.__module__}.PublicationSerializer",),
             "authorship": (
                 f"{self.__class__.__module__}.PublicationAuthorshipSerializer",
-                {"source": "authorship"},
             ),
         }
 
@@ -663,20 +592,14 @@ class PublicationSerializer(FlexFieldsModelSerializer):
         return {
             "persons": (
                 f"{self.__class__.__module__}.PublicationPersonSerializer",
-                {"source": "persons", "many": True},
+                {"many": True},
             ),
             "organization_authorship": (
                 f"{self.__class__.__module__}.PublicationOrganizationSerializer",
-                {"source": "organization_authorship", "many": True},
+                {"many": True},
             ),
-            "category": (
-                f"{self.__class__.__module__}.PublicationCategorySerializer",
-                {"source": "category"},
-            ),
-            "document": (
-                f"{self.__class__.__module__}.PublicationDocumentSerializer",
-                {"source": "document"},
-            ),
+            "category": (f"{self.__class__.__module__}.PublicationCategorySerializer",),
+            "document": (f"{self.__class__.__module__}.PublicationDocumentSerializer",),
         }
 
     class Meta:
@@ -756,15 +679,15 @@ class BiddingSerializer(FlexFieldsModelSerializer):
         return {
             "funders": (
                 f"{self.__class__.__module__}.FunderSerializer",
-                {"source": "funders", "many": True},
+                {"many": True},
             ),
             "deadlines": (
                 f"{self.__class__.__module__}.BiddingDeadlineSerializer",
-                {"source": "deadlines", "many": True},
+                {"many": True},
             ),
             "endowments": (
                 f"{self.__class__.__module__}.BiddingEndowmentSerializer",
-                {"source": "endowments", "many": True},
+                {"many": True},
             ),
         }
 
@@ -790,12 +713,7 @@ class BiddingDeadlineSerializer(FlexFieldsModelSerializer):
 
     @property
     def expandable_fields(self):
-        return {
-            "bidding": (
-                f"{self.__class__.__module__}.BiddingSerializer",
-                {"source": "bidding"},
-            )
-        }
+        return {"bidding": (f"{self.__class__.__module__}.BiddingSerializer",)}
 
     class Meta:
         model = models.BiddingDeadline
@@ -807,12 +725,7 @@ class BiddingEndowmentSerializer(FlexFieldsModelSerializer):
 
     @property
     def expandable_fields(self):
-        return {
-            "bidding": (
-                f"{self.__class__.__module__}.BiddingSerializer",
-                {"source": "bidding"},
-            )
-        }
+        return {"bidding": (f"{self.__class__.__module__}.BiddingSerializer",)}
 
     class Meta:
         model = models.BiddingEndowment
@@ -839,7 +752,6 @@ class PartnerSerializer(FlexFieldsModelSerializer):
         return {
             "typeintellectualcapitalaccounting": (
                 f"{self.__class__.__module__}.PartnerTypeIntellectualCapitalAccountingSerializer",
-                {"source": "typeintellectualcapitalaccounting"},
             ),
         }
 
@@ -892,11 +804,11 @@ class ServiceProviderSerializer(FlexFieldsModelSerializer):
         return {
             "campusonline": (
                 "outpost.django.campusonline.serializers.OrganizationSerializer",
-                {"source": "campusonline", "many": False},
+                {"many": False},
             ),
             "contacts": (
                 f"{self.__class__.__module__}.ServiceProviderContactSerializer",
-                {"source": "contacts", "many": True},
+                {"many": True},
             ),
         }
 
@@ -938,11 +850,11 @@ class ServiceProviderContactSerializer(FlexFieldsModelSerializer):
         return {
             "campusonline": (
                 f"outpost.django.campusonline.serializers.{person}",
-                {"source": "campusonline", "many": False},
+                {"many": False},
             ),
             "serviceprovider": (
                 f"{self.__class__.__module__}.ServiceProviderSerializer",
-                {"source": "serviceprovider", "many": False},
+                {"many": False},
             ),
         }
 
