@@ -7,7 +7,8 @@ from django.contrib.postgres.fields import (
     HStoreField,
 )
 from django.db.models.signals import post_save
-from django.utils.translation import get_language, gettext_lazy as _
+from django.utils.translation import get_language
+from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
 from treebeard.al_tree import AL_Node
 
@@ -372,6 +373,9 @@ class Funder(AL_Node):
 
     ### `typestatisticsaustria` (`integer`)
     Foreign key to [type according to Statistic Austria](../funder:type:statisticsaustria).
+
+    ### `note` (`string`)
+    General notes
     """
 
     name = models.CharField(max_length=256, blank=True, null=True)
@@ -407,6 +411,7 @@ class Funder(AL_Node):
         null=True,
         blank=True,
     )
+    note = models.TextField(blank=True, null=True)
 
     node_order_by = ("name",)
 
