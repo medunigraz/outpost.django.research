@@ -267,7 +267,6 @@ class FunderViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.FunderSerializer
     permission_classes = (AllowAny,)
     permit_list_expands = (
-        "category",
         "country",
         "typeintellectualcapitalaccounting",
         "typestatisticsaustria",

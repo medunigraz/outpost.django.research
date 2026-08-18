@@ -217,7 +217,6 @@ class FunderSerializer(FlexFieldsModelSerializer):
     @property
     def expandable_fields(self):
         return {
-            "category": (f"{self.__class__.__module__}.FunderCategorySerializer",),
             "country": (f"{self.__class__.__module__}.CountrySerializer",),
             "typeintellectualcapitalaccounting": (
                 f"{self.__class__.__module__}.FunderTypeIntellectualCapitalAccountingSerializer",
