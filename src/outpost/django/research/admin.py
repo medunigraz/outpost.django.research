@@ -71,15 +71,34 @@ class FunderCategoryAdmin(admin.ModelAdmin):
 class FunderAdmin(admin.ModelAdmin):
     autocomplete_fields = (
         "country",
-        "category",
         "typeintellectualcapitalaccounting",
         "typestatisticsaustria",
         "parent",
     )
-    list_display = ("__str__", "url")
+    list_display = (
+        "__str__",
+        "abbreviation",
+        "street",
+        "zipcode",
+        "city",
+        "country",
+        "url",
+        "active",
+    )
     list_display_links = ("__str__",)
-    list_filter = ("active", "patron", "category")
-    search_fields = ("country__name", "name", "street", "city", "email")
+    list_filter = (
+        "active",
+        "patron",
+        "patron_peer_review",
+        "typeintellectualcapitalaccounting",
+        "typestatisticsaustria",
+    )
+    readonly_fields = ("id",)
+    search_fields = ("country__name", "name", "street", "city")
+
+    def get_fields(self, request, obj=None):
+        fields = list(super().get_fields(request, obj))
+        return ["id", *[field for field in fields if field != "id"]]
 
 
 @admin.register(models.ProjectCategory)
