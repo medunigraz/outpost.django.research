@@ -379,16 +379,12 @@ class Funder(AL_Node):
     """
 
     name = models.CharField(max_length=256, blank=True, null=True)
+    abbreviation = models.CharField(max_length=256, blank=True, null=True)
     street = models.CharField(max_length=256, blank=True, null=True)
     zipcode = models.CharField(max_length=32, blank=True, null=True)
     city = models.CharField(max_length=256, blank=True, null=True)
     country = models.ForeignKey("Country", models.SET_NULL, null=True, blank=True)
-    category = models.ForeignKey(
-        "FunderCategory", models.SET_NULL, null=True, blank=True
-    )
     url = models.CharField(max_length=256, blank=True, null=True)
-    telephone = models.CharField(max_length=256, blank=True, null=True)
-    email = models.CharField(max_length=256, blank=True, null=True)
     active = models.BooleanField()
     parent = models.ForeignKey(
         "self",
