@@ -94,7 +94,7 @@ class FunderAdmin(admin.ModelAdmin):
         "typestatisticsaustria",
     )
     readonly_fields = ("id",)
-    search_fields = ("country__name", "name", "street", "city")
+    search_fields = ("name", "abbreviation")
 
     def get_fields(self, request, obj=None):
         fields = list(super().get_fields(request, obj))
