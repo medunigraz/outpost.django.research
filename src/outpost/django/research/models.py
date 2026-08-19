@@ -332,6 +332,9 @@ class Funder(AL_Node):
     ### `name` (`object`)
     Names of funder, defined by language.
 
+    ### `abbreviation` (`string`)
+    Abbreviation of funder.
+
     ### `street` (`string`)
     Street address.
 
@@ -385,25 +388,30 @@ class Funder(AL_Node):
     city = models.CharField(max_length=256, blank=True, null=True)
     country = models.ForeignKey("Country", models.SET_NULL, null=True, blank=True)
     url = models.CharField(max_length=256, blank=True, null=True)
-    active = models.BooleanField()
+    active = models.BooleanField(verbose_name="active organization")
     parent = models.ForeignKey(
         "self",
         models.SET_NULL,
         related_name="children_set",
+        verbose_name="parent organization",
         null=True,
         blank=True,
     )
-    patron = models.BooleanField()
-    patron_peer_review = models.BooleanField()
+    patron = models.BooleanField(verbose_name="research funding agency")
+    patron_peer_review = models.BooleanField(
+        verbose_name="funding agency with peer review"
+    )
     typeintellectualcapitalaccounting = models.ForeignKey(
         "FunderTypeIntellectualCapitalAccounting",
         models.SET_NULL,
+        verbose_name="wibi classification",
         null=True,
         blank=True,
     )
     typestatisticsaustria = models.ForeignKey(
         "FunderTypeStatisticsAustria",
         models.SET_NULL,
+        verbose_name="statistic austria classification",
         null=True,
         blank=True,
     )
