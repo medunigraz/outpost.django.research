@@ -85,7 +85,6 @@ class FunderAdmin(admin.ModelAdmin):
         "url",
         "active",
     )
-    list_display_links = ("__str__",)
     list_filter = (
         "active",
         "patron",
