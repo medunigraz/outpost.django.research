@@ -1,6 +1,41 @@
+from types import MethodType
+
 from django.contrib import admin
+from django.contrib.admin.views.autocomplete import AutocompleteJsonView
 
 from . import models
+
+
+class ResearchAutocompleteJsonView(AutocompleteJsonView):
+    def serialize_result(self, obj, to_field_name):
+        result = super().serialize_result(obj, to_field_name)
+
+        if isinstance(obj, models.Funder) and self.source_field.name == "parent":
+            details = []
+
+            if obj.street:
+                details.append(obj.street)
+            if obj.city:
+                details.append(obj.city)
+            if obj.country:
+                details.append(str(obj.country))
+
+            result["text"] = obj.name
+
+            if details:
+                result["text"] += f" - {' | '.join(details)}"
+
+        return result
+
+
+def custom_autocomplete_view(self, request):
+    return ResearchAutocompleteJsonView.as_view(admin_site=self)(request)
+
+
+admin.site.autocomplete_view = MethodType(
+    custom_autocomplete_view,
+    admin.site,
+)
 
 
 @admin.register(models.PredominantFunder)
