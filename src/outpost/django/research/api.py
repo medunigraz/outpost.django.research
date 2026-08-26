@@ -727,54 +727,6 @@ class BiddingViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
 
 
 @docstring_format(
-    model=models.PartnerTypeIntellectualCapitalAccounting.__doc__,
-    serializer=serializers.PartnerTypeIntellectualCapitalAccountingSerializer.__doc__,
-)
-class PartnerTypeIntellectualCapitalAccountingViewSet(
-    CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet
-):
-    """
-    List partner types according to intellectual capital accounting.
-
-    {model}
-    {serializer}
-    """
-
-    queryset = models.PartnerTypeIntellectualCapitalAccounting.objects.all()
-    serializer_class = serializers.PartnerTypeIntellectualCapitalAccountingSerializer
-    filter_backends = (DjangoFilterBackend, OrderingFilter)
-    permission_classes = (AllowAny,)
-
-
-@docstring_format(
-    model=models.Partner.__doc__,
-    serializer=serializers.PartnerSerializer.__doc__,
-    filter=filters.PartnerFilter.__doc__,
-)
-class PartnerViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
-    """
-    List partners.
-
-    {model}
-    {serializer}
-    {filter}
-    """
-
-    queryset = models.Partner.objects.all()
-    serializer_class = serializers.PartnerSerializer
-    filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filterset_class = filters.PartnerFilter
-    ordering_fields = ("start",)
-    permission_classes = (AllowAny,)
-    permit_list_expands = ("typeintellectualcapitalaccounting",)
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.prefetch_related("typeintellectualcapitalaccounting")
-        return queryset
-
-
-@docstring_format(
     model=models.ServiceProvider.__doc__,
     filter=filters.ServiceProviderFilter.__doc__,
     serializer=serializers.ServiceProviderSerializer.__doc__,

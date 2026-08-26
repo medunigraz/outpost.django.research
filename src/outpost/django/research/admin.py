@@ -289,19 +289,6 @@ class BiddingEndowmentAdmin(admin.ModelAdmin):
     search_fields = ("bidding__title", "information")
 
 
-@admin.register(models.Partner)
-class PartnerAdmin(admin.ModelAdmin):
-    autocomplete_fields = ("typeintellectualcapitalaccounting",)
-    list_display = ("name", "url")
-    list_filter = ("typeintellectualcapitalaccounting",)
-    search_fields = ("name", "short", "street", "city", "email", "information")
-
-
-@admin.register(models.PartnerTypeIntellectualCapitalAccounting)
-class PartnerTypeIntellectualCapitalAccountingAdmin(admin.ModelAdmin):
-    search_fields = ("name",)
-
-
 @admin.register(models.FunderTypeIntellectualCapitalAccounting)
 class FunderTypeIntellectualCapitalAccountingAdmin(admin.ModelAdmin):
     search_fields = ("name",)

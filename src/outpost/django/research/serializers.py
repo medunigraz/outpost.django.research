@@ -637,57 +637,6 @@ class BiddingEndowmentSerializer(FlexFieldsModelSerializer):
         fields = ("id", "bidding", "information", "amount", "currency")
 
 
-class PartnerSerializer(FlexFieldsModelSerializer):
-    """
-    ## Expansions
-
-    To activate relation expansion add the desired fields as a comma separated
-    list to the `expand` query parameter like this:
-
-        ?expand=<field>,<field>,<field>,...
-
-    The following relational fields can be expanded:
-
-     * `typeintellectualcapitalaccounting`
-
-    """
-
-    @property
-    def expandable_fields(self):
-        return {
-            "typeintellectualcapitalaccounting": (
-                f"{self.__class__.__module__}.PartnerTypeIntellectualCapitalAccountingSerializer",
-            ),
-        }
-
-    class Meta:
-        model = models.Partner
-        fields = (
-            "id",
-            "name",
-            "short",
-            "street",
-            "zipcode",
-            "city",
-            "typeintellectualcapitalaccounting",
-            "url",
-            "telephone",
-            "email",
-            "information",
-        )
-
-
-class PartnerTypeIntellectualCapitalAccountingSerializer(FlexFieldsModelSerializer):
-    """"""
-
-    class Meta:
-        model = models.PartnerTypeIntellectualCapitalAccounting
-        fields = (
-            "id",
-            "name",
-        )
-
-
 class ServiceProviderSerializer(FlexFieldsModelSerializer):
     """
     ## Expansions

@@ -323,42 +323,6 @@ class BiddingFilter(filterset.FilterSet):
         }
 
 
-class PartnerFilter(filterset.FilterSet):
-    """
-    ## Filters
-
-    To filter for exact value matches:
-
-        ?<fieldname>=<value>
-
-    Possible exact filters:
-
-      - `running`
-
-    For advanced filtering use lookups:
-
-        ?<fieldname>__<lookup>=<value>
-
-    All fields with advanced lookups can also be used for exact value matches
-    as described above.
-
-    Possible advanced lookups:
-
-      - `title`: `iexact`, `contains`, `icontains`
-      - `mode`: `iexact`, `contains`, `icontains`
-      - `funders`: `in`
-      - `start`: `gt`, `gte`, `lt`, `lte`, `date`
-    """
-
-    class Meta:
-        model = models.Partner
-        fields = {
-            "name": ("exact", "iexact", "contains", "icontains"),
-            "short": ("exact", "iexact", "contains", "icontains"),
-            "typeintellectualcapitalaccounting": ("exact",),
-        }
-
-
 class ClassificationFilter(filterset.FilterSet):
     """
     ## Filters
