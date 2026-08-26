@@ -219,51 +219,6 @@ class ProjectAdmin(admin.ModelAdmin):
     date_hierarchy = "assignment"
 
 
-@admin.register(models.PublicationCategory)
-class PublicationCategoryAdmin(admin.ModelAdmin):
-    search_fields = ("name",)
-
-
-@admin.register(models.PublicationDocument)
-class PublicationDocumentAdmin(admin.ModelAdmin):
-    search_fields = ("name",)
-
-
-@admin.register(models.PublicationAuthorship)
-class PublicationAuthorshipAdmin(admin.ModelAdmin):
-    search_fields = ("name",)
-
-
-@admin.register(models.PublicationOrganization)
-class PublicationOrganizationAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(models.PublicationPerson)
-class PublicationPersonAdmin(admin.ModelAdmin):
-    autocomplete_fields = ("publication", "person", "authorship")
-    list_display = ("person", "publication", "authorship")
-    list_display_links = ("person", "publication")
-    list_filter = ("authorship", "last_author")
-    search_fields = ("person__first_name", "person__last_name", "publication__title")
-
-
-@admin.register(models.Publication)
-class PublicationAdmin(admin.ModelAdmin):
-    search_fields = (
-        "id",
-        "title",
-        "authors",
-        "source",
-        "sci",
-        "pubmed",
-        "doi",
-        "pmc",
-        "issn",
-    )
-    autocomplete_fields = ("category", "document_type")
-
-
 @admin.register(models.Bidding)
 class BiddingAdmin(admin.ModelAdmin):
     list_display = ("title", "url", "start")

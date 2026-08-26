@@ -91,30 +91,4 @@ v1 = [
     ),
     (r"research/sponsorship", api.SponsorshipViewSet, "research-sponsorship"),
     (r"research/search/project", api.ProjectSearchViewSet, "research-project-search"),
-    (
-        r"research/publication:authorship",
-        api.PublicationAuthorshipViewSet,
-        "research-publication-authorship",
-    ),
-    (
-        r"research/publication:category",
-        api.PublicationCategoryViewSet,
-        "research-publication-category",
-    ),
-    (
-        r"research/publication:document",
-        api.PublicationDocumentViewSet,
-        "research-publication-document",
-    ),
-    (
-        r"research/publication:person",
-        api.PublicationPersonViewSet,
-        "research-publication-person",
-    ),
-    (r"research/publication", api.PublicationViewSet, "research-publication"),
-    (
-        r"research/search/publication",
-        api.PublicationSearchViewSet,
-        "research-publication-search",
-    ),
 ]
