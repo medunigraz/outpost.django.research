@@ -133,14 +133,6 @@ class ProjectFunctionAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
-@admin.register(models.ProjectPerson)
-class ProjectPersonAdmin(admin.ModelAdmin):
-    autocomplete_fields = ("project", "person", "function")
-    list_display = ("project", "person", "function")
-    list_filter = ("function",)
-    search_fields = ("project__name", "person__last_name", "person__first_name")
-
-
 @admin.register(models.ProjectPartnerFunction)
 class ProjectPartnerFunctionAdmin(admin.ModelAdmin):
     search_fields = ("name",)
@@ -162,56 +154,12 @@ class ProjectGrantAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
-@admin.register(models.ProjectStatus)
-class ProjectStatusAdmin(admin.ModelAdmin):
-    list_filter = ("public",)
-    search_fields = ("name",)
-
-
 @admin.register(models.Program)
 class ProgramAdmin(admin.ModelAdmin):
     autocomplete_fields = ("funder",)
     list_display = ("name", "funder")
     list_filter = ("active",)
     search_fields = ("name", "funder__name")
-
-
-@admin.register(models.Project)
-class ProjectAdmin(admin.ModelAdmin):
-    autocomplete_fields = (
-        "organization",
-        "category",
-        "type",
-        "partner_function",
-        "manager",
-        "contact",
-        "status",
-        "grant",
-        "research",
-        "event",
-        "study",
-        "language",
-        "program",
-        "legalbasis",
-        "predominant_funder",
-        "project_management_accountable",
-        "parent",
-        "co_accountable",
-    )
-    list_display = ("__str__", "short", "organization")
-    list_filter = (
-        "category",
-        "type",
-        "status",
-        "grant",
-        "research",
-        "event",
-        "language",
-        "publish",
-        "visible",
-    )
-    search_fields = ("title", "short")
-    date_hierarchy = "assignment"
 
 
 @admin.register(models.Bidding)

@@ -10,78 +10,6 @@ from . import models
 from .conf import settings
 
 
-class ProjectFilter(filterset.FilterSet):
-    """
-    ## Filters
-
-    To filter for exact value matches:
-
-        ?<fieldname>=<value>
-
-    Possible exact filters:
-
-      - `organization`
-      - `category`
-      - `manager`
-      - `contact`
-      - `status`
-      - `grant`
-      - `research`
-      - `study`
-      - `language`
-      - `funders`
-      - `program`
-
-    For advanced filtering use lookups:
-
-        ?<fieldname>__<lookup>=<value>
-
-    All fields with advanced lookups can also be used for exact value matches
-    as described above.
-
-    Possible advanced lookups:
-
-      - `begin_planned`: `gt`, `gte`, `lt`, `lte`
-      - `begin_effective`: `gt`, `gte`, `lt`, `lte`
-      - `end_planned`: `gt`, `gte`, `lt`, `lte`
-      - `end_effective`: `gt`, `gte`, `lt`, `lte`
-    """
-
-    title = CharFilter(method="title_filter", label="Title")
-
-    class Meta:
-        model = models.Project
-        fields = {
-            "organization": ("exact",),
-            "category": ("exact",),
-            "manager": ("exact",),
-            "contact": ("exact",),
-            "status": ("exact",),
-            "begin_planned": ("exact", "gt", "lt", "gte", "lte", "date"),
-            "begin_effective": ("exact", "gt", "lt", "gte", "lte", "date"),
-            "end_planned": ("exact", "gt", "lt", "gte", "lte", "date"),
-            "end_effective": ("exact", "gt", "lt", "gte", "lte", "date"),
-            "grant": ("exact",),
-            "research": ("exact",),
-            "event": ("exact",),
-            "study": ("exact",),
-            "language": ("exact",),
-            "funders": ("exact",),
-            "assignment": ("exact", "gt", "lt", "gte", "lte", "date"),
-            "program": ("exact",),
-        }
-
-    def title_filter(self, queryset, name, value):
-        f = reduce(
-            or_,
-            [
-                Q(**{f"{name}__{lang}__icontains": value})
-                for lang, _ in settings.LANGUAGES
-            ],
-        )
-        return queryset.filter(f)
-
-
 class BiddingDeadlineFilter(filterset.FilterSet):
     """
     ## Filters
@@ -298,30 +226,6 @@ class LegalBasisFilter(filterset.FilterSet):
         model = models.LegalBasis
         fields = {
             "active": ("exact",),
-        }
-
-
-class ProjectPersonFilter(filterset.FilterSet):
-    """
-    ## Filters
-
-    To filter for exact value matches:
-
-        ?<fieldname>=<value>
-
-    Possible exact filters:
-
-      - `project`
-      - `person`
-      - `function`
-    """
-
-    class Meta:
-        model = models.ProjectPerson
-        fields = {
-            "project": ("exact",),
-            "person": ("exact",),
-            "function": ("exact",),
         }
 
 

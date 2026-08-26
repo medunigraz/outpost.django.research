@@ -55,11 +55,6 @@ v1 = [
         "research-project-function",
     ),
     (
-        r"research/project:person",
-        api.ProjectPersonViewSet,
-        "research-project-person",
-    ),
-    (
         r"research/project:partnerfunction",
         api.ProjectPartnerFunctionViewSet,
         "research-project-partner-function",
@@ -67,8 +62,6 @@ v1 = [
     (r"research/project:study", api.ProjectStudyViewSet, "research-project-study"),
     (r"research/project:event", api.ProjectEventViewSet, "research-project-event"),
     (r"research/project:grant", api.ProjectGrantViewSet, "research-project-grant"),
-    (r"research/project:status", api.ProjectStatusViewSet, "research-project-status"),
-    (r"research/project", api.ProjectViewSet, "research-project"),
     (
         r"research/serviceprovider",
         api.ServiceProviderViewSet,
@@ -85,5 +78,4 @@ v1 = [
         "research-projectmentorcontribution",
     ),
     (r"research/sponsorship", api.SponsorshipViewSet, "research-sponsorship"),
-    (r"research/search/project", api.ProjectSearchViewSet, "research-project-search"),
 ]
