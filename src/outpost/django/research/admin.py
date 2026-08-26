@@ -76,11 +76,6 @@ class LanguageAdmin(admin.ModelAdmin):
     search_fields = ("name", "iso")
 
 
-@admin.register(models.FunderCategory)
-class FunderCategoryAdmin(admin.ModelAdmin):
-    search_fields = ("name", "short")
-
-
 @admin.register(models.Funder)
 class FunderAdmin(admin.ModelAdmin):
     autocomplete_fields = (

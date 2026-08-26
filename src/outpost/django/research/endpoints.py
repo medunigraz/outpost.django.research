@@ -24,11 +24,6 @@ v1 = [
     ),
     (r"research/bidding", api.BiddingViewSet, "research-bidding"),
     (
-        r"research/funder:category",
-        api.FunderCategoryViewSet,
-        "research-funder-category",
-    ),
-    (
         r"research/funder:type:intellectualcapitalaccounting",
         api.FunderTypeIntellectualCapitalAccountingViewSet,
         "research-funder-type-intellectualcapitalaccounting",

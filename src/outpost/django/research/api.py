@@ -149,23 +149,6 @@ class ClassificationViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
 
 @docstring_format(
-    model=models.FunderCategory.__doc__,
-    serializer=serializers.FunderCategorySerializer.__doc__,
-)
-class FunderCategoryViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
-    """
-    List funder categories.
-
-    {model}
-    {serializer}
-    """
-
-    queryset = models.FunderCategory.objects.all()
-    serializer_class = serializers.FunderCategorySerializer
-    permission_classes = (AllowAny,)
-
-
-@docstring_format(
     model=models.FunderTypeIntellectualCapitalAccounting.__doc__,
     serializer=serializers.FunderTypeIntellectualCapitalAccountingSerializer.__doc__,
 )

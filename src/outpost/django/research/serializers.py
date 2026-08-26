@@ -80,12 +80,6 @@ class ClassificationSerializer(FlexFieldsModelSerializer):
         }
 
 
-class FunderCategorySerializer(FlexFieldsModelSerializer):
-    class Meta:
-        model = models.FunderCategory
-        fields = "__all__"
-
-
 class FunderTypeIntellectualCapitalAccountingSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.FunderTypeIntellectualCapitalAccounting
