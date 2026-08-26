@@ -12,9 +12,6 @@ v1 = [
     (r"research/language", api.LanguageViewSet, "research-language"),
     (r"research/program", api.ProgramViewSet, "research-program"),
     (r"research/classification", api.ClassificationViewSet, "research-classification"),
-    (r"research/expertise", api.ExpertiseViewSet, "research-expertise"),
-    (r"research/knowledge", api.KnowledgeViewSet, "research-knowledge"),
-    (r"research/education", api.EducationViewSet, "research-education"),
     (
         r"research/bidding:deadline",
         api.BiddingDeadlineViewSet,

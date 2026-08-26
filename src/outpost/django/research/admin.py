@@ -65,27 +65,6 @@ class ClassificationAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
-@admin.register(models.Expertise)
-class ExpertiseAdmin(admin.ModelAdmin):
-    autocomplete_fields = ("person",)
-    list_display = ("__str__", "person")
-    search_fields = ("name", "person__first_name", "person__last_name")
-
-
-@admin.register(models.Knowledge)
-class KnowledgeAdmin(admin.ModelAdmin):
-    autocomplete_fields = ("person",)
-    list_display = ("__str__", "person")
-    search_fields = ("name", "person__first_name", "person__last_name")
-
-
-@admin.register(models.Education)
-class EducationAdmin(admin.ModelAdmin):
-    autocomplete_fields = ("person",)
-    list_display = ("__str__", "person")
-    search_fields = ("name", "person__first_name", "person__last_name")
-
-
 @admin.register(models.Country)
 class CountryAdmin(admin.ModelAdmin):
     search_fields = ("name", "iso")

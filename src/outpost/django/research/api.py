@@ -149,57 +149,6 @@ class ClassificationViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
 
 @docstring_format(
-    model=models.Expertise.__doc__, serializer=serializers.ExpertiseSerializer.__doc__
-)
-class ExpertiseViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
-    """
-    List expertise.
-
-    {model}
-    {serializer}
-    """
-
-    queryset = models.Expertise.objects.all()
-    serializer_class = serializers.ExpertiseSerializer
-    permission_classes = (AllowAny,)
-    permit_list_expands = ("person",)
-
-
-@docstring_format(
-    model=models.Knowledge.__doc__, serializer=serializers.KnowledgeSerializer.__doc__
-)
-class KnowledgeViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
-    """
-    List knowledge.
-
-    {model}
-    {serializer}
-    """
-
-    queryset = models.Knowledge.objects.all()
-    serializer_class = serializers.KnowledgeSerializer
-    permission_classes = (AllowAny,)
-    permit_list_expands = ("person",)
-
-
-@docstring_format(
-    model=models.Education.__doc__, serializer=serializers.EducationSerializer.__doc__
-)
-class EducationViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
-    """
-    List educations.
-
-    {model}
-    {serializer}
-    """
-
-    queryset = models.Education.objects.all()
-    serializer_class = serializers.EducationSerializer
-    permission_classes = (AllowAny,)
-    permit_list_expands = ("person",)
-
-
-@docstring_format(
     model=models.FunderCategory.__doc__,
     serializer=serializers.FunderCategorySerializer.__doc__,
 )
