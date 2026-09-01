@@ -32,10 +32,36 @@ class FieldSerializer(FlexFieldsModelSerializer):
         fields = "__all__"
 
 
+class CountryGroupSerializer(FlexFieldsModelSerializer):
+    class Meta:
+        model = models.CountryGroup
+        fields = "__all__"
+
+
 class CountrySerializer(FlexFieldsModelSerializer):
+    """
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `group`
+
+    """
+
     class Meta:
         model = models.Country
         fields = "__all__"
+
+    @property
+    def expandable_fields(self):
+        return {
+            "group": (f"{self.__class__.__module__}.CountryGroupSerializer",),
+        }
 
 
 class LanguageSerializer(FlexFieldsModelSerializer):

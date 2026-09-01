@@ -9,6 +9,7 @@ v1 = [
     (r"research/legalbasis", api.LegalBasisViewSet, "research-legalbasis"),
     (r"research/field", api.FieldViewSet, "research-field"),
     (r"research/country", api.CountryViewSet, "research-country"),
+    (r"research/country:group", api.CountryGroupViewSet, "research-country-group"),
     (r"research/language", api.LanguageViewSet, "research-language"),
     (r"research/program", api.ProgramViewSet, "research-program"),
     (r"research/classification", api.ClassificationViewSet, "research-classification"),

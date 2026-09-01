@@ -80,6 +80,23 @@ class FieldViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
 
 @docstring_format(
+    model=models.CountryGroup.__doc__,
+    serializer=serializers.CountryGroupSerializer.__doc__,
+)
+class CountryGroupViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
+    """
+    List country groups.
+
+    {model}
+    {serializer}
+    """
+
+    queryset = models.CountryGroup.objects.all()
+    serializer_class = serializers.CountryGroupSerializer
+    permission_classes = (AllowAny,)
+
+
+@docstring_format(
     model=models.Country.__doc__, serializer=serializers.CountrySerializer.__doc__
 )
 class CountryViewSet(CacheResponseMixin, ReadOnlyModelViewSet):

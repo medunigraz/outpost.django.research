@@ -258,12 +258,41 @@ class Country(models.Model):
     ### `name` (`object`)
     Names of country, defined by language.
 
+    ### `group` (`integer`)
+    Foreign key to `research/country:group` this country applies to.
+
     ### `iso` (`object`)
     ISO codes of country.
     """
 
     name = HStoreField()
+    group = models.ForeignKey(
+        "CountryGroup",
+        models.SET_NULL,
+        null=True,
+        blank=True,
+    )
     iso = HStoreField()
+
+    def __str__(self):
+        lang = get_language()
+        if lang in self.name:
+            return self.name.get(lang)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
+
+
+class CountryGroup(models.Model):
+    """
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of country group, defined by language.
+    """
+
+    name = HStoreField()
 
     def __str__(self):
         lang = get_language()

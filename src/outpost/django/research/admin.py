@@ -2,6 +2,7 @@ from types import MethodType
 
 from django.contrib import admin
 from django.contrib.admin.views.autocomplete import AutocompleteJsonView
+from django.db.models import OrderBy
 
 from . import models
 
@@ -68,6 +69,13 @@ class ClassificationAdmin(admin.ModelAdmin):
 @admin.register(models.Country)
 class CountryAdmin(admin.ModelAdmin):
     search_fields = ("name", "iso")
+
+
+@admin.register(models.CountryGroup)
+class CountryGroupAdmin(admin.ModelAdmin):
+    list_display = ("pk", "name")
+    search_fields = ("name",)
+    ordering = ("pk",)
 
 
 @admin.register(models.Language)
