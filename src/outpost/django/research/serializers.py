@@ -45,38 +45,9 @@ class LanguageSerializer(FlexFieldsModelSerializer):
 
 
 class ClassificationSerializer(FlexFieldsModelSerializer):
-    """
-    ## Expansions
-
-    To activate relation expansion add the desired fields as a comma separated
-    list to the `expand` query parameter like this:
-
-        ?expand=<field>,<field>,<field>,...
-
-    The following relational fields can be expanded:
-
-     * `persons`
-
-    """
-
     class Meta:
         model = models.Classification
-        fields = "__all__"
-
-    @property
-    def expandable_fields(self):
-        person = "PersonSerializer"
-        request = self.context.get("request", None)
-        if request:
-            if request.user:
-                if request.user.is_authenticated:
-                    person = "AuthenticatedPersonSerializer"
-        return {
-            "persons": (
-                f"outpost.django.campusonline.serializers.{person}",
-                {"many": True},
-            )
-        }
+        fields = ("classification_id", "name", "level", "parent")
 
 
 class FunderTypeIntellectualCapitalAccountingSerializer(FlexFieldsModelSerializer):

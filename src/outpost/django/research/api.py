@@ -146,6 +146,7 @@ class ClassificationViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_class = filters.ClassificationFilter
+    lookup_field = "classification_id"
 
 
 @docstring_format(

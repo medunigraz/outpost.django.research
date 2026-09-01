@@ -125,13 +125,17 @@ class Classification(AL_Node):
     ### `id` (`integer`)
     Primary key.
 
+    ### `classification_id` (`integer`)
+    ID of classification.
+
     ### `name` (`object`)
     Names of classification, defined by language.
 
-    ### `persons` (`integer[]`)
-    List of foreign keys to `campusonline/person`.
+    ### `level` (`integer`)
+    Level of classification.
     """
 
+    classification_id = models.PositiveIntegerField(unique=True)
     name = HStoreField()
     parent = models.ForeignKey(
         "self",
@@ -140,15 +144,9 @@ class Classification(AL_Node):
         null=True,
         blank=True,
     )
-    persons = models.ManyToManyField(
-        "campusonline.Person",
-        db_constraint=False,
-        db_table="research_classification_person",
-        related_name="classifications",
-    )
     level = models.PositiveSmallIntegerField()
 
-    node_order_by = ["id"]
+    node_order_by = ["classification_id"]
 
     def __str__(self):
         lang = get_language()
