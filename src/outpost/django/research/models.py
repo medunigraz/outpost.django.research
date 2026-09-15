@@ -6,7 +6,6 @@ from django.contrib.postgres.fields import (
     ArrayField,
     HStoreField,
 )
-from django.db.models.signals import post_save
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
@@ -38,6 +37,9 @@ class PredominantFunder(models.Model):
 
     name = HStoreField()
 
+    class Meta:
+        ordering = ("name",)
+
     def __str__(self):
         lang = get_language()
         if lang in self.name:
@@ -56,10 +58,16 @@ class LegalBasis(models.Model):
 
     ### `name` (`object`)
     Names of legal basis, defined by language.
+
+    ### `active` (`boolean`)
+    Is legal basis active.
     """
 
     name = HStoreField()
     active = models.BooleanField()
+
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         lang = get_language()
@@ -80,12 +88,15 @@ class Field(models.Model):
     ### `name` (`object`)
     Names of research field, defined by language.
 
-    ### `short` (`string`)
-    Short identifier.
+    ### `active` (`boolean`)
+    Is research field active.
     """
 
     name = HStoreField()
     active = models.BooleanField()
+
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         lang = get_language()
@@ -109,6 +120,9 @@ class ResearchType(models.Model):
 
     name = HStoreField()
 
+    class Meta:
+        ordering = ("name",)
+
     def __str__(self):
         lang = get_language()
         if lang in self.name:
@@ -131,6 +145,9 @@ class Classification(AL_Node):
     ### `name` (`object`)
     Names of classification, defined by language.
 
+    ### `parent` (`integer`)
+    Foreign key to parent classification.
+
     ### `level` (`integer`)
     Level of classification.
     """
@@ -147,6 +164,9 @@ class Classification(AL_Node):
     level = models.PositiveSmallIntegerField()
 
     node_order_by = ["classification_id"]
+
+    class Meta:
+        ordering = ("classification_id", "level")
 
     def __str__(self):
         lang = get_language()
@@ -262,7 +282,7 @@ class Country(models.Model):
     Foreign key to `research/country:group` this country applies to.
 
     ### `iso` (`object`)
-    ISO codes of country.
+    ISO codes of country, defined by language.
     """
 
     name = HStoreField()
@@ -273,6 +293,9 @@ class Country(models.Model):
         blank=True,
     )
     iso = HStoreField()
+
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         lang = get_language()
@@ -293,6 +316,9 @@ class CountryGroup(models.Model):
     """
 
     name = HStoreField()
+
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         lang = get_language()
@@ -317,6 +343,9 @@ class Language(models.Model):
 
     name = HStoreField()
     iso = models.CharField(max_length=2, blank=True, null=True)
+
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         lang = get_language()
@@ -374,20 +403,14 @@ class Funder(AL_Node):
     ### `country` (`integer`)
     Foreign key to [countries](../country).
 
-    ### `category` (`integer`)
-    Foreign key to [category](../funder:category).
-
     ### `url` (`string`)
     URL to website.
 
-    ### `telephone` (`string`)
-    Telephone number.
-
-    ### `email` (`string`)
-    Email address.
-
     ### `active` (`boolean`)
     Is funder active.
+
+    ### `parent` (`integer`)
+    Foreign key to parent funder.
 
     ### `patron` (`boolean`)
     Has funder been classified as a sponsor at the Medical University of Graz (can be assigned as a sponsor to a research funding project).
@@ -465,6 +488,9 @@ class ProjectCategory(models.Model):
 
     ### `name` (`object`)
     Names of project Category, defined by language.
+
+    ### `third_party_funding_policy` (`boolean`)
+    Is third party funding policy applicable.
     """
 
     name = HStoreField()
@@ -489,10 +515,16 @@ class ProjectType(models.Model):
 
     ### `name` (`object`)
     Names of project Type, defined by language.
+
+    ### `public` (`boolean`)
+    Is project type public.
     """
 
     name = HStoreField()
     public = models.BooleanField()
+
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         lang = get_language()
@@ -518,6 +550,9 @@ class ProjectResearch(models.Model):
     name = HStoreField()
     active = models.BooleanField()
 
+    class Meta:
+        ordering = ("name",)
+
     def __str__(self):
         lang = get_language()
         if lang in self.name:
@@ -541,6 +576,9 @@ class ProjectFunction(models.Model):
 
     name = HStoreField()
     active = models.BooleanField()
+
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         lang = get_language()
@@ -604,6 +642,9 @@ class ProjectPartnerFunction(models.Model):
 
     name = HStoreField()
 
+    class Meta:
+        ordering = ("name",)
+
     def __str__(self):
         lang = get_language()
         if lang in self.name:
@@ -620,10 +661,16 @@ class ProjectStudy(models.Model):
 
     ### `name` (`object`)
     Names of project study, defined by language.
+
+    ### `active` (`boolean`)
+    Is project study active.
     """
 
     name = HStoreField()
     active = models.BooleanField()
+
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         lang = get_language()
@@ -645,6 +692,9 @@ class ProjectEvent(models.Model):
 
     name = HStoreField()
 
+    class Meta:
+        ordering = ("name",)
+
     def __str__(self):
         lang = get_language()
         if lang in self.name:
@@ -664,6 +714,9 @@ class ProjectGrant(models.Model):
     """
 
     name = HStoreField()
+
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         lang = get_language()
@@ -1072,11 +1125,14 @@ class Bidding(models.Model):
     ### `url` (`string`)
     URL to web presence.
 
-    ### `short` (`boolean`)
-    Bidding running or not.
+    ### `running` (`boolean`)
+    Is bidding currently running.
 
     ### `funders` (`integer[]`)
     List of foreign keys to funders for this bidding.
+
+    ### `start` (`datetime`)
+    Start date of bidding.
     """
 
     title = models.CharField(max_length=256, blank=True, null=True)
@@ -1246,6 +1302,8 @@ class PartnerTypeIntellectualCapitalAccounting(models.Model):
 
 class FunderTypeIntellectualCapitalAccounting(models.Model):
     """
+    Funder type according to intellectual capital accounting.
+
     ## Fields
 
     ### `id` (`integer`)
@@ -1257,6 +1315,9 @@ class FunderTypeIntellectualCapitalAccounting(models.Model):
 
     name = HStoreField()
 
+    class Meta:
+        ordering = ("name",)
+
     def __str__(self):
         lang = get_language()
         if lang in self.name:
@@ -1266,6 +1327,8 @@ class FunderTypeIntellectualCapitalAccounting(models.Model):
 
 class FunderTypeStatisticsAustria(models.Model):
     """
+    Funder type according to Statistics Austria.
+
     ## Fields
 
     ### `id` (`integer`)
@@ -1277,6 +1340,9 @@ class FunderTypeStatisticsAustria(models.Model):
 
     name = HStoreField()
 
+    class Meta:
+        ordering = ("name",)
+
     def __str__(self):
         lang = get_language()
         if lang in self.name:
@@ -1285,6 +1351,27 @@ class FunderTypeStatisticsAustria(models.Model):
 
 
 class ServiceProvider(models.Model):
+    """
+    Service provider (linked to campusonline organization).
+
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `campusonline` (`integer`)
+    Foreign key to `campusonline/organization`.
+
+    ### `alternate_name` (`object`)
+    Alternate names of service provider, defined by language.
+
+    ### `notes` (`object`)
+    Notes about service provider, defined by language.
+
+    ### `active` (`boolean`)
+    Is service provider active.
+    """
+
     campusonline = models.ForeignKey(
         "campusonline.Organization",
         models.DO_NOTHING,
@@ -1292,17 +1379,18 @@ class ServiceProvider(models.Model):
         null=True,
         blank=True,
     )
-    alternate_name = HStoreField(
-        default=MultiLanguage.empty_default, blank=True, null=True
-    )
-    notes = HStoreField(default=MultiLanguage.empty_default, blank=True, null=True)
+    alternate_name = HStoreField(blank=True, null=True)
+    notes = HStoreField(blank=True, null=True)
     active = models.BooleanField()
+
+    class Meta:
+        ordering = ("campusonline",)
 
     def __str__(self):
         lang = get_language()
         if lang in self.name:
             return self.name.get(lang)
-        return str(self.name)
+        return self.name.get(settings.LANGUAGE_CODE, next(self.names.values()))
 
     @property
     def name(self):
@@ -1312,6 +1400,27 @@ class ServiceProvider(models.Model):
 
 
 class ServiceProviderContact(models.Model):
+    """
+    Contact for a service provider.
+
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `serviceprovider` (`integer`)
+    Foreign key to [service provider](../serviceprovider).
+
+    ### `campusonline` (`integer`)
+    Foreign key to `campusonline/person` (contact person).
+
+    ### `alternate_name` (`string`)
+    Alternate name of contact.
+
+    ### `alternate_email` (`string`)
+    Alternate email of contact.
+    """
+
     serviceprovider = models.ForeignKey(
         "ServiceProvider",
         models.CASCADE,
@@ -1324,9 +1433,13 @@ class ServiceProviderContact(models.Model):
         null=True,
         blank=True,
         related_name="+",
+        verbose_name="contactperson",
     )
     alternate_name = models.CharField(max_length=1024, blank=True, null=True)
     alternate_email = models.EmailField(blank=True, null=True)
+
+    class Meta:
+        ordering = ("serviceprovider",)
 
     def __str__(self):
         return self.name
@@ -1345,8 +1458,29 @@ class ServiceProviderContact(models.Model):
 
 
 class ProjectMentorContribution(OrderedModel):
+    """
+    Project mentor contribution.
+
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of mentor contribution, defined by language.
+
+    ### `active` (`boolean`)
+    Is mentor contribution active.
+
+    ### `position` (`integer`)
+    Order position.
+    """
+
     name = HStoreField(default=MultiLanguage.empty_default)
     active = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         lang = get_language()
@@ -1356,6 +1490,24 @@ class ProjectMentorContribution(OrderedModel):
 
 
 class Sponsorship(OrderedModel):
+    """
+    Sponsorship.
+
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of sponsorship, defined by language.
+
+    ### `active` (`boolean`)
+    Is sponsorship active.
+
+    ### `position` (`integer`)
+    Order position.
+    """
+
     name = HStoreField(default=MultiLanguage.empty_default)
     active = models.BooleanField(default=False)
 
