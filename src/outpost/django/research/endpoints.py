@@ -79,4 +79,5 @@ v1 = [
         "research-projectmentorcontribution",
     ),
     (r"research/sponsorship", api.SponsorshipViewSet, "research-sponsorship"),
+    (r"research/researchtype", api.ResearchTypeViewSet, "research-researchtype"),
 ]

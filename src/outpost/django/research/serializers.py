@@ -378,3 +378,11 @@ class SponsorshipSerializer(FlexFieldsModelSerializer):
             "id",
             "name",
         )
+
+
+class ResearchTypeSerializer(FlexFieldsModelSerializer):
+    """"""
+
+    class Meta:
+        model = models.ResearchType
+        fields = "__all__"

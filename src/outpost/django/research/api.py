@@ -537,3 +537,21 @@ class SponsorshipViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = filters.SponsorshipFilter
     permission_classes = (AllowAny,)
+
+
+@docstring_format(
+    model=models.ResearchType.__doc__,
+    serializer=serializers.ResearchTypeSerializer.__doc__,
+)
+class ResearchTypeViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+    """
+    List research types.
+
+    {model}
+    {serializer}
+    """
+
+    queryset = models.ResearchType.objects.all()
+    serializer_class = serializers.ResearchTypeSerializer
+    filter_backends = (DjangoFilterBackend,)
+    permission_classes = (AllowAny,)
