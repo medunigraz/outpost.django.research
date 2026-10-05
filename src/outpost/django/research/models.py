@@ -311,10 +311,14 @@ class CountryGroup(models.Model):
     ### `id` (`integer`)
     Primary key.
 
+    ### `group_id` (`integer`)
+    ID of country group.
+
     ### `name` (`object`)
     Names of country group, defined by language.
     """
 
+    group_id = models.PositiveIntegerField(unique=True)
     name = HStoreField()
 
     class Meta:
@@ -1309,10 +1313,14 @@ class FunderTypeIntellectualCapitalAccounting(models.Model):
     ### `id` (`integer`)
     Primary key.
 
+    ### `funder_type_id` (`integer`)
+    ID of funder type.
+
     ### `name` (`object`)
     Name of the funder type according to intellectual capital accounting in multiple languages.
     """
 
+    funder_type_id = models.PositiveIntegerField(unique=True)
     name = HStoreField()
 
     class Meta:
@@ -1334,10 +1342,14 @@ class FunderTypeStatisticsAustria(models.Model):
     ### `id` (`integer`)
     Primary key.
 
+    ### `funder_type_id` (`integer`)
+    ID of funder type.
+
     ### `name` (`object`)
     Name of the funder type according to [Statistics Austria](https://www.statistik.at/web_en/statistics/index.html) in multiple languages.
     """
 
+    funder_type_id = models.PositiveIntegerField(unique=True)
     name = HStoreField()
 
     class Meta:

@@ -35,7 +35,7 @@ class FieldSerializer(FlexFieldsModelSerializer):
 class CountryGroupSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.CountryGroup
-        fields = "__all__"
+        fields = ("group_id", "name")
 
 
 class CountrySerializer(FlexFieldsModelSerializer):
@@ -79,13 +79,13 @@ class ClassificationSerializer(FlexFieldsModelSerializer):
 class FunderTypeIntellectualCapitalAccountingSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.FunderTypeIntellectualCapitalAccounting
-        fields = "__all__"
+        fields = ("funder_type_id", "name")
 
 
 class FunderTypeStatisticsAustriaSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.FunderTypeStatisticsAustria
-        fields = "__all__"
+        fields = ("funder_type_id", "name")
 
 
 class FunderSerializer(FlexFieldsModelSerializer):

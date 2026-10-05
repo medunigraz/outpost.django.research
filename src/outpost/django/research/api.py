@@ -94,6 +94,7 @@ class CountryGroupViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     queryset = models.CountryGroup.objects.all()
     serializer_class = serializers.CountryGroupSerializer
     permission_classes = (AllowAny,)
+    lookup_field = "group_id"
 
 
 @docstring_format(
@@ -183,6 +184,7 @@ class FunderTypeIntellectualCapitalAccountingViewSet(
     queryset = models.FunderTypeIntellectualCapitalAccounting.objects.all()
     serializer_class = serializers.FunderTypeIntellectualCapitalAccountingSerializer
     permission_classes = (AllowAny,)
+    lookup_field = "funder_type_id"
 
 
 @docstring_format(
@@ -200,6 +202,7 @@ class FunderTypeStatisticsAustriaViewSet(CacheResponseMixin, ReadOnlyModelViewSe
     queryset = models.FunderTypeStatisticsAustria.objects.all()
     serializer_class = serializers.FunderTypeStatisticsAustriaSerializer
     permission_classes = (AllowAny,)
+    lookup_field = "funder_type_id"
 
 
 @docstring_format(

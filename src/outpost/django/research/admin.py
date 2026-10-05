@@ -77,7 +77,7 @@ class CountryAdmin(ResearchModelAdmin):
 
 @admin.register(models.CountryGroup)
 class CountryGroupAdmin(ResearchModelAdmin):
-    pass
+    list_display = ("group_id", "name")
 
 
 @admin.register(models.Field)
@@ -117,12 +117,12 @@ class FunderAdmin(ResearchModelAdmin):
 
 @admin.register(models.FunderTypeIntellectualCapitalAccounting)
 class FunderTypeIntellectualCapitalAccountingAdmin(ResearchModelAdmin):
-    pass
+    list_display = ("funder_type_id", "name")
 
 
 @admin.register(models.FunderTypeStatisticsAustria)
 class FunderTypeStatisticsAustriaAdmin(ResearchModelAdmin):
-    pass
+    list_display = ("funder_type_id", "name")
 
 
 @admin.register(models.Language)
