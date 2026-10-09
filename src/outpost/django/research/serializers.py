@@ -4,6 +4,7 @@ from drf_haystack.serializers import HaystackSerializer
 from rest_flex_fields import FlexFieldsModelSerializer
 from rest_framework.serializers import (
     CharField,
+    IntegerField,
     PrimaryKeyRelatedField,
 )
 
@@ -33,9 +34,10 @@ class FieldSerializer(FlexFieldsModelSerializer):
 
 
 class CountryGroupSerializer(FlexFieldsModelSerializer):
+    id = IntegerField(source="group_id", read_only=True)
     class Meta:
         model = models.CountryGroup
-        fields = ("group_id", "name")
+        fields = ("id", "name")
 
 
 class CountrySerializer(FlexFieldsModelSerializer):
@@ -52,6 +54,8 @@ class CountrySerializer(FlexFieldsModelSerializer):
      * `group`
 
     """
+
+    group = IntegerField(source="group.group_id", read_only=True)
 
     class Meta:
         model = models.Country
@@ -71,21 +75,24 @@ class LanguageSerializer(FlexFieldsModelSerializer):
 
 
 class ClassificationSerializer(FlexFieldsModelSerializer):
+    id = IntegerField(source="classification_id", read_only=True)
     class Meta:
         model = models.Classification
-        fields = ("classification_id", "name", "level", "parent")
+        fields = ("id", "name", "level", "parent")
 
 
 class FunderTypeIntellectualCapitalAccountingSerializer(FlexFieldsModelSerializer):
+    id = IntegerField(source="funder_type_id", read_only=True)
     class Meta:
         model = models.FunderTypeIntellectualCapitalAccounting
-        fields = ("funder_type_id", "name")
+        fields = ("id", "name")
 
 
 class FunderTypeStatisticsAustriaSerializer(FlexFieldsModelSerializer):
+    id = IntegerField(source="funder_type_id", read_only=True)
     class Meta:
         model = models.FunderTypeStatisticsAustria
-        fields = ("funder_type_id", "name")
+        fields = ("id", "name")
 
 
 class FunderSerializer(FlexFieldsModelSerializer):
@@ -105,6 +112,9 @@ class FunderSerializer(FlexFieldsModelSerializer):
      * `typestatisticsaustria`
 
     """
+
+    typeintellectualcapitalaccounting = IntegerField(source="typeintellectualcapitalaccounting.funder_type_id", read_only=True)
+    typestatisticsaustria = IntegerField(source="typestatisticsaustria.funder_type_id", read_only=True)
 
     class Meta:
         model = models.Funder
