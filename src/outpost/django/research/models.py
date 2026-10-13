@@ -35,7 +35,7 @@ class PredominantFunder(models.Model):
     Names of predominant funder, defined by language.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
 
     class Meta:
         ordering = ("name",)
@@ -63,7 +63,7 @@ class LegalBasis(models.Model):
     Is legal basis active.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
     active = models.BooleanField()
 
     class Meta:
@@ -92,7 +92,7 @@ class Field(models.Model):
     Is research field active.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
     active = models.BooleanField()
 
     class Meta:
@@ -118,7 +118,7 @@ class ResearchType(models.Model):
     Names of research field, defined by language.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
 
     class Meta:
         ordering = ("name",)
@@ -153,7 +153,7 @@ class Classification(AL_Node):
     """
 
     classification_id = models.PositiveIntegerField(unique=True)
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
     parent = models.ForeignKey(
         "self",
         models.SET_NULL,
@@ -191,7 +191,7 @@ class Expertise(models.Model):
     Foreign key to `campusonline/person` this expertise applies to.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
     person = models.ForeignKey(
         "campusonline.Person",
         models.DO_NOTHING,
@@ -222,7 +222,7 @@ class Knowledge(models.Model):
     Foreign key to `campusonline/person` this knowledge applies to.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
     person = models.ForeignKey(
         "campusonline.Person",
         models.DO_NOTHING,
@@ -253,7 +253,7 @@ class Education(models.Model):
     Foreign key to `campusonline/person` this education applies to.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
     person = models.ForeignKey(
         "campusonline.Person",
         models.DO_NOTHING,
@@ -285,7 +285,7 @@ class Country(models.Model):
     ISO codes of country, defined by language.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
     group = models.ForeignKey(
         "CountryGroup",
         models.SET_NULL,
@@ -319,7 +319,7 @@ class CountryGroup(models.Model):
     """
 
     group_id = models.PositiveIntegerField(unique=True)
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
 
     class Meta:
         ordering = ("name",)
@@ -345,7 +345,7 @@ class Language(models.Model):
     ISO code of language.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
     iso = models.CharField(max_length=2, blank=True, null=True)
 
     class Meta:
@@ -497,7 +497,7 @@ class ProjectCategory(models.Model):
     Is third party funding policy applicable.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
     third_party_funding_policy = models.BooleanField()
 
     class Meta:
@@ -524,7 +524,7 @@ class ProjectType(models.Model):
     Is project type public.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
     public = models.BooleanField()
 
     class Meta:
@@ -551,7 +551,7 @@ class ProjectResearch(models.Model):
     Is project research active.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
     active = models.BooleanField()
 
     class Meta:
@@ -578,7 +578,7 @@ class ProjectFunction(models.Model):
     Is project function active.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
     active = models.BooleanField()
 
     class Meta:
@@ -644,7 +644,7 @@ class ProjectPartnerFunction(models.Model):
     Names of project partner function, defined by language.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
 
     class Meta:
         ordering = ("name",)
@@ -670,7 +670,7 @@ class ProjectStudy(models.Model):
     Is project study active.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
     active = models.BooleanField()
 
     class Meta:
@@ -694,7 +694,7 @@ class ProjectEvent(models.Model):
     Names of project event, defined by language.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
 
     class Meta:
         ordering = ("name",)
@@ -717,7 +717,7 @@ class ProjectGrant(models.Model):
     Names of project grant, defined by language.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
 
     class Meta:
         ordering = ("name",)
@@ -795,7 +795,7 @@ class Project(models.Model):
     )
     type = models.ForeignKey("ProjectType", models.CASCADE, null=True, blank=True)
     short = models.CharField(max_length=256, blank=True, null=True)
-    title = HStoreField()
+    title = HStoreField(default=MultiLanguage.empty_default)
     partner_function = models.ForeignKey(
         "ProjectPartnerFunction",
         models.CASCADE,
@@ -820,7 +820,7 @@ class Project(models.Model):
     )
     status = models.ForeignKey("ProjectStatus", models.CASCADE, null=True, blank=True)
     url = models.URLField(blank=True, null=True)
-    abstract = HStoreField()
+    abstract = HStoreField(default=MultiLanguage.empty_default)
     begin_planned = models.DateTimeField(blank=True, null=True)
     begin_effective = models.DateTimeField(blank=True, null=True)
     end_planned = models.DateTimeField(blank=True, null=True)
@@ -905,7 +905,7 @@ class PublicationCategory(models.Model):
     Names of category, defined by language.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
 
     def __str__(self):
         lang = get_language()
@@ -925,7 +925,7 @@ class PublicationDocument(models.Model):
     Names of publication document, defined by language.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
 
     def __str__(self):
         lang = get_language()
@@ -945,7 +945,7 @@ class PublicationAuthorship(models.Model):
     Names of publication authorship, defined by language.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
 
     def __str__(self):
         lang = get_language()
@@ -1295,7 +1295,7 @@ class PartnerTypeIntellectualCapitalAccounting(models.Model):
     Name of the partner type according to intellectual capital accounting in multiple languages.
     """
 
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
 
     def __str__(self):
         lang = get_language()
@@ -1321,7 +1321,7 @@ class FunderTypeIntellectualCapitalAccounting(models.Model):
     """
 
     funder_type_id = models.PositiveIntegerField(unique=True)
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
 
     class Meta:
         ordering = ("name",)
@@ -1350,7 +1350,7 @@ class FunderTypeStatisticsAustria(models.Model):
     """
 
     funder_type_id = models.PositiveIntegerField(unique=True)
-    name = HStoreField()
+    name = HStoreField(default=MultiLanguage.empty_default)
 
     class Meta:
         ordering = ("name",)
@@ -1391,8 +1391,8 @@ class ServiceProvider(models.Model):
         null=True,
         blank=True,
     )
-    alternate_name = HStoreField(blank=True, null=True)
-    notes = HStoreField(blank=True, null=True)
+    alternate_name = HStoreField(default=MultiLanguage.empty_default)
+    notes = HStoreField(default=MultiLanguage.empty_default)
     active = models.BooleanField()
 
     class Meta:
