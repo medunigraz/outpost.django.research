@@ -210,6 +210,10 @@ class ServiceProviderContactAdmin(ResearchModelAdmin):
     autocomplete_fields = ("serviceprovider", "campusonline")
     list_display = ("id", "serviceprovider", "name", "email")
     list_filter = ("serviceprovider",)
+    search_fields = (
+        "serviceprovider__campusonline__name__de",
+        "serviceprovider__campusonline__name__en",
+    )
 
 
 @admin.register(models.Sponsorship)
