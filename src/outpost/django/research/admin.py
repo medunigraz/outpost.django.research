@@ -112,7 +112,7 @@ class FunderAdmin(ResearchModelAdmin):
         "typestatisticsaustria",
         "country",
     )
-    search_fields = ("name", "abbreviation")
+    search_fields = ("name__unaccent", "abbreviation__unaccent")
 
 
 @admin.register(models.FunderTypeIntellectualCapitalAccounting)
@@ -146,7 +146,7 @@ class ProgramAdmin(ResearchModelAdmin):
     autocomplete_fields = ("funder",)
     list_display = ("id", "name", "funder")
     list_filter = ("active", "funder")
-    search_fields = ("name", "funder__name")
+    search_fields = ("name", "funder__name__unaccent")
 
 
 @admin.register(models.ProjectCategory)
